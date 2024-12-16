@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Also works with zsh: https://stackoverflow.com/a/3251836
+# This also works for zsh: https://zsh.sourceforge.io/Doc/Release/Completion-System.html#Completion-System
 _main()
 {
     COMPREPLY=()
