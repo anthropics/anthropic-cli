@@ -63,6 +63,33 @@ func init() {
 
 	var modelsListSubcommand = createModelsListSubcommand()
 	subcommands[modelsListSubcommand.flagSet.Name()] = &modelsListSubcommand
+
+	var betaModelsRetrieveSubcommand = createBetaModelsRetrieveSubcommand()
+	subcommands[betaModelsRetrieveSubcommand.flagSet.Name()] = &betaModelsRetrieveSubcommand
+
+	var betaModelsListSubcommand = createBetaModelsListSubcommand()
+	subcommands[betaModelsListSubcommand.flagSet.Name()] = &betaModelsListSubcommand
+
+	var betaMessagesCreateSubcommand = createBetaMessagesCreateSubcommand(initialBody)
+	subcommands[betaMessagesCreateSubcommand.flagSet.Name()] = &betaMessagesCreateSubcommand
+
+	var betaMessagesCountTokensSubcommand = createBetaMessagesCountTokensSubcommand(initialBody)
+	subcommands[betaMessagesCountTokensSubcommand.flagSet.Name()] = &betaMessagesCountTokensSubcommand
+
+	var betaMessagesBatchesCreateSubcommand = createBetaMessagesBatchesCreateSubcommand(initialBody)
+	subcommands[betaMessagesBatchesCreateSubcommand.flagSet.Name()] = &betaMessagesBatchesCreateSubcommand
+
+	var betaMessagesBatchesRetrieveSubcommand = createBetaMessagesBatchesRetrieveSubcommand()
+	subcommands[betaMessagesBatchesRetrieveSubcommand.flagSet.Name()] = &betaMessagesBatchesRetrieveSubcommand
+
+	var betaMessagesBatchesListSubcommand = createBetaMessagesBatchesListSubcommand()
+	subcommands[betaMessagesBatchesListSubcommand.flagSet.Name()] = &betaMessagesBatchesListSubcommand
+
+	var betaMessagesBatchesDeleteSubcommand = createBetaMessagesBatchesDeleteSubcommand(initialBody)
+	subcommands[betaMessagesBatchesDeleteSubcommand.flagSet.Name()] = &betaMessagesBatchesDeleteSubcommand
+
+	var betaMessagesBatchesCancelSubcommand = createBetaMessagesBatchesCancelSubcommand(initialBody)
+	subcommands[betaMessagesBatchesCancelSubcommand.flagSet.Name()] = &betaMessagesBatchesCancelSubcommand
 }
 
 var subcommands = map[string]*Subcommand{}
