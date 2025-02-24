@@ -913,6 +913,45 @@ func createMessagesCreateSubcommand(initialBody []byte) Subcommand {
 		},
 	)
 
+	flagSet.Func(
+		"messages.content.signature",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.signature", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.thinking",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.thinking", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.data",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.data", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
 	flagSet.BoolFunc(
 		"messages.+content",
 		"",
@@ -1245,6 +1284,36 @@ func createMessagesCreateSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"thinking.budget_tokens",
+		"",
+		func(string string) error {
+			int, err := parseInt(string)
+			if err != nil {
+				return err
+			}
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.budget_tokens", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"thinking.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"tool-choice.type",
 		"",
 		func(string string) error {
@@ -1289,6 +1358,19 @@ func createMessagesCreateSubcommand(initialBody []byte) Subcommand {
 		func(string string) error {
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "tools.#.name", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.type", string)
 			if jsonErr != nil {
 				return jsonErr
 			}
@@ -2278,6 +2360,45 @@ func createMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 		},
 	)
 
+	flagSet.Func(
+		"messages.content.signature",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.signature", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.thinking",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.thinking", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.data",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.data", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
 	flagSet.BoolFunc(
 		"messages.+content",
 		"",
@@ -2567,6 +2688,36 @@ func createMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"thinking.budget_tokens",
+		"",
+		func(string string) error {
+			int, err := parseInt(string)
+			if err != nil {
+				return err
+			}
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.budget_tokens", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"thinking.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"tool-choice.type",
 		"",
 		func(string string) error {
@@ -2611,6 +2762,19 @@ func createMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 		func(string string) error {
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "tools.#.name", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.type", string)
 			if jsonErr != nil {
 				return jsonErr
 			}

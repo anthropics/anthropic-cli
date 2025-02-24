@@ -913,6 +913,45 @@ func createBetaMessagesCreateSubcommand(initialBody []byte) Subcommand {
 		},
 	)
 
+	flagSet.Func(
+		"messages.content.signature",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.signature", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.thinking",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.thinking", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.data",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.data", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
 	flagSet.BoolFunc(
 		"messages.+content",
 		"",
@@ -1245,6 +1284,36 @@ func createBetaMessagesCreateSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"thinking.budget_tokens",
+		"",
+		func(string string) error {
+			int, err := parseInt(string)
+			if err != nil {
+				return err
+			}
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.budget_tokens", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"thinking.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"tool-choice.type",
 		"",
 		func(string string) error {
@@ -1276,71 +1345,6 @@ func createBetaMessagesCreateSubcommand(initialBody []byte) Subcommand {
 		func(string string) error {
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "tool_choice.name", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.input_schema.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.input_schema.type", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.name",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.name", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.cache_control.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.cache_control.type", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.description",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.description", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.type", string)
 			if jsonErr != nil {
 				return jsonErr
 			}
@@ -1383,6 +1387,45 @@ func createBetaMessagesCreateSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"tools.name",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.name", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.cache_control.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.cache_control.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"tools.display_number",
 		"",
 		func(string string) error {
@@ -1392,6 +1435,32 @@ func createBetaMessagesCreateSubcommand(initialBody []byte) Subcommand {
 			}
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "tools.#.display_number", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.input_schema.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.input_schema.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.description",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.description", string)
 			if jsonErr != nil {
 				return jsonErr
 			}
@@ -2381,6 +2450,45 @@ func createBetaMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 		},
 	)
 
+	flagSet.Func(
+		"messages.content.signature",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.signature", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.thinking",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.thinking", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"messages.content.data",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "messages.#.content.#.data", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
 	flagSet.BoolFunc(
 		"messages.+content",
 		"",
@@ -2670,6 +2778,36 @@ func createBetaMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"thinking.budget_tokens",
+		"",
+		func(string string) error {
+			int, err := parseInt(string)
+			if err != nil {
+				return err
+			}
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.budget_tokens", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"thinking.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "thinking.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"tool-choice.type",
 		"",
 		func(string string) error {
@@ -2701,71 +2839,6 @@ func createBetaMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 		func(string string) error {
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "tool_choice.name", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.input_schema.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.input_schema.type", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.name",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.name", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.cache_control.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.cache_control.type", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.description",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.description", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"tools.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "tools.#.type", string)
 			if jsonErr != nil {
 				return jsonErr
 			}
@@ -2808,6 +2881,45 @@ func createBetaMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"tools.name",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.name", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.cache_control.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.cache_control.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"tools.display_number",
 		"",
 		func(string string) error {
@@ -2817,6 +2929,32 @@ func createBetaMessagesCountTokensSubcommand(initialBody []byte) Subcommand {
 			}
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "tools.#.display_number", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.input_schema.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.input_schema.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"tools.description",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "tools.#.description", string)
 			if jsonErr != nil {
 				return jsonErr
 			}

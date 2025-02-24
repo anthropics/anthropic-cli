@@ -926,6 +926,45 @@ func createBetaMessagesBatchesCreateSubcommand(initialBody []byte) Subcommand {
 		},
 	)
 
+	flagSet.Func(
+		"requests.params.messages.content.signature",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.messages.#.content.#.signature", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.messages.content.thinking",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.messages.#.content.#.thinking", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.messages.content.data",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.messages.#.content.#.data", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
 	flagSet.BoolFunc(
 		"requests.params.messages.+content",
 		"",
@@ -1271,6 +1310,36 @@ func createBetaMessagesBatchesCreateSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"requests.params.thinking.budget_tokens",
+		"",
+		func(string string) error {
+			int, err := parseInt(string)
+			if err != nil {
+				return err
+			}
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.thinking.budget_tokens", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.thinking.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.thinking.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"requests.params.tool_choice.type",
 		"",
 		func(string string) error {
@@ -1302,71 +1371,6 @@ func createBetaMessagesBatchesCreateSubcommand(initialBody []byte) Subcommand {
 		func(string string) error {
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "requests.#.params.tool_choice.name", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"requests.params.tools.input_schema.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.input_schema.type", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"requests.params.tools.name",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.name", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"requests.params.tools.cache_control.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.cache_control.type", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"requests.params.tools.description",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.description", string)
-			if jsonErr != nil {
-				return jsonErr
-			}
-			return nil
-		},
-	)
-
-	flagSet.Func(
-		"requests.params.tools.type",
-		"",
-		func(string string) error {
-			var jsonErr error
-			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.type", string)
 			if jsonErr != nil {
 				return jsonErr
 			}
@@ -1409,6 +1413,45 @@ func createBetaMessagesBatchesCreateSubcommand(initialBody []byte) Subcommand {
 	)
 
 	flagSet.Func(
+		"requests.params.tools.name",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.name", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.tools.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.tools.cache_control.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.cache_control.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
 		"requests.params.tools.display_number",
 		"",
 		func(string string) error {
@@ -1418,6 +1461,32 @@ func createBetaMessagesBatchesCreateSubcommand(initialBody []byte) Subcommand {
 			}
 			var jsonErr error
 			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.display_number", int)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.tools.input_schema.type",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.input_schema.type", string)
+			if jsonErr != nil {
+				return jsonErr
+			}
+			return nil
+		},
+	)
+
+	flagSet.Func(
+		"requests.params.tools.description",
+		"",
+		func(string string) error {
+			var jsonErr error
+			body, jsonErr = jsonSet(body, "requests.#.params.tools.#.description", string)
 			if jsonErr != nil {
 				return jsonErr
 			}
