@@ -161,7 +161,7 @@ _main()
             COMPREPLY=( $(compgen -W "enabled disabled" -- $cur) )
             ;;
           --tool-choice.type)
-            COMPREPLY=( $(compgen -W "auto any tool" -- $cur) )
+            COMPREPLY=( $(compgen -W "auto any tool none" -- $cur) )
             ;;
           --tools.name)
             COMPREPLY=( $(compgen -W "bash str_replace_editor" -- $cur) )
@@ -240,7 +240,7 @@ _main()
             COMPREPLY=( $(compgen -W "enabled disabled" -- $cur) )
             ;;
           --tool-choice.type)
-            COMPREPLY=( $(compgen -W "auto any tool" -- $cur) )
+            COMPREPLY=( $(compgen -W "auto any tool none" -- $cur) )
             ;;
           --tools.name)
             COMPREPLY=( $(compgen -W "bash str_replace_editor" -- $cur) )
@@ -319,7 +319,7 @@ _main()
             COMPREPLY=( $(compgen -W "enabled disabled" -- $cur) )
             ;;
           --requests.params.tool_choice.type)
-            COMPREPLY=( $(compgen -W "auto any tool" -- $cur) )
+            COMPREPLY=( $(compgen -W "auto any tool none" -- $cur) )
             ;;
           --requests.params.tools.name)
             COMPREPLY=( $(compgen -W "bash str_replace_editor" -- $cur) )
@@ -398,7 +398,7 @@ _main()
             COMPREPLY=( $(compgen -W "enabled disabled" -- $cur) )
             ;;
           --tool-choice.type)
-            COMPREPLY=( $(compgen -W "auto any tool" -- $cur) )
+            COMPREPLY=( $(compgen -W "auto any tool none" -- $cur) )
             ;;
           --tools.input_schema.type)
             COMPREPLY=( $(compgen -W "object" -- $cur) )
@@ -486,7 +486,7 @@ _main()
             COMPREPLY=( $(compgen -W "enabled disabled" -- $cur) )
             ;;
           --tool-choice.type)
-            COMPREPLY=( $(compgen -W "auto any tool" -- $cur) )
+            COMPREPLY=( $(compgen -W "auto any tool none" -- $cur) )
             ;;
           --tools.input_schema.type)
             COMPREPLY=( $(compgen -W "object" -- $cur) )
@@ -574,7 +574,7 @@ _main()
             COMPREPLY=( $(compgen -W "enabled disabled" -- $cur) )
             ;;
           --requests.params.tool_choice.type)
-            COMPREPLY=( $(compgen -W "auto any tool" -- $cur) )
+            COMPREPLY=( $(compgen -W "auto any tool none" -- $cur) )
             ;;
           --requests.params.tools.input_schema.type)
             COMPREPLY=( $(compgen -W "object" -- $cur) )

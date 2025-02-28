@@ -152,7 +152,7 @@ complete -c anthropic-cli --no-files \
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from messages.create" \
    -l tool-choice.type \
-   -ra "auto any tool"
+   -ra "auto any tool none"
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from messages.create" \
    -l tools.name \
@@ -252,7 +252,7 @@ complete -c anthropic-cli --no-files \
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from messages.count_tokens" \
    -l tool-choice.type \
-   -ra "auto any tool"
+   -ra "auto any tool none"
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from messages.count_tokens" \
    -l tools.name \
@@ -352,7 +352,7 @@ complete -c anthropic-cli --no-files \
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from messages.batches.create" \
    -l requests.params.tool_choice.type \
-   -ra "auto any tool"
+   -ra "auto any tool none"
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from messages.batches.create" \
    -l requests.params.tools.name \
@@ -452,7 +452,7 @@ complete -c anthropic-cli --no-files \
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from beta.messages.create" \
    -l tool-choice.type \
-   -ra "auto any tool"
+   -ra "auto any tool none"
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from beta.messages.create" \
    -l tools.input_schema.type \
@@ -564,7 +564,7 @@ complete -c anthropic-cli --no-files \
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from beta.messages.count_tokens" \
    -l tool-choice.type \
-   -ra "auto any tool"
+   -ra "auto any tool none"
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from beta.messages.count_tokens" \
    -l tools.input_schema.type \
@@ -676,7 +676,7 @@ complete -c anthropic-cli --no-files \
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from beta.messages.batches.create" \
    -l requests.params.tool_choice.type \
-   -ra "auto any tool"
+   -ra "auto any tool none"
  complete -c anthropic-cli --no-files \
    -n "__fish_seen_subcommand_from beta.messages.batches.create" \
    -l requests.params.tools.input_schema.type \
