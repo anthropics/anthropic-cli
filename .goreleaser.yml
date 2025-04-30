@@ -1,0 +1,57 @@
+project_name: anthropic-cli
+version: 2
+
+builds:
+  - id: macos
+    goos: [darwin]
+    goarch: [amd64, arm64]
+    binary: '{{ .ProjectName }}'
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
+
+  - id: linux
+    goos: [linux]
+    goarch: ['386', arm, amd64, arm64]
+    env:
+      - CGO_ENABLED=0
+    binary: '{{ .ProjectName }}'
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
+
+  - id: windows
+    goos: [windows]
+    goarch: ['386', amd64, arm64]
+    binary: '{{ .ProjectName }}'
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
+
+archives:
+  - id: linux-archive
+    ids: [linux]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    wrap_in_directory: true
+    formats: [tar.gz]
+  - id: macos-archive
+    ids: [macos]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_macos_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    wrap_in_directory: true
+    formats: [zip]
+  - id: windows-archive
+    ids: [windows]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_windows_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    wrap_in_directory: false
+    formats: [zip]
+
+snapshot:
+  version_template: "{{ .Tag }}-next"
+
+nfpms:
+  - license: MIT
+    maintainer: support@anthropic.com
+    bindir: /usr
+    formats:
+      - deb
+      - rpm
