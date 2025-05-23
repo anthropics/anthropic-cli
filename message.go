@@ -1054,10 +1054,10 @@ var messagesCountTokens = cli.Command{
 
 func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.MessageNewParams{}
 	stream := cc.client.Messages.NewStreaming(
 		context.TODO(),
-		anthropic.MessageNewParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -1072,10 +1072,10 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 
 func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.MessageCountTokensParams{}
 	res, err := cc.client.Messages.CountTokens(
 		context.TODO(),
-		anthropic.MessageCountTokensParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)

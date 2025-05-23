@@ -634,10 +634,10 @@ var messagesBatchesResults = cli.Command{
 
 func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.MessageBatchNewParams{}
 	res, err := cc.client.Messages.Batches.New(
 		context.TODO(),
-		anthropic.MessageBatchNewParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -651,7 +651,6 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 
 func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
 	res, err := cc.client.Messages.Batches.Get(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
@@ -667,10 +666,10 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 
 func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.MessageBatchListParams{}
 	res, err := cc.client.Messages.Batches.List(
 		context.TODO(),
-		anthropic.MessageBatchListParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -683,7 +682,6 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 
 func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
 	res, err := cc.client.Messages.Batches.Delete(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
@@ -700,7 +698,6 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 
 func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
 	res, err := cc.client.Messages.Batches.Cancel(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
@@ -717,7 +714,6 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 
 func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
 	stream := cc.client.Messages.Batches.ResultsStreaming(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),

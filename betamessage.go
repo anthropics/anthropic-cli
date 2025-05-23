@@ -1306,10 +1306,10 @@ var betaMessagesCountTokens = cli.Command{
 
 func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageNewParams{}
 	stream := cc.client.Beta.Messages.NewStreaming(
 		context.TODO(),
-		anthropic.BetaMessageNewParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -1324,10 +1324,10 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 
 func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageCountTokensParams{}
 	res, err := cc.client.Beta.Messages.CountTokens(
 		context.TODO(),
-		anthropic.BetaMessageCountTokensParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)

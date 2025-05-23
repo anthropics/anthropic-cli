@@ -129,10 +129,10 @@ var betaFilesUpload = cli.Command{
 
 func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaFileListParams{}
 	res, err := cc.client.Beta.Files.List(
 		context.TODO(),
-		anthropic.BetaFileListParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -145,11 +145,11 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 
 func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaFileDeleteParams{}
 	res, err := cc.client.Beta.Files.Delete(
 		context.TODO(),
 		cmd.Value("file-id").(string),
-		anthropic.BetaFileDeleteParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -163,11 +163,11 @@ func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 
 func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaFileDownloadParams{}
 	res, err := cc.client.Beta.Files.Download(
 		context.TODO(),
 		cmd.Value("file-id").(string),
-		anthropic.BetaFileDownloadParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -180,11 +180,11 @@ func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
 
 func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaFileGetMetadataParams{}
 	res, err := cc.client.Beta.Files.GetMetadata(
 		context.TODO(),
 		cmd.Value("file-id").(string),
-		anthropic.BetaFileGetMetadataParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -197,10 +197,10 @@ func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) erro
 
 func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaFileUploadParams{}
 	res, err := cc.client.Beta.Files.Upload(
 		context.TODO(),
-		anthropic.BetaFileUploadParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)

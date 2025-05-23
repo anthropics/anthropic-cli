@@ -65,11 +65,11 @@ var betaModelsList = cli.Command{
 
 func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaModelGetParams{}
 	res, err := cc.client.Beta.Models.Get(
 		context.TODO(),
 		cmd.Value("model-id").(string),
-		anthropic.BetaModelGetParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -82,10 +82,10 @@ func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 
 func handleBetaModelsList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaModelListParams{}
 	res, err := cc.client.Beta.Models.List(
 		context.TODO(),
-		anthropic.BetaModelListParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {

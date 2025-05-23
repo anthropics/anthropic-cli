@@ -802,10 +802,10 @@ var betaMessagesBatchesResults = cli.Command{
 
 func handleBetaMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageBatchNewParams{}
 	res, err := cc.client.Beta.Messages.Batches.New(
 		context.TODO(),
-		anthropic.BetaMessageBatchNewParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -819,11 +819,11 @@ func handleBetaMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) erro
 
 func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageBatchGetParams{}
 	res, err := cc.client.Beta.Messages.Batches.Get(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
-		anthropic.BetaMessageBatchGetParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -836,10 +836,10 @@ func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) er
 
 func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageBatchListParams{}
 	res, err := cc.client.Beta.Messages.Batches.List(
 		context.TODO(),
-		anthropic.BetaMessageBatchListParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -852,11 +852,11 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 
 func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageBatchDeleteParams{}
 	res, err := cc.client.Beta.Messages.Batches.Delete(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
-		anthropic.BetaMessageBatchDeleteParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -870,11 +870,11 @@ func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) erro
 
 func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageBatchCancelParams{}
 	res, err := cc.client.Beta.Messages.Batches.Cancel(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
-		anthropic.BetaMessageBatchCancelParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
@@ -888,11 +888,11 @@ func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) erro
 
 func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.BetaMessageBatchResultsParams{}
 	stream := cc.client.Beta.Messages.Batches.ResultsStreaming(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
-		anthropic.BetaMessageBatchResultsParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	for stream.Next() {

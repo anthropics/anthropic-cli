@@ -65,11 +65,11 @@ var modelsList = cli.Command{
 
 func handleModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.ModelGetParams{}
 	res, err := cc.client.Models.Get(
 		context.TODO(),
 		cmd.Value("model-id").(string),
-		anthropic.ModelGetParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {
@@ -82,10 +82,10 @@ func handleModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 
 func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.ModelListParams{}
 	res, err := cc.client.Models.List(
 		context.TODO(),
-		anthropic.ModelListParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
 	if err != nil {

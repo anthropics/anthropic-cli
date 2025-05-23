@@ -67,10 +67,10 @@ var completionsCreate = cli.Command{
 
 func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-
+	params := anthropic.CompletionNewParams{}
 	stream := cc.client.Completions.NewStreaming(
 		context.TODO(),
-		anthropic.CompletionNewParams{},
+		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithRequestBody("application/json", cc.body),
 	)
