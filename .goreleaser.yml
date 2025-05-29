@@ -6,6 +6,7 @@ builds:
     goos: [darwin]
     goarch: [amd64, arm64]
     binary: '{{ .ProjectName }}'
+    main: ./cmd/anthropic-cli/main.go
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
@@ -16,6 +17,7 @@ builds:
     env:
       - CGO_ENABLED=0
     binary: '{{ .ProjectName }}'
+    main: ./cmd/anthropic-cli/main.go
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
@@ -24,6 +26,7 @@ builds:
     goos: [windows]
     goarch: ['386', amd64, arm64]
     binary: '{{ .ProjectName }}'
+    main: ./cmd/anthropic-cli/main.go
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"

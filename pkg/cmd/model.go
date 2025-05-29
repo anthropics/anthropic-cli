@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-package main
+package cmd
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaModelsRetrieve = cli.Command{
+var modelsRetrieve = cli.Command{
 	Name:  "retrieve",
 	Usage: "Get a specific model.",
 	Flags: []cli.Flag{
@@ -29,11 +29,11 @@ var betaModelsRetrieve = cli.Command{
 		},
 	},
 	Before:          initAPICommand,
-	Action:          handleBetaModelsRetrieve,
+	Action:          handleModelsRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaModelsList = cli.Command{
+var modelsList = cli.Command{
 	Name:  "list",
 	Usage: "List available models.",
 	Flags: []cli.Flag{
@@ -59,14 +59,14 @@ var betaModelsList = cli.Command{
 		},
 	},
 	Before:          initAPICommand,
-	Action:          handleBetaModelsList,
+	Action:          handleModelsList,
 	HideHelpCommand: true,
 }
 
-func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
+func handleModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-	params := anthropic.BetaModelGetParams{}
-	res, err := cc.client.Beta.Models.Get(
+	params := anthropic.ModelGetParams{}
+	res, err := cc.client.Models.Get(
 		context.TODO(),
 		cmd.Value("model-id").(string),
 		params,
@@ -80,10 +80,10 @@ func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-func handleBetaModelsList(ctx context.Context, cmd *cli.Command) error {
+func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(ctx, cmd)
-	params := anthropic.BetaModelListParams{}
-	res, err := cc.client.Beta.Models.List(
+	params := anthropic.ModelListParams{}
+	res, err := cc.client.Models.List(
 		context.TODO(),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
