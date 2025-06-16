@@ -9,6 +9,7 @@ import (
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/stainless-sdks/anthropic-cli/pkg/jsonflag"
 	"github.com/urfave/cli/v3"
 )
 
@@ -19,16 +20,21 @@ var betaModelsRetrieve = cli.Command{
 		&cli.StringFlag{
 			Name: "model-id",
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaModelsRetrieve,
 	HideHelpCommand: true,
 }
@@ -37,34 +43,48 @@ var betaModelsList = cli.Command{
 	Name:  "list",
 	Usage: "List available models.",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:   "after-id",
-			Action: getAPIFlagAction[string]("query", "after_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "after-id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "after_id",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "before-id",
-			Action: getAPIFlagAction[string]("query", "before_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "before-id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "before_id",
+			},
 		},
-		&cli.Int64Flag{
-			Name:   "limit",
-			Action: getAPIFlagAction[int64]("query", "limit"),
+		&jsonflag.JSONIntFlag{
+			Name: "limit",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "limit",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaModelsList,
 	HideHelpCommand: true,
 }
 
 func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaModelGetParams{}
 	res, err := cc.client.Beta.Models.Get(
 		context.TODO(),
@@ -81,7 +101,7 @@ func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleBetaModelsList(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaModelListParams{}
 	res, err := cc.client.Beta.Models.List(
 		context.TODO(),

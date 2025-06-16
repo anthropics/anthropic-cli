@@ -1,21 +1,19 @@
 package cmd
 
 import (
-	"context"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/stainless-sdks/anthropic-cli/pkg/jsonflag"
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
-	"github.com/tidwall/sjson"
 	"github.com/urfave/cli/v3"
 	"golang.org/x/term"
 )
@@ -26,25 +24,6 @@ func getDefaultRequestOptions() []option.RequestOption {
 		option.WithHeader("X-Stainless-Runtime", "cli"),
 	}
 }
-
-func jsonSet(json []byte, path string, value interface{}) ([]byte, error) {
-	keys := strings.Split(path, ".")
-	path = ""
-	for i := 0; i < len(keys); i++ {
-		key := keys[i]
-		if key == "#" {
-			key = strconv.Itoa(len(gjson.GetBytes(json, path).Array()) - 1)
-		}
-
-		if len(path) > 0 {
-			path += "."
-		}
-		path += key
-	}
-	return sjson.SetBytes(json, path, value)
-}
-
-type apiCommandKey string
 
 type apiCommandContext struct {
 	client anthropic.Client
@@ -73,7 +52,7 @@ func (c apiCommandContext) AsMiddleware() option.Middleware {
 	}
 }
 
-func initAPICommand(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+func getAPICommandContext(cmd *cli.Command) *apiCommandContext {
 	client := anthropic.NewClient(getDefaultRequestOptions()...)
 	body := getStdInput()
 	if body == nil {
@@ -82,45 +61,13 @@ func initAPICommand(ctx context.Context, cmd *cli.Command) (context.Context, err
 	var query = []byte("{}")
 	var header = []byte("{}")
 
-	return context.WithValue(ctx, apiCommandKey(cmd.Name), &apiCommandContext{client, body, query, header}), nil
-}
-
-func getAPICommandContext(ctx context.Context, cmd *cli.Command) *apiCommandContext {
-	return ctx.Value(apiCommandKey(cmd.Name)).(*apiCommandContext)
-}
-
-func getAPIFlagAction[T any](kind string, path string) func(context.Context, *cli.Command, T) error {
-	return func(ctx context.Context, cmd *cli.Command, value T) (err error) {
-		commandContext := getAPICommandContext(ctx, cmd)
-		var dest *[]byte
-		switch kind {
-		case "body":
-			dest = &commandContext.body
-		case "query":
-			dest = &commandContext.query
-		case "header":
-			dest = &commandContext.header
-		}
-		*dest, err = jsonSet(*dest, path, value)
-		return err
+	// Apply JSON flag mutations
+	body, query, header, err := jsonflag.Apply(body, query, header)
+	if err != nil {
+		log.Fatal(err)
 	}
-}
 
-func getAPIFlagActionWithValue[T any](kind string, path string, value interface{}) func(context.Context, *cli.Command, T) error {
-	return func(ctx context.Context, cmd *cli.Command, unusedValue T) (err error) {
-		commandContext := getAPICommandContext(ctx, cmd)
-		var dest *[]byte
-		switch kind {
-		case "body":
-			dest = &commandContext.body
-		case "query":
-			dest = &commandContext.query
-		case "header":
-			dest = &commandContext.header
-		}
-		*dest, err = jsonSet(*dest, path, value)
-		return err
-	}
+	return &apiCommandContext{client, body, query, header}
 }
 
 func serializeQuery(params []byte) url.Values {

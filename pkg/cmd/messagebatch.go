@@ -9,6 +9,7 @@ import (
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/stainless-sdks/anthropic-cli/pkg/jsonflag"
 	"github.com/urfave/cli/v3"
 )
 
@@ -16,544 +17,967 @@ var messagesBatchesCreate = cli.Command{
 	Name:  "create",
 	Usage: "Send a batch of Message creation requests.",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:   "requests.custom_id",
-			Action: getAPIFlagAction[string]("body", "requests.#.custom_id"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.max_tokens",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.max_tokens"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.id",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.id"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.name",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.name"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.encrypted_content",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.encrypted_content"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.url"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.page_age",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.page_age"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.#.content.#.content.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.error_code",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.error_code"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.tool_use_id",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.tool_use_id"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.#.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.data",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.url"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.#.content.#.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.source.data",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.source.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.content.source.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.content.#.source.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.is_error",
-			Action: getAPIFlagAction[bool]("body", "requests.#.params.messages.#.content.#.is_error"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.messages.content.source.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.source.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.#.content.#.source.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.source.data",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.source.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.source.content.source.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.source.content.#.source.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.source.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.#.content.#.source.content.-1", map[string]interface{}{}),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.content.citations.enabled",
-			Action: getAPIFlagAction[bool]("body", "requests.#.params.messages.#.content.#.citations.enabled"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.context",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.context"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.signature",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.signature"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.thinking",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.thinking"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.content.data",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.content.#.data"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.messages.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.#.content.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.messages.role",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.messages.#.role"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.+message",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.messages.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.model",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.model"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.metadata.user_id",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.metadata.user_id"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.service_tier",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.service_tier"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.stop_sequences",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.stop_sequences.#"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.+stop_sequence",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.stop_sequences.-1"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.stream",
-			Action: getAPIFlagAction[bool]("body", "requests.#.params.stream"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.citations.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.system.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.system.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.citations.title",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.system.citations.url",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.system.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.system.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.system.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.+system",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.system.-1", map[string]interface{}{}),
-		},
-		&cli.FloatFlag{
-			Name:   "requests.params.temperature",
-			Action: getAPIFlagAction[float64]("body", "requests.#.params.temperature"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.thinking.budget_tokens",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.thinking.budget_tokens"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.thinking.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.thinking.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tool_choice.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tool_choice.type"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.tool_choice.disable_parallel_tool_use",
-			Action: getAPIFlagAction[bool]("body", "requests.#.params.tool_choice.disable_parallel_tool_use"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tool_choice.name",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tool_choice.name"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.name",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.name"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.description",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.description"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.allowed_domains",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.allowed_domains.#"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.+allowed_domain",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.allowed_domains.-1"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.blocked_domains",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.blocked_domains.#"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.+blocked_domain",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.blocked_domains.-1"),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.tools.max_uses",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.tools.#.max_uses"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.user_location.type",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.user_location.type"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.user_location.city",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.user_location.city"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.user_location.country",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.user_location.country"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.user_location.region",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.user_location.region"),
-		},
-		&cli.StringFlag{
-			Name:   "requests.params.tools.user_location.timezone",
-			Action: getAPIFlagAction[string]("body", "requests.#.params.tools.#.user_location.timezone"),
-		},
-		&cli.BoolFlag{
-			Name:   "requests.params.+tool",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.#.params.tools.-1", map[string]interface{}{}),
-		},
-		&cli.Int64Flag{
-			Name:   "requests.params.top_k",
-			Action: getAPIFlagAction[int64]("body", "requests.#.params.top_k"),
-		},
-		&cli.FloatFlag{
-			Name:   "requests.params.top_p",
-			Action: getAPIFlagAction[float64]("body", "requests.#.params.top_p"),
-		},
-		&cli.BoolFlag{
-			Name:   "+request",
-			Action: getAPIFlagActionWithValue[bool]("body", "requests.-1", map[string]interface{}{}),
+		&jsonflag.JSONStringFlag{
+			Name: "requests.custom_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.custom_id",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.max_tokens",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.max_tokens",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.encrypted_content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.encrypted_content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.page_age",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.page_age",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.error_code",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.error_code",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.tool_use_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.tool_use_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "requests.params.messages.content.is_error",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.is_error",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.source.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.source.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.source.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.source.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "requests.params.messages.content.citations.enabled",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.enabled",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.context",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.context",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.signature",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.signature",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.thinking",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.thinking",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.data",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.role",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.role",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.+message",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.model",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.model",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.metadata.user_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.metadata.user_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.service_tier",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.service_tier",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.stop_sequences",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.stop_sequences.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.+stop_sequence",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.stop_sequences.-1",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "requests.params.stream",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.stream",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.system.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.system.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.+system",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.system.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONFloatFlag{
+			Name: "requests.params.temperature",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.temperature",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.thinking.budget_tokens",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.thinking.budget_tokens",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.thinking.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.thinking.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tool_choice.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tool_choice.type",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "requests.params.tool_choice.disable_parallel_tool_use",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tool_choice.disable_parallel_tool_use",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tool_choice.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tool_choice.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.description",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.description",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.allowed_domains",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.allowed_domains.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.+allowed_domain",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.allowed_domains.-1",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.blocked_domains",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.blocked_domains.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.+blocked_domain",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.blocked_domains.-1",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.tools.max_uses",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.max_uses",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.user_location.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.user_location.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.user_location.city",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.user_location.city",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.user_location.country",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.user_location.country",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.user_location.region",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.user_location.region",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.tools.user_location.timezone",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.tools.#.user_location.timezone",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.+tool",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.tools.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.top_k",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.top_k",
+			},
+		},
+		&jsonflag.JSONFloatFlag{
+			Name: "requests.params.top_p",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.top_p",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+request",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesBatchesCreate,
 	HideHelpCommand: true,
 }
@@ -566,7 +990,6 @@ var messagesBatchesRetrieve = cli.Command{
 			Name: "message-batch-id",
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesBatchesRetrieve,
 	HideHelpCommand: true,
 }
@@ -575,20 +998,28 @@ var messagesBatchesList = cli.Command{
 	Name:  "list",
 	Usage: "List all Message Batches within a Workspace. Most recently created batches are\nreturned first.",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:   "after-id",
-			Action: getAPIFlagAction[string]("query", "after_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "after-id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "after_id",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "before-id",
-			Action: getAPIFlagAction[string]("query", "before_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "before-id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "before_id",
+			},
 		},
-		&cli.Int64Flag{
-			Name:   "limit",
-			Action: getAPIFlagAction[int64]("query", "limit"),
+		&jsonflag.JSONIntFlag{
+			Name: "limit",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "limit",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesBatchesList,
 	HideHelpCommand: true,
 }
@@ -601,7 +1032,6 @@ var messagesBatchesDelete = cli.Command{
 			Name: "message-batch-id",
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesBatchesDelete,
 	HideHelpCommand: true,
 }
@@ -614,7 +1044,6 @@ var messagesBatchesCancel = cli.Command{
 			Name: "message-batch-id",
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesBatchesCancel,
 	HideHelpCommand: true,
 }
@@ -627,13 +1056,12 @@ var messagesBatchesResults = cli.Command{
 			Name: "message-batch-id",
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesBatchesResults,
 	HideHelpCommand: true,
 }
 
 func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.MessageBatchNewParams{}
 	res, err := cc.client.Messages.Batches.New(
 		context.TODO(),
@@ -650,7 +1078,7 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	res, err := cc.client.Messages.Batches.Get(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
@@ -665,7 +1093,7 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 }
 
 func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.MessageBatchListParams{}
 	res, err := cc.client.Messages.Batches.List(
 		context.TODO(),
@@ -681,7 +1109,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	res, err := cc.client.Messages.Batches.Delete(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
@@ -697,7 +1125,7 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	res, err := cc.client.Messages.Batches.Cancel(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
@@ -713,7 +1141,7 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	stream := cc.client.Messages.Batches.ResultsStreaming(
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),

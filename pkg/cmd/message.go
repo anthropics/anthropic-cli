@@ -9,6 +9,7 @@ import (
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/stainless-sdks/anthropic-cli/pkg/jsonflag"
 	"github.com/urfave/cli/v3"
 )
 
@@ -16,532 +17,944 @@ var messagesCreate = cli.Command{
 	Name:  "create",
 	Usage: "Send a structured list of input messages with text and/or image content, and the\nmodel will generate the next message in the conversation.",
 	Flags: []cli.Flag{
-		&cli.Int64Flag{
-			Name:   "max-tokens",
-			Action: getAPIFlagAction[int64]("body", "max_tokens"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.id",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.id"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.name",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.name"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.encrypted_content",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.encrypted_content"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.url"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.page_age",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.page_age"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.content.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.error_code",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.error_code"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.tool_use_id",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.tool_use_id"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.url"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.is_error",
-			Action: getAPIFlagAction[bool]("body", "messages.#.content.#.is_error"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.source.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.source.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.source.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.source.content.-1", map[string]interface{}{}),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.citations.enabled",
-			Action: getAPIFlagAction[bool]("body", "messages.#.content.#.citations.enabled"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.context",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.context"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.signature",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.signature"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.thinking",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.thinking"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.data"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.role",
-			Action: getAPIFlagAction[string]("body", "messages.#.role"),
-		},
-		&cli.BoolFlag{
-			Name:   "+message",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "model",
-			Action: getAPIFlagAction[string]("body", "model"),
-		},
-		&cli.StringFlag{
-			Name:   "metadata.user_id",
-			Action: getAPIFlagAction[string]("body", "metadata.user_id"),
-		},
-		&cli.StringFlag{
-			Name:   "service-tier",
-			Action: getAPIFlagAction[string]("body", "service_tier"),
-		},
-		&cli.StringFlag{
-			Name:   "stop-sequences",
-			Action: getAPIFlagAction[string]("body", "stop_sequences.#"),
-		},
-		&cli.StringFlag{
-			Name:   "+stop_sequence",
-			Action: getAPIFlagAction[string]("body", "stop_sequences.-1"),
-		},
-		&cli.StringFlag{
-			Name:   "system.text",
-			Action: getAPIFlagAction[string]("body", "system.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "system.type",
-			Action: getAPIFlagAction[string]("body", "system.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "system.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "system.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.type",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.title",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.url",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "system.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "system.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.BoolFlag{
-			Name:   "+system",
-			Action: getAPIFlagActionWithValue[bool]("body", "system.-1", map[string]interface{}{}),
-		},
-		&cli.FloatFlag{
-			Name:   "temperature",
-			Action: getAPIFlagAction[float64]("body", "temperature"),
-		},
-		&cli.Int64Flag{
-			Name:   "thinking.budget_tokens",
-			Action: getAPIFlagAction[int64]("body", "thinking.budget_tokens"),
-		},
-		&cli.StringFlag{
-			Name:   "thinking.type",
-			Action: getAPIFlagAction[string]("body", "thinking.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tool-choice.type",
-			Action: getAPIFlagAction[string]("body", "tool_choice.type"),
-		},
-		&cli.BoolFlag{
-			Name:   "tool-choice.disable_parallel_tool_use",
-			Action: getAPIFlagAction[bool]("body", "tool_choice.disable_parallel_tool_use"),
-		},
-		&cli.StringFlag{
-			Name:   "tool-choice.name",
-			Action: getAPIFlagAction[string]("body", "tool_choice.name"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.name",
-			Action: getAPIFlagAction[string]("body", "tools.#.name"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "tools.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.description",
-			Action: getAPIFlagAction[string]("body", "tools.#.description"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.type",
-			Action: getAPIFlagAction[string]("body", "tools.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.allowed_domains",
-			Action: getAPIFlagAction[string]("body", "tools.#.allowed_domains.#"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.+allowed_domain",
-			Action: getAPIFlagAction[string]("body", "tools.#.allowed_domains.-1"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.blocked_domains",
-			Action: getAPIFlagAction[string]("body", "tools.#.blocked_domains.#"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.+blocked_domain",
-			Action: getAPIFlagAction[string]("body", "tools.#.blocked_domains.-1"),
-		},
-		&cli.Int64Flag{
-			Name:   "tools.max_uses",
-			Action: getAPIFlagAction[int64]("body", "tools.#.max_uses"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.type",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.city",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.city"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.country",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.country"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.region",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.region"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.timezone",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.timezone"),
-		},
-		&cli.BoolFlag{
-			Name:   "+tool",
-			Action: getAPIFlagActionWithValue[bool]("body", "tools.-1", map[string]interface{}{}),
-		},
-		&cli.Int64Flag{
-			Name:   "top-k",
-			Action: getAPIFlagAction[int64]("body", "top_k"),
-		},
-		&cli.FloatFlag{
-			Name:   "top-p",
-			Action: getAPIFlagAction[float64]("body", "top_p"),
+		&jsonflag.JSONIntFlag{
+			Name: "max-tokens",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "max_tokens",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.encrypted_content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.encrypted_content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.page_age",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.page_age",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.error_code",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.error_code",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.tool_use_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.tool_use_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "messages.content.is_error",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.is_error",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.source.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.source.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.source.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.source.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "messages.content.citations.enabled",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.enabled",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.context",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.context",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.signature",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.signature",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.thinking",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.thinking",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.data",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.role",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.role",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+message",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "model",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "model",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "metadata.user_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "metadata.user_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "service-tier",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "service_tier",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "stop-sequences",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "stop_sequences.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "+stop_sequence",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "stop_sequences.-1",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "system.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "system.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+system",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "system.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONFloatFlag{
+			Name: "temperature",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "temperature",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "thinking.budget_tokens",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "thinking.budget_tokens",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "thinking.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "thinking.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tool-choice.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tool_choice.type",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "tool-choice.disable_parallel_tool_use",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tool_choice.disable_parallel_tool_use",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tool-choice.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tool_choice.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.description",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.description",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.allowed_domains",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.allowed_domains.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.+allowed_domain",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.allowed_domains.-1",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.blocked_domains",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.blocked_domains.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.+blocked_domain",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.blocked_domains.-1",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "tools.max_uses",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.max_uses",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.city",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.city",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.country",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.country",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.region",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.region",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.timezone",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.timezone",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+tool",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "tools.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "top-k",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "top_k",
+			},
+		},
+		&jsonflag.JSONFloatFlag{
+			Name: "top-p",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "top_p",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesCreate,
 	HideHelpCommand: true,
 }
@@ -550,510 +963,901 @@ var messagesCountTokens = cli.Command{
 	Name:  "count_tokens",
 	Usage: "Count the number of tokens in a Message.",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:   "messages.content.id",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.id"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.name",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.name"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.encrypted_content",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.encrypted_content"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.url"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.page_age",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.page_age"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.content.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.error_code",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.error_code"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.tool_use_id",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.tool_use_id"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.url"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.content.source.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.content.#.source.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.is_error",
-			Action: getAPIFlagAction[bool]("body", "messages.#.content.#.is_error"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "messages.content.source.content.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "messages.#.content.#.source.content.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.citations.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.source.content.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.source.content.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.data"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.media_type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.media_type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.type",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.type"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.source.content.source.url",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.source.content.#.source.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.source.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.#.source.content.-1", map[string]interface{}{}),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.content.citations.enabled",
-			Action: getAPIFlagAction[bool]("body", "messages.#.content.#.citations.enabled"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.context",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.context"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.title",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.signature",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.signature"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.thinking",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.thinking"),
-		},
-		&cli.StringFlag{
-			Name:   "messages.content.data",
-			Action: getAPIFlagAction[string]("body", "messages.#.content.#.data"),
-		},
-		&cli.BoolFlag{
-			Name:   "messages.+content",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.#.content.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "messages.role",
-			Action: getAPIFlagAction[string]("body", "messages.#.role"),
-		},
-		&cli.BoolFlag{
-			Name:   "+message",
-			Action: getAPIFlagActionWithValue[bool]("body", "messages.-1", map[string]interface{}{}),
-		},
-		&cli.StringFlag{
-			Name:   "model",
-			Action: getAPIFlagAction[string]("body", "model"),
-		},
-		&cli.StringFlag{
-			Name:   "system",
-			Action: getAPIFlagAction[string]("body", "system"),
-		},
-		&cli.StringFlag{
-			Name:   "system.text",
-			Action: getAPIFlagAction[string]("body", "system.#.text"),
-		},
-		&cli.StringFlag{
-			Name:   "system.type",
-			Action: getAPIFlagAction[string]("body", "system.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "system.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "system.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.cited_text",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.cited_text"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.document_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.document_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.document_title",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.document_title"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.end_char_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.end_char_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.start_char_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.start_char_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.type",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.type"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.end_page_number",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.end_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.start_page_number",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.start_page_number"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.end_block_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.end_block_index"),
-		},
-		&cli.Int64Flag{
-			Name:   "system.citations.start_block_index",
-			Action: getAPIFlagAction[int64]("body", "system.#.citations.#.start_block_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.encrypted_index",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.encrypted_index"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.title",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.title"),
-		},
-		&cli.StringFlag{
-			Name:   "system.citations.url",
-			Action: getAPIFlagAction[string]("body", "system.#.citations.#.url"),
-		},
-		&cli.BoolFlag{
-			Name:   "system.+citation",
-			Action: getAPIFlagActionWithValue[bool]("body", "system.#.citations.-1", map[string]interface{}{}),
-		},
-		&cli.BoolFlag{
-			Name:   "+system",
-			Action: getAPIFlagActionWithValue[bool]("body", "system.-1", map[string]interface{}{}),
-		},
-		&cli.Int64Flag{
-			Name:   "thinking.budget_tokens",
-			Action: getAPIFlagAction[int64]("body", "thinking.budget_tokens"),
-		},
-		&cli.StringFlag{
-			Name:   "thinking.type",
-			Action: getAPIFlagAction[string]("body", "thinking.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tool-choice.type",
-			Action: getAPIFlagAction[string]("body", "tool_choice.type"),
-		},
-		&cli.BoolFlag{
-			Name:   "tool-choice.disable_parallel_tool_use",
-			Action: getAPIFlagAction[bool]("body", "tool_choice.disable_parallel_tool_use"),
-		},
-		&cli.StringFlag{
-			Name:   "tool-choice.name",
-			Action: getAPIFlagAction[string]("body", "tool_choice.name"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.name",
-			Action: getAPIFlagAction[string]("body", "tools.#.name"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.cache_control.type",
-			Action: getAPIFlagAction[string]("body", "tools.#.cache_control.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.description",
-			Action: getAPIFlagAction[string]("body", "tools.#.description"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.type",
-			Action: getAPIFlagAction[string]("body", "tools.#.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.allowed_domains",
-			Action: getAPIFlagAction[string]("body", "tools.#.allowed_domains.#"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.+allowed_domain",
-			Action: getAPIFlagAction[string]("body", "tools.#.allowed_domains.-1"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.blocked_domains",
-			Action: getAPIFlagAction[string]("body", "tools.#.blocked_domains.#"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.+blocked_domain",
-			Action: getAPIFlagAction[string]("body", "tools.#.blocked_domains.-1"),
-		},
-		&cli.Int64Flag{
-			Name:   "tools.max_uses",
-			Action: getAPIFlagAction[int64]("body", "tools.#.max_uses"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.type",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.type"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.city",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.city"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.country",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.country"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.region",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.region"),
-		},
-		&cli.StringFlag{
-			Name:   "tools.user_location.timezone",
-			Action: getAPIFlagAction[string]("body", "tools.#.user_location.timezone"),
-		},
-		&cli.BoolFlag{
-			Name:   "+tool",
-			Action: getAPIFlagActionWithValue[bool]("body", "tools.-1", map[string]interface{}{}),
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.encrypted_content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.encrypted_content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.page_age",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.page_age",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.error_code",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.error_code",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.tool_use_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.tool_use_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "messages.content.is_error",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.is_error",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "messages.content.source.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.source.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.source.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.source.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.source.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.content.source.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.#.source.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "messages.content.citations.enabled",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.citations.enabled",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.context",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.context",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.signature",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.signature",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.thinking",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.thinking",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.content.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.content.#.data",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "messages.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "messages.role",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "messages.#.role",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+message",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "messages.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "model",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "model",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "system.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "system.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "system.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "system.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "system.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+system",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "system.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "thinking.budget_tokens",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "thinking.budget_tokens",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "thinking.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "thinking.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tool-choice.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tool_choice.type",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "tool-choice.disable_parallel_tool_use",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tool_choice.disable_parallel_tool_use",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tool-choice.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tool_choice.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.description",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.description",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.allowed_domains",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.allowed_domains.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.+allowed_domain",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.allowed_domains.-1",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.blocked_domains",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.blocked_domains.#",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.+blocked_domain",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.blocked_domains.-1",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "tools.max_uses",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.max_uses",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.city",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.city",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.country",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.country",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.region",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.region",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "tools.user_location.timezone",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "tools.#.user_location.timezone",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "+tool",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "tools.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleMessagesCountTokens,
 	HideHelpCommand: true,
 }
 
 func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.MessageNewParams{}
 	stream := cc.client.Messages.NewStreaming(
 		context.TODO(),
@@ -1071,7 +1875,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.MessageCountTokensParams{}
 	res, err := cc.client.Messages.CountTokens(
 		context.TODO(),

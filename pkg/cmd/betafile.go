@@ -9,6 +9,7 @@ import (
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/stainless-sdks/anthropic-cli/pkg/jsonflag"
 	"github.com/urfave/cli/v3"
 )
 
@@ -16,28 +17,42 @@ var betaFilesList = cli.Command{
 	Name:  "list",
 	Usage: "List Files",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:   "after-id",
-			Action: getAPIFlagAction[string]("query", "after_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "after-id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "after_id",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "before-id",
-			Action: getAPIFlagAction[string]("query", "before_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "before-id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "before_id",
+			},
 		},
-		&cli.Int64Flag{
-			Name:   "limit",
-			Action: getAPIFlagAction[int64]("query", "limit"),
+		&jsonflag.JSONIntFlag{
+			Name: "limit",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Query,
+				Path: "limit",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaFilesList,
 	HideHelpCommand: true,
 }
@@ -49,16 +64,21 @@ var betaFilesDelete = cli.Command{
 		&cli.StringFlag{
 			Name: "file-id",
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaFilesDelete,
 	HideHelpCommand: true,
 }
@@ -70,16 +90,21 @@ var betaFilesDownload = cli.Command{
 		&cli.StringFlag{
 			Name: "file-id",
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaFilesDownload,
 	HideHelpCommand: true,
 }
@@ -91,16 +116,21 @@ var betaFilesRetrieveMetadata = cli.Command{
 		&cli.StringFlag{
 			Name: "file-id",
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaFilesRetrieveMetadata,
 	HideHelpCommand: true,
 }
@@ -109,26 +139,34 @@ var betaFilesUpload = cli.Command{
 	Name:  "upload",
 	Usage: "Upload File",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:   "file",
-			Action: getAPIFlagAction[string]("body", "file"),
+		&jsonflag.JSONStringFlag{
+			Name: "file",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "file",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleBetaFilesUpload,
 	HideHelpCommand: true,
 }
 
 func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaFileListParams{}
 	res, err := cc.client.Beta.Files.List(
 		context.TODO(),
@@ -144,7 +182,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaFileDeleteParams{}
 	res, err := cc.client.Beta.Files.Delete(
 		context.TODO(),
@@ -162,24 +200,26 @@ func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 }
 
 func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaFileDownloadParams{}
-	res, err := cc.client.Beta.Files.Download(
+	res := []byte{}
+	_, err := cc.client.Beta.Files.Download(
 		context.TODO(),
 		cmd.Value("file-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
+		option.WithResponseBodyInto(&res),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", colorizeJSON(string(res), os.Stdout))
 	return nil
 }
 
 func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaFileGetMetadataParams{}
 	res, err := cc.client.Beta.Files.GetMetadata(
 		context.TODO(),
@@ -196,7 +236,7 @@ func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) erro
 }
 
 func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.BetaFileUploadParams{}
 	res, err := cc.client.Beta.Files.Upload(
 		context.TODO(),

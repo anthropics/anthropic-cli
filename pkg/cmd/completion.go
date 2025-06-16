@@ -8,6 +8,7 @@ import (
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/stainless-sdks/anthropic-cli/pkg/jsonflag"
 	"github.com/urfave/cli/v3"
 )
 
@@ -15,58 +16,90 @@ var completionsCreate = cli.Command{
 	Name:  "create",
 	Usage: "[Legacy] Create a Text Completion.",
 	Flags: []cli.Flag{
-		&cli.Int64Flag{
-			Name:   "max-tokens-to-sample",
-			Action: getAPIFlagAction[int64]("body", "max_tokens_to_sample"),
+		&jsonflag.JSONIntFlag{
+			Name: "max-tokens-to-sample",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "max_tokens_to_sample",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "model",
-			Action: getAPIFlagAction[string]("body", "model"),
+		&jsonflag.JSONStringFlag{
+			Name: "model",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "model",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "prompt",
-			Action: getAPIFlagAction[string]("body", "prompt"),
+		&jsonflag.JSONStringFlag{
+			Name: "prompt",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "prompt",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "metadata.user_id",
-			Action: getAPIFlagAction[string]("body", "metadata.user_id"),
+		&jsonflag.JSONStringFlag{
+			Name: "metadata.user_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "metadata.user_id",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "stop-sequences",
-			Action: getAPIFlagAction[string]("body", "stop_sequences.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "stop-sequences",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "stop_sequences.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+stop_sequence",
-			Action: getAPIFlagAction[string]("body", "stop_sequences.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+stop_sequence",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "stop_sequences.-1",
+			},
 		},
-		&cli.FloatFlag{
-			Name:   "temperature",
-			Action: getAPIFlagAction[float64]("body", "temperature"),
+		&jsonflag.JSONFloatFlag{
+			Name: "temperature",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "temperature",
+			},
 		},
-		&cli.Int64Flag{
-			Name:   "top-k",
-			Action: getAPIFlagAction[int64]("body", "top_k"),
+		&jsonflag.JSONIntFlag{
+			Name: "top-k",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "top_k",
+			},
 		},
-		&cli.FloatFlag{
-			Name:   "top-p",
-			Action: getAPIFlagAction[float64]("body", "top_p"),
+		&jsonflag.JSONFloatFlag{
+			Name: "top-p",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "top_p",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "betas",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.#"),
+		&jsonflag.JSONStringFlag{
+			Name: "betas",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.#",
+			},
 		},
-		&cli.StringFlag{
-			Name:   "+beta",
-			Action: getAPIFlagAction[string]("header", "anthropic-beta.-1"),
+		&jsonflag.JSONStringFlag{
+			Name: "+beta",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Header,
+				Path: "anthropic-beta.-1",
+			},
 		},
 	},
-	Before:          initAPICommand,
 	Action:          handleCompletionsCreate,
 	HideHelpCommand: true,
 }
 
 func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
-	cc := getAPICommandContext(ctx, cmd)
+	cc := getAPICommandContext(cmd)
 	params := anthropic.CompletionNewParams{}
 	stream := cc.client.Completions.NewStreaming(
 		context.TODO(),
