@@ -2340,7 +2340,6 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		context.TODO(),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	for stream.Next() {
 		fmt.Printf("%s\n", stream.Current().RawJSON())
@@ -2358,12 +2357,11 @@ func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error 
 		context.TODO(),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }

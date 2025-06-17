@@ -105,7 +105,6 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 		context.TODO(),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	for stream.Next() {
 		fmt.Printf("%s\n", stream.Current().RawJSON())

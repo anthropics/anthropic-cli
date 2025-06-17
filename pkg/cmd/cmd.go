@@ -9,6 +9,12 @@ import (
 var Command = cli.Command{
 	Name:  "anthropic-cli",
 	Usage: "CLI for the anthropic API",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "debug",
+			Usage: "Enable debug logging",
+		},
+	},
 	Commands: []*cli.Command{
 		{
 			Name: "completions",

@@ -1067,13 +1067,12 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 		context.TODO(),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1088,7 +1087,7 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1104,7 +1103,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1114,13 +1113,12 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1130,13 +1128,12 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 		context.TODO(),
 		cmd.Value("message-batch-id").(string),
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 

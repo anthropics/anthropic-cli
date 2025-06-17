@@ -1379,13 +1379,12 @@ func handleBetaMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) erro
 		context.TODO(),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1402,7 +1401,7 @@ func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) er
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1418,7 +1417,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1430,13 +1429,12 @@ func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) erro
 		cmd.Value("message-batch-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 
@@ -1448,13 +1446,12 @@ func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) erro
 		cmd.Value("message-batch-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
-		option.WithRequestBody("application/json", cc.body),
 	)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", colorizeJSON(res.RawJSON(), os.Stdout))
+	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
 	return nil
 }
 

@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bytes"
 	"io"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -27,33 +29,10 @@ func getDefaultRequestOptions() []option.RequestOption {
 
 type apiCommandContext struct {
 	client anthropic.Client
-	body   []byte
-	query  []byte
-	header []byte
+	cmd    *cli.Command
 }
 
 func (c apiCommandContext) AsMiddleware() option.Middleware {
-	return func(r *http.Request, mn option.MiddlewareNext) (*http.Response, error) {
-		q := r.URL.Query()
-		for key, values := range serializeQuery(c.query) {
-			for _, value := range values {
-				q.Add(key, value)
-			}
-		}
-		r.URL.RawQuery = q.Encode()
-
-		for key, values := range serializeHeader(c.header) {
-			for _, value := range values {
-				r.Header.Add(key, value)
-			}
-		}
-
-		return mn(r)
-	}
-}
-
-func getAPICommandContext(cmd *cli.Command) *apiCommandContext {
-	client := anthropic.NewClient(getDefaultRequestOptions()...)
 	body := getStdInput()
 	if body == nil {
 		body = []byte("{}")
@@ -67,7 +46,52 @@ func getAPICommandContext(cmd *cli.Command) *apiCommandContext {
 		log.Fatal(err)
 	}
 
-	return &apiCommandContext{client, body, query, header}
+	debug := c.cmd.Bool("debug")
+
+	return func(r *http.Request, mn option.MiddlewareNext) (*http.Response, error) {
+		q := r.URL.Query()
+		for key, values := range serializeQuery(query) {
+			for _, value := range values {
+				q.Set(key, value)
+			}
+		}
+		r.URL.RawQuery = q.Encode()
+
+		for key, values := range serializeHeader(header) {
+			for _, value := range values {
+				r.Header.Add(key, value)
+			}
+		}
+
+		r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+		// Add debug logging if the --debug flag is set
+		if debug {
+			logger := log.Default()
+
+			if reqBytes, err := httputil.DumpRequest(r, true); err == nil {
+				logger.Printf("Request Content:\n%s\n", reqBytes)
+			}
+
+			resp, err := mn(r)
+			if err != nil {
+				return resp, err
+			}
+
+			if respBytes, err := httputil.DumpResponse(resp, true); err == nil {
+				logger.Printf("Response Content:\n%s\n", respBytes)
+			}
+
+			return resp, err
+		}
+
+		return mn(r)
+	}
+}
+
+func getAPICommandContext(cmd *cli.Command) *apiCommandContext {
+	client := anthropic.NewClient(getDefaultRequestOptions()...)
+	return &apiCommandContext{client, cmd}
 }
 
 func serializeQuery(params []byte) url.Values {
@@ -176,7 +200,7 @@ func shouldUseColors(w io.Writer) bool {
 
 }
 
-func colorizeJSON(input string, w io.Writer) string {
+func ColorizeJSON(input string, w io.Writer) string {
 	if !shouldUseColors(w) {
 		return input
 	}
