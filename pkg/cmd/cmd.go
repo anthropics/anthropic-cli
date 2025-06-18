@@ -7,8 +7,9 @@ import (
 )
 
 var Command = cli.Command{
-	Name:  "anthropic-cli",
-	Usage: "CLI for the anthropic API",
+	Name:    "anthropic-cli",
+	Usage:   "CLI for the anthropic API",
+	Version: Version,
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name:  "debug",

@@ -29,3 +29,8 @@ anthropic-cli messages create \
 ```
 
 For details about specific commands, use the `--help` flag.
+
+## Global Flags
+
+- `--debug` - Enable debug logging (includes HTTP request/response details)
+- `--version`, `-v` - Show the CLI version

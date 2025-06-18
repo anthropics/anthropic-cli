@@ -63,7 +63,11 @@ func (c apiCommandContext) AsMiddleware() option.Middleware {
 			}
 		}
 
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
+		if r.Body != nil || len(body) > 2 {
+			r.Body = io.NopCloser(bytes.NewBuffer(body))
+			r.ContentLength = int64(len(body))
+			r.Header.Set("Content-Type", "application/json")
+		}
 
 		// Add debug logging if the --debug flag is set
 		if debug {
