@@ -32,17 +32,10 @@ var betaMessagesBatchesCreate = cli.Command{
 			},
 		},
 		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.id",
+			Name: "requests.params.messages.content.text",
 			Config: jsonflag.JSONConfig{
 				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.id",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.name",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.name",
+				Path: "requests.#.params.messages.#.content.#.text",
 			},
 		},
 		&jsonflag.JSONStringFlag{
@@ -64,258 +57,6 @@ var betaMessagesBatchesCreate = cli.Command{
 			Config: jsonflag.JSONConfig{
 				Kind: jsonflag.Body,
 				Path: "requests.#.params.messages.#.content.#.cache_control.ttl",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.encrypted_content",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.encrypted_content",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.title",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.title",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.type",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.type",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.url",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.url",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.page_age",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.page_age",
-			},
-		},
-		&jsonflag.JSONAnyFlag{
-			Name: "requests.params.messages.content.+content",
-			Config: jsonflag.JSONConfig{
-				Kind:     jsonflag.Body,
-				Path:     "requests.#.params.messages.#.content.#.content.-1",
-				SetValue: map[string]interface{}{},
-			},
-			Value: map[string]interface{}{},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.error_code",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.error_code",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.tool_use_id",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.tool_use_id",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.content.file_id",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.content.#.file_id",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.content.type",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.content.#.type",
-			},
-		},
-		&jsonflag.JSONAnyFlag{
-			Name: "requests.params.messages.content.content.+content",
-			Config: jsonflag.JSONConfig{
-				Kind:     jsonflag.Body,
-				Path:     "requests.#.params.messages.#.content.#.content.content.-1",
-				SetValue: map[string]interface{}{},
-			},
-			Value: map[string]interface{}{},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.return_code",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.return_code",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.stderr",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.stderr",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.stdout",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.stdout",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.server_name",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.server_name",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.text",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.text",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.cache_control.type",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.cache_control.type",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.cache_control.ttl",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.cache_control.ttl",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.citations.cited_text",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.cited_text",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.document_index",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.document_index",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.citations.document_title",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.document_title",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.end_char_index",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_char_index",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.start_char_index",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_char_index",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.citations.type",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.type",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.end_page_number",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_page_number",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.start_page_number",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_page_number",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.end_block_index",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_block_index",
-			},
-		},
-		&jsonflag.JSONIntFlag{
-			Name: "requests.params.messages.content.content.citations.start_block_index",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_block_index",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.citations.encrypted_index",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.encrypted_index",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.citations.title",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.title",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.citations.url",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.url",
-			},
-		},
-		&jsonflag.JSONAnyFlag{
-			Name: "requests.params.messages.content.content.+citation",
-			Config: jsonflag.JSONConfig{
-				Kind:     jsonflag.Body,
-				Path:     "requests.#.params.messages.#.content.#.content.#.citations.-1",
-				SetValue: map[string]interface{}{},
-			},
-			Value: map[string]interface{}{},
-		},
-		&jsonflag.JSONBoolFlag{
-			Name: "requests.params.messages.content.is_error",
-			Config: jsonflag.JSONConfig{
-				Kind:     jsonflag.Body,
-				Path:     "requests.#.params.messages.#.content.#.is_error",
-				SetValue: true,
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.text",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.text",
 			},
 		},
 		&jsonflag.JSONStringFlag{
@@ -409,6 +150,20 @@ var betaMessagesBatchesCreate = cli.Command{
 				Path: "requests.#.params.messages.#.content.#.citations.#.url",
 			},
 		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.citations.search_result_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.search_result_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.citations.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.citations.#.source",
+			},
+		},
 		&jsonflag.JSONAnyFlag{
 			Name: "requests.params.messages.content.+citation",
 			Config: jsonflag.JSONConfig{
@@ -451,41 +206,6 @@ var betaMessagesBatchesCreate = cli.Command{
 			Config: jsonflag.JSONConfig{
 				Kind: jsonflag.Body,
 				Path: "requests.#.params.messages.#.content.#.source.file_id",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.source.data",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.source.data",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.source.media_type",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.source.media_type",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.source.type",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.source.type",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.source.url",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.source.url",
-			},
-		},
-		&jsonflag.JSONStringFlag{
-			Name: "requests.params.messages.content.content.source.file_id",
-			Config: jsonflag.JSONConfig{
-				Kind: jsonflag.Body,
-				Path: "requests.#.params.messages.#.content.#.content.#.source.file_id",
 			},
 		},
 		&jsonflag.JSONStringFlag{
@@ -614,6 +334,20 @@ var betaMessagesBatchesCreate = cli.Command{
 				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.url",
 			},
 		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.source.content.citations.search_result_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.search_result_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source.content.citations.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source.content.#.citations.#.source",
+			},
+		},
 		&jsonflag.JSONAnyFlag{
 			Name: "requests.params.messages.content.source.content.+citation",
 			Config: jsonflag.JSONConfig{
@@ -690,6 +424,164 @@ var betaMessagesBatchesCreate = cli.Command{
 			},
 		},
 		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.cache_control.ttl",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.cache_control.ttl",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.citations.search_result_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.search_result_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.citations.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.citations.#.source",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.source",
+			},
+		},
+		&jsonflag.JSONStringFlag{
 			Name: "requests.params.messages.content.signature",
 			Config: jsonflag.JSONConfig{
 				Kind: jsonflag.Body,
@@ -708,6 +600,313 @@ var betaMessagesBatchesCreate = cli.Command{
 			Config: jsonflag.JSONConfig{
 				Kind: jsonflag.Body,
 				Path: "requests.#.params.messages.#.content.#.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.tool_use_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.tool_use_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.data",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.data",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.media_type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.media_type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source.file_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source.file_id",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.text",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.cache_control.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.cache_control.type",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.cache_control.ttl",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.cache_control.ttl",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.cited_text",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.cited_text",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.document_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.document_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.document_title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.document_title",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.end_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.end_char_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.start_char_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.start_char_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.type",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.type",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.end_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.end_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.start_page_number",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.start_page_number",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.end_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.end_block_index",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.start_block_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.start_block_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.encrypted_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.encrypted_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.title",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.content.citations.search_result_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.search_result_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.citations.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.content.#.citations.#.source",
+			},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.content.content.+citation",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.#.content.#.citations.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONAnyFlag{
+			Name: "requests.params.messages.content.content.+content",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.#.content.-1",
+				SetValue: map[string]interface{}{},
+			},
+			Value: map[string]interface{}{},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.source",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.title",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.title",
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "requests.params.messages.content.content.citations.enabled",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.content.#.citations.enabled",
+				SetValue: true,
+			},
+		},
+		&jsonflag.JSONBoolFlag{
+			Name: "requests.params.messages.content.is_error",
+			Config: jsonflag.JSONConfig{
+				Kind:     jsonflag.Body,
+				Path:     "requests.#.params.messages.#.content.#.is_error",
+				SetValue: true,
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.encrypted_content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.encrypted_content",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.url",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.url",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.page_age",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.#.page_age",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.error_code",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.error_code",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.content.file_id",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.content.#.file_id",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.messages.content.content.return_code",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.return_code",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.stderr",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.stderr",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content.stdout",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content.stdout",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.server_name",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.server_name",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.messages.content.content",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.messages.#.content.#.content",
 			},
 		},
 		&jsonflag.JSONStringFlag{
@@ -968,6 +1167,20 @@ var betaMessagesBatchesCreate = cli.Command{
 			Config: jsonflag.JSONConfig{
 				Kind: jsonflag.Body,
 				Path: "requests.#.params.system.#.citations.#.url",
+			},
+		},
+		&jsonflag.JSONIntFlag{
+			Name: "requests.params.system.citations.search_result_index",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.search_result_index",
+			},
+		},
+		&jsonflag.JSONStringFlag{
+			Name: "requests.params.system.citations.source",
+			Config: jsonflag.JSONConfig{
+				Kind: jsonflag.Body,
+				Path: "requests.#.params.system.#.citations.#.source",
 			},
 		},
 		&jsonflag.JSONAnyFlag{
