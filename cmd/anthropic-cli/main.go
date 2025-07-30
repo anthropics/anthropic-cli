@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
@@ -17,9 +18,10 @@ func main() {
 	if err := app.Run(context.Background(), os.Args); err != nil {
 		var apierr *anthropic.Error
 		if errors.As(err, &apierr) {
-			fmt.Printf("%s\n", cmd.ColorizeJSON(apierr.RawJSON(), os.Stderr))
+			fmt.Fprintf(os.Stderr, "%s %q: %d %s\n", apierr.Request.Method, apierr.Request.URL, apierr.Response.StatusCode, http.StatusText(apierr.Response.StatusCode))
+			fmt.Fprintf(os.Stdout, "%s\n", cmd.ColorizeJSON(apierr.RawJSON(), os.Stdout))
 		} else {
-			fmt.Printf("%s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		}
 		os.Exit(1)
 	}
