@@ -19,7 +19,12 @@ func main() {
 		var apierr *anthropic.Error
 		if errors.As(err, &apierr) {
 			fmt.Fprintf(os.Stderr, "%s %q: %d %s\n", apierr.Request.Method, apierr.Request.URL, apierr.Response.StatusCode, http.StatusText(apierr.Response.StatusCode))
-			fmt.Fprintf(os.Stdout, "%s\n", cmd.ColorizeJSON(apierr.RawJSON(), os.Stdout))
+			format := app.String("format")
+			show_err := cmd.ShowJSON("Error", apierr.RawJSON(), format)
+			if show_err != nil {
+				// Just print the original error:
+				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			}
 		} else {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		}

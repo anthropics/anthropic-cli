@@ -8,12 +8,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 
 	docs "github.com/urfave/cli-docs/v3"
 	"github.com/urfave/cli/v3"
 )
 
-var Command *cli.Command
+var (
+	Command       *cli.Command
+	OutputFormats = []string{"auto", "explore", "json", "pretty", "raw", "yaml"}
+)
 
 func init() {
 	Command = &cli.Command{
@@ -26,8 +31,20 @@ func init() {
 				Usage: "Enable debug logging",
 			},
 			&cli.StringFlag{
-				Name:  "base-url",
-				Usage: "Override the base URL for API requests",
+				Name:        "base-url",
+				DefaultText: "url",
+				Usage:       "Override the base URL for API requests",
+			},
+			&cli.StringFlag{
+				Name:  "format",
+				Usage: "The format for data output (one of: " + strings.Join(OutputFormats[:], ", ") + ")",
+				Value: "auto",
+				Validator: func(format string) error {
+					if !slices.Contains(OutputFormats[:], strings.ToLower(format)) {
+						return fmt.Errorf("format must be one of: %s", strings.Join(OutputFormats[:], ", "))
+					}
+					return nil
+				},
 			},
 		},
 		Commands: []*cli.Command{

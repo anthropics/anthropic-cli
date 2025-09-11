@@ -4,8 +4,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
@@ -96,8 +94,8 @@ func handleModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("models retrieve", res.RawJSON(), format)
 }
 
 func handleModelsList(ctx context.Context, cmd *cli.Command) error {
@@ -112,6 +110,6 @@ func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("models list", res.RawJSON(), format)
 }

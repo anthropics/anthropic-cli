@@ -109,8 +109,5 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 	for stream.Next() {
 		fmt.Printf("%s\n", stream.Current().RawJSON())
 	}
-	if err := stream.Err(); err != nil {
-		return err
-	}
-	return nil
+	return stream.Err()
 }

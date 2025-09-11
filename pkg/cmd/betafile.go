@@ -4,8 +4,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
@@ -177,8 +175,8 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:files list", res.RawJSON(), format)
 }
 
 func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
@@ -194,8 +192,8 @@ func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:files delete", res.RawJSON(), format)
 }
 
 func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
@@ -213,8 +211,8 @@ func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(string(res), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:files download", string(res), format)
 }
 
 func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) error {
@@ -230,8 +228,8 @@ func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) erro
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:files retrieve-metadata", res.RawJSON(), format)
 }
 
 func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
@@ -246,6 +244,6 @@ func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:files upload", res.RawJSON(), format)
 }

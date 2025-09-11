@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
@@ -2173,8 +2172,8 @@ func handleBetaMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) erro
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:messages:batches create", res.RawJSON(), format)
 }
 
 func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -2190,8 +2189,8 @@ func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) er
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:messages:batches retrieve", res.RawJSON(), format)
 }
 
 func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
@@ -2206,8 +2205,8 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:messages:batches list", res.RawJSON(), format)
 }
 
 func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
@@ -2223,8 +2222,8 @@ func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) erro
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:messages:batches delete", res.RawJSON(), format)
 }
 
 func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
@@ -2240,8 +2239,8 @@ func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) erro
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:messages:batches cancel", res.RawJSON(), format)
 }
 
 func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
@@ -2256,8 +2255,5 @@ func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) err
 	for stream.Next() {
 		fmt.Printf("%s\n", stream.Current().RawJSON())
 	}
-	if err := stream.Err(); err != nil {
-		return err
-	}
-	return nil
+	return stream.Err()
 }

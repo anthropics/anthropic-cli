@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
@@ -1540,8 +1539,8 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("messages:batches create", res.RawJSON(), format)
 }
 
 func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -1555,8 +1554,8 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("messages:batches retrieve", res.RawJSON(), format)
 }
 
 func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
@@ -1571,8 +1570,8 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("messages:batches list", res.RawJSON(), format)
 }
 
 func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
@@ -1586,8 +1585,8 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("messages:batches delete", res.RawJSON(), format)
 }
 
 func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
@@ -1601,8 +1600,8 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("messages:batches cancel", res.RawJSON(), format)
 }
 
 func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
@@ -1615,8 +1614,5 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	for stream.Next() {
 		fmt.Printf("%s\n", stream.Current().RawJSON())
 	}
-	if err := stream.Err(); err != nil {
-		return err
-	}
-	return nil
+	return stream.Err()
 }

@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
@@ -3920,10 +3919,7 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	for stream.Next() {
 		fmt.Printf("%s\n", stream.Current().RawJSON())
 	}
-	if err := stream.Err(); err != nil {
-		return err
-	}
-	return nil
+	return stream.Err()
 }
 
 func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
@@ -3938,6 +3934,6 @@ func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
-	fmt.Printf("%s\n", ColorizeJSON(res.RawJSON(), os.Stdout))
-	return nil
+	format := cmd.Root().String("format")
+	return ShowJSON("beta:messages count-tokens", res.RawJSON(), format)
 }
