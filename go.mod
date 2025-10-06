@@ -1,8 +1,6 @@
 module github.com/stainless-sdks/anthropic-cli
 
-go 1.24.0
-
-toolchain go1.24.7
+go 1.25
 
 require (
 	github.com/anthropics/anthropic-sdk-go v1.13.0
