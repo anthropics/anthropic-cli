@@ -3121,7 +3121,7 @@ var messagesCountTokens = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleMessagesCreate(_ context.Context, cmd *cli.Command) error {
+func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -3129,7 +3129,7 @@ func handleMessagesCreate(_ context.Context, cmd *cli.Command) error {
 	}
 	params := anthropic.MessageNewParams{}
 	stream := cc.client.Messages.NewStreaming(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
@@ -3139,7 +3139,7 @@ func handleMessagesCreate(_ context.Context, cmd *cli.Command) error {
 	return stream.Err()
 }
 
-func handleMessagesCountTokens(_ context.Context, cmd *cli.Command) error {
+func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -3148,7 +3148,7 @@ func handleMessagesCountTokens(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.MessageCountTokensParams{}
 	var res []byte
 	_, err := cc.client.Messages.CountTokens(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),

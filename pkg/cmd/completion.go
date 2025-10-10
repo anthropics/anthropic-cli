@@ -109,7 +109,7 @@ var completionsCreate = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleCompletionsCreate(_ context.Context, cmd *cli.Command) error {
+func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -117,7 +117,7 @@ func handleCompletionsCreate(_ context.Context, cmd *cli.Command) error {
 	}
 	params := anthropic.CompletionNewParams{}
 	stream := cc.client.Completions.NewStreaming(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)

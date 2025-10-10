@@ -1720,7 +1720,7 @@ var messagesBatchesResults = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleMessagesBatchesCreate(_ context.Context, cmd *cli.Command) error {
+func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -1729,7 +1729,7 @@ func handleMessagesBatchesCreate(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.MessageBatchNewParams{}
 	var res []byte
 	_, err := cc.client.Messages.Batches.New(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
@@ -1744,7 +1744,7 @@ func handleMessagesBatchesCreate(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("messages:batches create", json, format, transform)
 }
 
-func handleMessagesBatchesRetrieve(_ context.Context, cmd *cli.Command) error {
+func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("message-batch-id") && len(unusedArgs) > 0 {
@@ -1756,7 +1756,7 @@ func handleMessagesBatchesRetrieve(_ context.Context, cmd *cli.Command) error {
 	}
 	var res []byte
 	_, err := cc.client.Messages.Batches.Get(
-		context.TODO(),
+		ctx,
 		cmd.Value("message-batch-id").(string),
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
@@ -1771,7 +1771,7 @@ func handleMessagesBatchesRetrieve(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("messages:batches retrieve", json, format, transform)
 }
 
-func handleMessagesBatchesList(_ context.Context, cmd *cli.Command) error {
+func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -1780,7 +1780,7 @@ func handleMessagesBatchesList(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.MessageBatchListParams{}
 	var res []byte
 	_, err := cc.client.Messages.Batches.List(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
@@ -1795,7 +1795,7 @@ func handleMessagesBatchesList(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("messages:batches list", json, format, transform)
 }
 
-func handleMessagesBatchesDelete(_ context.Context, cmd *cli.Command) error {
+func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("message-batch-id") && len(unusedArgs) > 0 {
@@ -1807,7 +1807,7 @@ func handleMessagesBatchesDelete(_ context.Context, cmd *cli.Command) error {
 	}
 	var res []byte
 	_, err := cc.client.Messages.Batches.Delete(
-		context.TODO(),
+		ctx,
 		cmd.Value("message-batch-id").(string),
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
@@ -1822,7 +1822,7 @@ func handleMessagesBatchesDelete(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("messages:batches delete", json, format, transform)
 }
 
-func handleMessagesBatchesCancel(_ context.Context, cmd *cli.Command) error {
+func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("message-batch-id") && len(unusedArgs) > 0 {
@@ -1834,7 +1834,7 @@ func handleMessagesBatchesCancel(_ context.Context, cmd *cli.Command) error {
 	}
 	var res []byte
 	_, err := cc.client.Messages.Batches.Cancel(
-		context.TODO(),
+		ctx,
 		cmd.Value("message-batch-id").(string),
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
@@ -1849,7 +1849,7 @@ func handleMessagesBatchesCancel(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("messages:batches cancel", json, format, transform)
 }
 
-func handleMessagesBatchesResults(_ context.Context, cmd *cli.Command) error {
+func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("message-batch-id") && len(unusedArgs) > 0 {
@@ -1860,7 +1860,7 @@ func handleMessagesBatchesResults(_ context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 	stream := cc.client.Messages.Batches.ResultsStreaming(
-		context.TODO(),
+		ctx,
 		cmd.Value("message-batch-id").(string),
 		option.WithMiddleware(cc.AsMiddleware()),
 	)

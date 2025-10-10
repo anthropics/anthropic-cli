@@ -92,7 +92,7 @@ var modelsList = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleModelsRetrieve(_ context.Context, cmd *cli.Command) error {
+func handleModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("model-id") && len(unusedArgs) > 0 {
@@ -105,7 +105,7 @@ func handleModelsRetrieve(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.ModelGetParams{}
 	var res []byte
 	_, err := cc.client.Models.Get(
-		context.TODO(),
+		ctx,
 		cmd.Value("model-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
@@ -121,7 +121,7 @@ func handleModelsRetrieve(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("models retrieve", json, format, transform)
 }
 
-func handleModelsList(_ context.Context, cmd *cli.Command) error {
+func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -130,7 +130,7 @@ func handleModelsList(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.ModelListParams{}
 	var res []byte
 	_, err := cc.client.Models.List(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),

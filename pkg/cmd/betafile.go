@@ -183,7 +183,7 @@ var betaFilesUpload = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleBetaFilesList(_ context.Context, cmd *cli.Command) error {
+func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -192,7 +192,7 @@ func handleBetaFilesList(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaFileListParams{}
 	var res []byte
 	_, err := cc.client.Beta.Files.List(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
@@ -207,7 +207,7 @@ func handleBetaFilesList(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("beta:files list", json, format, transform)
 }
 
-func handleBetaFilesDelete(_ context.Context, cmd *cli.Command) error {
+func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("file-id") && len(unusedArgs) > 0 {
@@ -220,7 +220,7 @@ func handleBetaFilesDelete(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaFileDeleteParams{}
 	var res []byte
 	_, err := cc.client.Beta.Files.Delete(
-		context.TODO(),
+		ctx,
 		cmd.Value("file-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
@@ -236,7 +236,7 @@ func handleBetaFilesDelete(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("beta:files delete", json, format, transform)
 }
 
-func handleBetaFilesDownload(_ context.Context, cmd *cli.Command) error {
+func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("file-id") && len(unusedArgs) > 0 {
@@ -249,7 +249,7 @@ func handleBetaFilesDownload(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaFileDownloadParams{}
 	var res []byte
 	_, err := cc.client.Beta.Files.Download(
-		context.TODO(),
+		ctx,
 		cmd.Value("file-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
@@ -265,7 +265,7 @@ func handleBetaFilesDownload(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("beta:files download", json, format, transform)
 }
 
-func handleBetaFilesRetrieveMetadata(_ context.Context, cmd *cli.Command) error {
+func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("file-id") && len(unusedArgs) > 0 {
@@ -278,7 +278,7 @@ func handleBetaFilesRetrieveMetadata(_ context.Context, cmd *cli.Command) error 
 	params := anthropic.BetaFileGetMetadataParams{}
 	var res []byte
 	_, err := cc.client.Beta.Files.GetMetadata(
-		context.TODO(),
+		ctx,
 		cmd.Value("file-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
@@ -294,7 +294,7 @@ func handleBetaFilesRetrieveMetadata(_ context.Context, cmd *cli.Command) error 
 	return ShowJSON("beta:files retrieve-metadata", json, format, transform)
 }
 
-func handleBetaFilesUpload(_ context.Context, cmd *cli.Command) error {
+func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -303,7 +303,7 @@ func handleBetaFilesUpload(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaFileUploadParams{}
 	var res []byte
 	_, err := cc.client.Beta.Files.Upload(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),

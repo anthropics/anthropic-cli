@@ -92,7 +92,7 @@ var betaModelsList = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleBetaModelsRetrieve(_ context.Context, cmd *cli.Command) error {
+func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("model-id") && len(unusedArgs) > 0 {
@@ -105,7 +105,7 @@ func handleBetaModelsRetrieve(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaModelGetParams{}
 	var res []byte
 	_, err := cc.client.Beta.Models.Get(
-		context.TODO(),
+		ctx,
 		cmd.Value("model-id").(string),
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
@@ -121,7 +121,7 @@ func handleBetaModelsRetrieve(_ context.Context, cmd *cli.Command) error {
 	return ShowJSON("beta:models retrieve", json, format, transform)
 }
 
-func handleBetaModelsList(_ context.Context, cmd *cli.Command) error {
+func handleBetaModelsList(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -130,7 +130,7 @@ func handleBetaModelsList(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaModelListParams{}
 	var res []byte
 	_, err := cc.client.Beta.Models.List(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),

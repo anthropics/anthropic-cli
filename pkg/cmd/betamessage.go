@@ -4587,7 +4587,7 @@ var betaMessagesCountTokens = cli.Command{
 	HideHelpCommand: true,
 }
 
-func handleBetaMessagesCreate(_ context.Context, cmd *cli.Command) error {
+func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -4595,7 +4595,7 @@ func handleBetaMessagesCreate(_ context.Context, cmd *cli.Command) error {
 	}
 	params := anthropic.BetaMessageNewParams{}
 	stream := cc.client.Beta.Messages.NewStreaming(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 	)
@@ -4605,7 +4605,7 @@ func handleBetaMessagesCreate(_ context.Context, cmd *cli.Command) error {
 	return stream.Err()
 }
 
-func handleBetaMessagesCountTokens(_ context.Context, cmd *cli.Command) error {
+func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 	cc := getAPICommandContext(cmd)
 	unusedArgs := cmd.Args().Slice()
 	if len(unusedArgs) > 0 {
@@ -4614,7 +4614,7 @@ func handleBetaMessagesCountTokens(_ context.Context, cmd *cli.Command) error {
 	params := anthropic.BetaMessageCountTokensParams{}
 	var res []byte
 	_, err := cc.client.Beta.Messages.CountTokens(
-		context.TODO(),
+		ctx,
 		params,
 		option.WithMiddleware(cc.AsMiddleware()),
 		option.WithResponseBodyInto(&res),
