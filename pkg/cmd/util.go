@@ -29,7 +29,7 @@ import (
 
 func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 	opts := []option.RequestOption{
-		option.WithHeader("User-Agent", fmt.Sprintf("BruceTestAPI/CLI %s", Version)),
+		option.WithHeader("User-Agent", fmt.Sprintf("Anthropic/CLI %s", Version)),
 		option.WithHeader("X-Stainless-Lang", "cli"),
 		option.WithHeader("X-Stainless-Package-Version", Version),
 		option.WithHeader("X-Stainless-Runtime", "cli"),
