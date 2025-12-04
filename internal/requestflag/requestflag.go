@@ -58,6 +58,10 @@ type requestValue[T any | string | int64 | float64 | bool] struct {
 	config RequestConfig
 }
 
+func Value[T any | string | int64 | float64 | bool](val T) requestValue[T] {
+	return requestValue[T]{val, RequestConfig{}}
+}
+
 func (s requestValue[T]) RequestConfig() RequestConfig {
 	return s.config
 }
@@ -93,7 +97,7 @@ type requestValueCreator[T any | string | int64 | float64 | bool] struct {
 }
 
 func (s requestValueCreator[T]) Create(defaultValue requestValue[T], p *requestValue[T], c RequestConfig) cli.Value {
-	*p = defaultValue
+	p.value = defaultValue.value
 	p.config = c
 	return &requestValueCreator[T]{
 		destination: p,

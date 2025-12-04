@@ -78,7 +78,7 @@ var betaMessagesBatchesList = cli.Command{
 		&requestflag.IntFlag{
 			Name:  "limit",
 			Usage: "Number of items to return per page.\n\nDefaults to `20`. Ranges from `1` to `1000`.",
-			Value: 20,
+			Value: requestflag.Value[int64](20),
 			Config: requestflag.RequestConfig{
 				QueryPath: "limit",
 			},

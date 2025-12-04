@@ -71,7 +71,7 @@ var betaSkillsList = cli.Command{
 		&requestflag.IntFlag{
 			Name:  "limit",
 			Usage: "Number of results to return per page.\n\nMaximum value is 100. Defaults to 20.",
-			Value: 20,
+			Value: requestflag.Value[int64](20),
 			Config: requestflag.RequestConfig{
 				QueryPath: "limit",
 			},
