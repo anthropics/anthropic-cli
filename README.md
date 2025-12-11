@@ -1,4 +1,4 @@
-# Anthropic CLI
+# Claude Developer Platform CLI
 
 The official CLI for the [Anthropic REST API](https://docs.anthropic.com/claude/reference/).
 
@@ -7,13 +7,13 @@ The official CLI for the [Anthropic REST API](https://docs.anthropic.com/claude/
 ### Installing with Go
 
 ```sh
-go install 'github.com/stainless-sdks/anthropic-cli/cmd/anthropic-cli@latest'
+go install 'github.com/stainless-sdks/anthropic-cli/cmd/cdp@latest'
 ```
 
 ### Running Locally
 
 ```sh
-go run cmd/anthropic-cli/main.go
+go run cmd/cdp/main.go
 ```
 
 ## Usage
@@ -21,11 +21,11 @@ go run cmd/anthropic-cli/main.go
 The CLI follows a resource-based command structure:
 
 ```sh
-anthropic-cli [resource] [command] [flags]
+cdp [resource] [command] [flags]
 ```
 
 ```sh
-anthropic-cli messages create \
+cdp messages create \
   --max-tokens 1024 \
   --message '{content: [{text: x, type: text}], role: user}' \
   --model claude-sonnet-4-5-20250929

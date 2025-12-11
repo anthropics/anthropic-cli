@@ -4,4 +4,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-go run ./cmd/anthropic-cli "$@"
+go run ./cmd/cdp "$@"

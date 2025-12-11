@@ -1,20 +1,20 @@
-project_name: anthropic-cli
+project_name: cdp
 version: 2
 
 before:
   hooks:
     - mkdir -p completions
-    - sh -c "go run ./cmd/anthropic-cli/main.go @completion bash > completions/anthropic-cli.bash"
-    - sh -c "go run ./cmd/anthropic-cli/main.go @completion zsh > completions/anthropic-cli.zsh"
-    - sh -c "go run ./cmd/anthropic-cli/main.go @completion fish > completions/anthropic-cli.fish"
-    - sh -c "go run ./cmd/anthropic-cli/main.go @manpages -o man"
+    - sh -c "go run ./cmd/cdp/main.go @completion bash > completions/cdp.bash"
+    - sh -c "go run ./cmd/cdp/main.go @completion zsh > completions/cdp.zsh"
+    - sh -c "go run ./cmd/cdp/main.go @completion fish > completions/cdp.fish"
+    - sh -c "go run ./cmd/cdp/main.go @manpages -o man"
 
 builds:
   - id: macos
     goos: [darwin]
     goarch: [amd64, arm64]
     binary: '{{ .ProjectName }}'
-    main: ./cmd/anthropic-cli/main.go
+    main: ./cmd/cdp/main.go
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}'
@@ -25,7 +25,7 @@ builds:
     env:
       - CGO_ENABLED=0
     binary: '{{ .ProjectName }}'
-    main: ./cmd/anthropic-cli/main.go
+    main: ./cmd/cdp/main.go
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}'
@@ -34,7 +34,7 @@ builds:
     goos: [windows]
     goarch: ['386', amd64, arm64]
     binary: '{{ .ProjectName }}'
-    main: ./cmd/anthropic-cli/main.go
+    main: ./cmd/cdp/main.go
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}'

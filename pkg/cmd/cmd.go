@@ -21,7 +21,7 @@ var (
 
 func init() {
 	Command = &cli.Command{
-		Name:    "anthropic-cli",
+		Name:    "cdp",
 		Usage:   "CLI for the anthropic API",
 		Version: Version,
 		Flags: []cli.Flag{
@@ -160,7 +160,7 @@ func init() {
 			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",
-				UsageText:       "anthropic-cli @manpages [-o anthropic-cli.1] [--gzip]",
+				UsageText:       "cdp @manpages [-o cdp.1] [--gzip]",
 				Hidden:          true,
 				Action:          generateManpages,
 				HideHelpCommand: true,
@@ -203,7 +203,7 @@ func generateManpages(ctx context.Context, c *cli.Command) error {
 		// handle error
 	}
 	if c.Bool("text") {
-		file, err := os.Create(filepath.Join(dir, "man1", "anthropic-cli.1"))
+		file, err := os.Create(filepath.Join(dir, "man1", "cdp.1"))
 		if err != nil {
 			return err
 		}
@@ -213,7 +213,7 @@ func generateManpages(ctx context.Context, c *cli.Command) error {
 		}
 	}
 	if c.Bool("gzip") {
-		file, err := os.Create(filepath.Join(dir, "man1", "anthropic-cli.1.gz"))
+		file, err := os.Create(filepath.Join(dir, "man1", "cdp.1.gz"))
 		if err != nil {
 			return err
 		}

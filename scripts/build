@@ -4,5 +4,5 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "==> Building anthropic-cli"
-go build ./cmd/anthropic-cli
+echo "==> Building cdp"
+go build ./cmd/cdp
