@@ -57,3 +57,5 @@ go test ./... "$@"
 
 echo "==> Checking tests on Windows"
 GOARCH=amd64 GOOS=windows go test -c ./... "$@"
+# `go test -c` produces a bunch of .exe files; make sure to clean those up
+find . -name "*.test.exe" -exec rm {} \;
