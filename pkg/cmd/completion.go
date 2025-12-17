@@ -4,11 +4,14 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/stainless-sdks/anthropic-cli/internal/apiquery"
 	"github.com/stainless-sdks/anthropic-cli/internal/requestflag"
+	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
@@ -91,9 +94,17 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	format := cmd.Root().String("format")
+	transform := cmd.Root().String("transform")
 	stream := client.Completions.NewStreaming(ctx, params, options...)
 	for stream.Next() {
-		fmt.Printf("%s\n", stream.Current().RawJSON())
+		response := stream.Current()
+		jsonData, err := json.Marshal(response)
+		if err != nil {
+			return err
+		}
+		obj := gjson.ParseBytes(jsonData)
+		ShowJSON(os.Stdout, "completions create", obj, format, transform)
 	}
 	return stream.Err()
 }

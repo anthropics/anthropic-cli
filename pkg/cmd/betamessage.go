@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -202,9 +203,17 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	format := cmd.Root().String("format")
+	transform := cmd.Root().String("transform")
 	stream := client.Beta.Messages.NewStreaming(ctx, params, options...)
 	for stream.Next() {
-		fmt.Printf("%s\n", stream.Current().RawJSON())
+		response := stream.Current()
+		jsonData, err := json.Marshal(response)
+		if err != nil {
+			return err
+		}
+		obj := gjson.ParseBytes(jsonData)
+		ShowJSON(os.Stdout, "beta:messages create", obj, format, transform)
 	}
 	return stream.Err()
 }

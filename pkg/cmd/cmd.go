@@ -91,6 +91,7 @@ func init() {
 					&messagesBatchesList,
 					&messagesBatchesDelete,
 					&messagesBatchesCancel,
+					&messagesBatchesResults,
 				},
 			},
 			{
@@ -126,6 +127,7 @@ func init() {
 					&betaMessagesBatchesList,
 					&betaMessagesBatchesDelete,
 					&betaMessagesBatchesCancel,
+					&betaMessagesBatchesResults,
 				},
 			},
 			{
