@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -215,16 +214,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(os.Stdout, "messages:batches list", obj, format, transform)
 	} else {
 		iter := client.Messages.Batches.ListAutoPaging(ctx, params, options...)
-		return streamOutput("messages:batches list", func(w *os.File) error {
-			for iter.Next() {
-				item := iter.Current()
-				obj := gjson.Parse(item.RawJSON())
-				if err := ShowJSON(w, "messages:batches list", obj, format, transform); err != nil {
-					return err
-				}
-			}
-			return iter.Err()
-		})
+		return ShowJSONIterator(os.Stdout, "messages:batches list", iter, format, transform)
 	}
 }
 
@@ -323,14 +313,5 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	transform := cmd.Root().String("transform")
 	stream := client.Messages.Batches.ResultsStreaming(ctx, cmd.Value("message-batch-id").(string), options...)
-	for stream.Next() {
-		response := stream.Current()
-		jsonData, err := json.Marshal(response)
-		if err != nil {
-			return err
-		}
-		obj := gjson.ParseBytes(jsonData)
-		ShowJSON(os.Stdout, "messages:batches results", obj, format, transform)
-	}
-	return stream.Err()
+	return ShowJSONIterator(os.Stdout, "messages:batches results", stream, format, transform)
 }

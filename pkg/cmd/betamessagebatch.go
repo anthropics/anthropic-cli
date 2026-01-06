@@ -4,7 +4,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -252,16 +251,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 		return ShowJSON(os.Stdout, "beta:messages:batches list", obj, format, transform)
 	} else {
 		iter := client.Beta.Messages.Batches.ListAutoPaging(ctx, params, options...)
-		return streamOutput("beta:messages:batches list", func(w *os.File) error {
-			for iter.Next() {
-				item := iter.Current()
-				obj := gjson.Parse(item.RawJSON())
-				if err := ShowJSON(w, "beta:messages:batches list", obj, format, transform); err != nil {
-					return err
-				}
-			}
-			return iter.Err()
-		})
+		return ShowJSONIterator(os.Stdout, "beta:messages:batches list", iter, format, transform)
 	}
 }
 
@@ -381,14 +371,5 @@ func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) err
 		params,
 		options...,
 	)
-	for stream.Next() {
-		response := stream.Current()
-		jsonData, err := json.Marshal(response)
-		if err != nil {
-			return err
-		}
-		obj := gjson.ParseBytes(jsonData)
-		ShowJSON(os.Stdout, "beta:messages:batches results", obj, format, transform)
-	}
-	return stream.Err()
+	return ShowJSONIterator(os.Stdout, "beta:messages:batches results", stream, format, transform)
 }

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -163,6 +164,7 @@ func shouldUseColors(w io.Writer) bool {
 	return isTerminal(w)
 }
 
+// Display JSON to the user in various different formats
 func ShowJSON(out *os.File, title string, res gjson.Result, format string, transform string) error {
 	if format != "raw" && transform != "" {
 		transformed := res.Get(transform)
@@ -214,4 +216,26 @@ func ShowJSON(out *os.File, title string, res gjson.Result, format string, trans
 	default:
 		return fmt.Errorf("Invalid format: %s, valid formats are: %s", format, strings.Join(OutputFormats, ", "))
 	}
+}
+
+// For an iterator over different value types, display its values to the user in
+// different formats.
+func ShowJSONIterator[T any](out *os.File, title string, iter jsonview.Iterator[T], format string, transform string) error {
+	if format == "explore" {
+		return jsonview.ExploreJSONStream(title, iter)
+	}
+	return streamOutput(title, func(w *os.File) error {
+		for iter.Next() {
+			item := iter.Current()
+			jsonData, err := json.Marshal(item)
+			if err != nil {
+				return err
+			}
+			obj := gjson.ParseBytes(jsonData)
+			if err := ShowJSON(out, title, obj, format, transform); err != nil {
+				return err
+			}
+		}
+		return iter.Err()
+	})
 }

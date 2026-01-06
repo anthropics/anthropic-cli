@@ -1,9 +1,11 @@
 package jsonview
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -12,6 +14,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/x/term"
 	"github.com/muesli/reflow/truncate"
 	"github.com/muesli/reflow/wordwrap"
 	"github.com/tidwall/gjson"
@@ -100,29 +103,99 @@ var (
 type JSONView interface {
 	GetPath() string
 	GetData() gjson.Result
-	Update(tea.Msg) tea.Cmd
+	Update(tea.Msg, bool) tea.Cmd
 	View() string
 	Resize(width, height int)
 }
 
 type TableView struct {
-	path    string
-	data    gjson.Result
-	table   table.Model
-	rowData []gjson.Result
+	width     int
+	height    int
+	path      string
+	data      gjson.Result
+	table     table.Model
+	rowData   []gjson.Result
+	iterator  AnyIterator
+	isLoading bool
+	columns   []table.Column
 }
 
 func (tv *TableView) GetPath() string       { return tv.path }
 func (tv *TableView) GetData() gjson.Result { return tv.data }
 func (tv *TableView) View() string          { return tv.table.View() }
 
-func (tv *TableView) Update(msg tea.Msg) tea.Cmd {
+func (tv *TableView) Update(msg tea.Msg, raw bool) tea.Cmd {
 	var cmd tea.Cmd
 	tv.table, cmd = tv.table.Update(msg)
+
+	// Check if we need to load more data
+	if tv.iterator != nil && !tv.isLoading && tv.data.IsArray() {
+		cursor := tv.table.Cursor()
+		totalRows := len(tv.table.Rows())
+
+		// Load more when we're at the last row
+		if cursor == totalRows-1 {
+			tv.isLoading = true
+			return tv.loadMoreData(raw)
+		}
+	}
+
 	return cmd
 }
 
+func (tv *TableView) loadMoreData(raw bool) tea.Cmd {
+	return func() tea.Msg {
+		if tv.iterator == nil {
+			return nil
+		}
+
+		if !tv.iterator.Next() {
+			tv.isLoading = false
+			return tv.iterator.Err()
+		}
+
+		obj := tv.iterator.Current()
+		var result gjson.Result
+		if jsonBytes, err := json.Marshal(obj); err != nil {
+			return err
+		} else {
+			result = gjson.ParseBytes(jsonBytes)
+		}
+
+		if !result.Exists() {
+			tv.isLoading = false
+			return nil
+		}
+
+		// Add the new item to our data
+		tv.rowData = append(tv.rowData, result)
+
+		// Add new row to the table
+		newRow := table.Row{formatValue(result, raw)}
+
+		// For array of objects, we need to format according to columns
+		if len(tv.columns) > 1 && result.IsObject() {
+			newRow = make(table.Row, len(tv.columns))
+			for i, col := range tv.columns {
+				newRow[i] = formatValue(result.Get(col.Title), raw)
+			}
+		}
+
+		rows := tv.table.Rows()
+		rows = append(rows, newRow)
+		tv.table.SetRows(rows)
+
+		// Resize columns to accommodate the new data
+		tv.Resize(tv.width, tv.height)
+
+		tv.isLoading = false
+		return nil
+	}
+}
+
 func (tv *TableView) Resize(width, height int) {
+	tv.width = width
+	tv.height = height
 	tv.updateColumnWidths(width)
 	tv.table.SetHeight(min(height-heightOffset, tableMinHeight+len(tv.table.Rows())))
 }
@@ -190,7 +263,8 @@ type TextView struct {
 func (tv *TextView) GetPath() string       { return tv.path }
 func (tv *TextView) GetData() gjson.Result { return tv.data }
 func (tv *TextView) View() string          { return tv.viewport.View() }
-func (tv *TextView) Update(msg tea.Msg) tea.Cmd {
+
+func (tv *TextView) Update(msg tea.Msg, raw bool) tea.Cmd {
 	var cmd tea.Cmd
 	tv.viewport, cmd = tv.viewport.Update(msg)
 	return cmd
@@ -218,10 +292,55 @@ type JSONViewer struct {
 	help    help.Model
 }
 
+// ExploreJSON explores a single JSON value known ahead of time
 func ExploreJSON(title string, json gjson.Result) error {
 	view, err := newView("", json, false)
 	if err != nil {
 		return err
+	}
+
+	viewer := &JSONViewer{stack: []JSONView{view}, root: title, rawMode: false, help: help.New()}
+
+	_, err = tea.NewProgram(viewer).Run()
+	if viewer.message != "" {
+		_, msgErr := fmt.Println("\n" + viewer.message)
+		err = errors.Join(err, msgErr)
+	}
+	return err
+}
+
+// ExploreJSONStream explores JSON data loaded incrementally via an iterator
+func ExploreJSONStream[T any](title string, it Iterator[T]) error {
+	anyIt := genericToAnyIterator(it)
+
+	preloadCount := 20
+	if termHeight, _, err := term.GetSize(os.Stdout.Fd()); err == nil {
+		preloadCount = termHeight
+	}
+
+	items := make([]any, 0, preloadCount)
+	for i := 0; i < preloadCount && anyIt.Next(); i++ {
+		items = append(items, anyIt.Current())
+	}
+
+	if err := anyIt.Err(); err != nil {
+		return err
+	}
+
+	// Convert items to JSON array
+	jsonBytes, err := json.Marshal(items)
+	if err != nil {
+		return err
+	}
+	arrayJSON := gjson.ParseBytes(jsonBytes)
+	view, err := newTableView("", arrayJSON, false)
+	if err != nil {
+		return err
+	}
+
+	// Set iterator if there might be more data
+	if len(items) == preloadCount {
+		view.iterator = anyIt
 	}
 
 	viewer := &JSONViewer{stack: []JSONView{view}, root: title, rawMode: false, help: help.New()}
@@ -265,7 +384,7 @@ func (v *JSONViewer) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	return v, v.current().Update(msg)
+	return v, v.current().Update(msg, v.rawMode)
 }
 
 func (v *JSONViewer) getSelectedContent() string {
@@ -343,11 +462,16 @@ func (v *JSONViewer) toggleRaw() (tea.Model, tea.Cmd) {
 	v.rawMode = !v.rawMode
 
 	for i, view := range v.stack {
-		rawView, err := newView(view.GetPath(), view.GetData(), v.rawMode)
+		viewWithRaw, err := newView(view.GetPath(), view.GetData(), v.rawMode)
 		if err != nil {
 			return v, tea.Printf("Error: %s", err)
 		}
-		v.stack[i] = rawView
+		if newTV, ok := viewWithRaw.(*TableView); ok {
+			if tv, ok := view.(*TableView); ok && tv.iterator != nil {
+				newTV.iterator = tv.iterator
+			}
+		}
+		v.stack[i] = viewWithRaw
 	}
 
 	v.resize(v.width, v.height)
@@ -431,7 +555,13 @@ func newArrayTableView(path string, data gjson.Result, array []gjson.Result, raw
 	}
 
 	t := createTable(columns, rows, arrayColor)
-	return &TableView{path: path, data: data, table: t, rowData: rowData}
+	return &TableView{
+		path:    path,
+		data:    data,
+		table:   t,
+		rowData: rowData,
+		columns: columns,
+	}
 }
 
 func newArrayOfObjectsTableView(path string, data gjson.Result, array []gjson.Result, raw bool) *TableView {
@@ -462,7 +592,13 @@ func newArrayOfObjectsTableView(path string, data gjson.Result, array []gjson.Re
 	}
 
 	t := createTable(columns, rows, arrayColor)
-	return &TableView{path: path, data: data, table: t, rowData: rowData}
+	return &TableView{
+		path:    path,
+		data:    data,
+		table:   t,
+		rowData: rowData,
+		columns: columns,
+	}
 }
 
 func newObjectTableView(path string, data gjson.Result, raw bool) *TableView {
@@ -489,7 +625,13 @@ func newObjectTableView(path string, data gjson.Result, raw bool) *TableView {
 	}
 
 	t := createTable(columns, rows, objectColor)
-	return &TableView{path: path, data: data, table: t, rowData: rowData}
+	return &TableView{
+		path:    path,
+		data:    data,
+		table:   t,
+		rowData: rowData,
+		columns: columns,
+	}
 }
 
 func createTable(columns []table.Column, rows []table.Row, bgColor lipgloss.Color) table.Model {
@@ -587,4 +729,47 @@ func sum(ints []int) int {
 		total += n
 	}
 	return total
+}
+
+// An iterator over `any` values
+type AnyIterator interface {
+	Next() bool
+	Err() error
+	Current() any
+}
+
+// A generic iterator interface that is used by the `genericIterator` struct
+// below to convert iterators over specific types to an AnyIterator
+type Iterator[T any] interface {
+	Next() bool
+	Err() error
+	Current() T
+}
+
+// genericIterator adapts a generic Iterator[T] to an AnyIterator.
+type genericIterator[T any] struct {
+	iterator Iterator[T]
+	current  any
+}
+
+func (g *genericIterator[T]) Next() bool {
+	if !g.iterator.Next() {
+		return false
+	}
+	g.current = g.iterator.Current()
+	return true
+}
+
+func (g *genericIterator[T]) Err() error {
+	return g.iterator.Err()
+}
+
+func (g *genericIterator[T]) Current() any {
+	return g.current
+}
+
+func genericToAnyIterator[T any](it Iterator[T]) AnyIterator {
+	return &genericIterator[T]{
+		iterator: it,
+	}
 }
