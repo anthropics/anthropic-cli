@@ -119,7 +119,8 @@ func flagOptions(
 		if !ok {
 			return nil, fmt.Errorf("Cannot send a non-map value to a form-encoded endpoint: %v\n", bodyData)
 		}
-		if err := apiform.MarshalWithSettings(bodyMap, writer, apiform.FormatComma); err != nil {
+		encodingFormat := apiform.FormatComma
+		if err := apiform.MarshalWithSettings(bodyMap, writer, encodingFormat); err != nil {
 			return nil, err
 		}
 		if err := writer.Close(); err != nil {

@@ -502,3 +502,30 @@ func TestYamlHandling(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestFlagTypeNames(t *testing.T) {
+	tests := []struct {
+		name     string
+		flag     cli.DocGenerationFlag
+		expected string
+	}{
+		{"string", &Flag[string]{}, "string"},
+		{"int64", &Flag[int64]{}, "int"},
+		{"float64", &Flag[float64]{}, "float"},
+		{"bool", &Flag[bool]{}, "boolean"},
+		{"string slice", &Flag[[]string]{}, "string"},
+		{"date", &Flag[DateValue]{}, "date"},
+		{"datetime", &Flag[DateTimeValue]{}, "datetime"},
+		{"time", &Flag[TimeValue]{}, "time"},
+		{"date slice", &Flag[[]DateValue]{}, "date"},
+		{"datetime slice", &Flag[[]DateTimeValue]{}, "datetime"},
+		{"time slice", &Flag[[]TimeValue]{}, "time"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			typeName := tt.flag.TypeName()
+			assert.Equal(t, tt.expected, typeName, "Expected type name %q, got %q", tt.expected, typeName)
+		})
+	}
+}

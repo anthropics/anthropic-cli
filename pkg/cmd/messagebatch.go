@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var messagesBatchesCreate = cli.Command{
+var messagesBatchesCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:  "create",
 	Usage: "Send a batch of Message creation requests.",
 	Flags: []cli.Flag{
@@ -28,7 +28,20 @@ var messagesBatchesCreate = cli.Command{
 	},
 	Action:          handleMessagesBatchesCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"request": {
+		&requestflag.InnerFlag[string]{
+			Name:       "request.custom-id",
+			Usage:      "Developer-provided ID created for each request in a Message Batch. Useful for matching results to requests, as results may be given out of request order.\n\nMust be unique for each request within the Message Batch.",
+			InnerField: "custom_id",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "request.params",
+			Usage:      "Messages API creation parameters for the individual request.\n\nSee the [Messages API reference](https://docs.claude.com/en/api/messages) for full documentation on available parameters.",
+			InnerField: "params",
+		},
+	},
+})
 
 var messagesBatchesRetrieve = cli.Command{
 	Name:  "retrieve",

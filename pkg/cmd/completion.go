@@ -13,7 +13,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var completionsCreate = cli.Command{
+var completionsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:  "create",
 	Usage: "[Legacy] Create a Text Completion.",
 	Flags: []cli.Flag{
@@ -35,7 +35,7 @@ var completionsCreate = cli.Command{
 			Required: true,
 			BodyPath: "prompt",
 		},
-		&requestflag.Flag[map[string]string]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			BodyPath: "metadata",
 		},
@@ -72,7 +72,15 @@ var completionsCreate = cli.Command{
 	},
 	Action:          handleCompletionsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"metadata": {
+		&requestflag.InnerFlag[string]{
+			Name:       "metadata.user-id",
+			Usage:      "An external identifier for the user who is associated with the request.\n\nThis should be a uuid, hash value, or other opaque identifier. Anthropic may use this id to help detect abuse. Do not include any identifying information such as name, email address, or phone number.",
+			InnerField: "user_id",
+		},
+	},
+})
 
 func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)

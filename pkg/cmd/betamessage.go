@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaMessagesCreate = cli.Command{
+var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:  "create",
 	Usage: "Send a structured list of input messages with text and/or image content, and the\nmodel will generate the next message in the conversation.",
 	Flags: []cli.Flag{
@@ -42,7 +42,7 @@ var betaMessagesCreate = cli.Command{
 			Usage:    "Container identifier for reuse across requests.",
 			BodyPath: "container",
 		},
-		&requestflag.Flag[map[string][]map[string]any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "context-management",
 			BodyPath: "context_management",
 		},
@@ -51,11 +51,11 @@ var betaMessagesCreate = cli.Command{
 			Usage:    "MCP servers to be utilized in this request",
 			BodyPath: "mcp_servers",
 		},
-		&requestflag.Flag[map[string]string]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			BodyPath: "metadata",
 		},
-		&requestflag.Flag[map[string]string]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "output-config",
 			BodyPath: "output_config",
 		},
@@ -121,9 +121,74 @@ var betaMessagesCreate = cli.Command{
 	},
 	Action:          handleBetaMessagesCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"message": {
+		&requestflag.InnerFlag[[]any]{
+			Name:       "message.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "message.role",
+			InnerField: "role",
+		},
+	},
+	"context-management": {
+		&requestflag.InnerFlag[[]map[string]any]{
+			Name:       "context-management.edits",
+			Usage:      "List of context management edits to apply",
+			InnerField: "edits",
+		},
+	},
+	"mcp-server": {
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.name",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.type",
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.url",
+			InnerField: "url",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.authorization-token",
+			InnerField: "authorization_token",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "mcp-server.tool-configuration",
+			InnerField: "tool_configuration",
+		},
+	},
+	"metadata": {
+		&requestflag.InnerFlag[string]{
+			Name:       "metadata.user-id",
+			Usage:      "An external identifier for the user who is associated with the request.\n\nThis should be a uuid, hash value, or other opaque identifier. Anthropic may use this id to help detect abuse. Do not include any identifying information such as name, email address, or phone number.",
+			InnerField: "user_id",
+		},
+	},
+	"output-config": {
+		&requestflag.InnerFlag[string]{
+			Name:       "output-config.effort",
+			Usage:      "All possible effort levels.",
+			InnerField: "effort",
+		},
+	},
+	"output-format": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "output-format.schema",
+			Usage:      "The JSON schema of the format",
+			InnerField: "schema",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "output-format.type",
+			InnerField: "type",
+		},
+	},
+})
 
-var betaMessagesCountTokens = cli.Command{
+var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	Name:  "count-tokens",
 	Usage: "Count the number of tokens in a Message.",
 	Flags: []cli.Flag{
@@ -139,7 +204,7 @@ var betaMessagesCountTokens = cli.Command{
 			Required: true,
 			BodyPath: "model",
 		},
-		&requestflag.Flag[map[string][]map[string]any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "context-management",
 			BodyPath: "context_management",
 		},
@@ -148,7 +213,7 @@ var betaMessagesCountTokens = cli.Command{
 			Usage:    "MCP servers to be utilized in this request",
 			BodyPath: "mcp_servers",
 		},
-		&requestflag.Flag[map[string]string]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "output-config",
 			BodyPath: "output_config",
 		},
@@ -184,7 +249,65 @@ var betaMessagesCountTokens = cli.Command{
 	},
 	Action:          handleBetaMessagesCountTokens,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"message": {
+		&requestflag.InnerFlag[[]any]{
+			Name:       "message.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "message.role",
+			InnerField: "role",
+		},
+	},
+	"context-management": {
+		&requestflag.InnerFlag[[]map[string]any]{
+			Name:       "context-management.edits",
+			Usage:      "List of context management edits to apply",
+			InnerField: "edits",
+		},
+	},
+	"mcp-server": {
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.name",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.type",
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.url",
+			InnerField: "url",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "mcp-server.authorization-token",
+			InnerField: "authorization_token",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "mcp-server.tool-configuration",
+			InnerField: "tool_configuration",
+		},
+	},
+	"output-config": {
+		&requestflag.InnerFlag[string]{
+			Name:       "output-config.effort",
+			Usage:      "All possible effort levels.",
+			InnerField: "effort",
+		},
+	},
+	"output-format": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "output-format.schema",
+			Usage:      "The JSON schema of the format",
+			InnerField: "schema",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "output-format.type",
+			InnerField: "type",
+		},
+	},
+})
 
 func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)

@@ -15,7 +15,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var messagesCreate = cli.Command{
+var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:  "create",
 	Usage: "Send a structured list of input messages with text and/or image content, and the\nmodel will generate the next message in the conversation.",
 	Flags: []cli.Flag{
@@ -37,7 +37,7 @@ var messagesCreate = cli.Command{
 			Required: true,
 			BodyPath: "model",
 		},
-		&requestflag.Flag[map[string]string]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			BodyPath: "metadata",
 		},
@@ -94,9 +94,27 @@ var messagesCreate = cli.Command{
 	},
 	Action:          handleMessagesCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"message": {
+		&requestflag.InnerFlag[[]any]{
+			Name:       "message.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "message.role",
+			InnerField: "role",
+		},
+	},
+	"metadata": {
+		&requestflag.InnerFlag[string]{
+			Name:       "metadata.user-id",
+			Usage:      "An external identifier for the user who is associated with the request.\n\nThis should be a uuid, hash value, or other opaque identifier. Anthropic may use this id to help detect abuse. Do not include any identifying information such as name, email address, or phone number.",
+			InnerField: "user_id",
+		},
+	},
+})
 
-var messagesCountTokens = cli.Command{
+var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	Name:  "count-tokens",
 	Usage: "Count the number of tokens in a Message.",
 	Flags: []cli.Flag{
@@ -135,7 +153,18 @@ var messagesCountTokens = cli.Command{
 	},
 	Action:          handleMessagesCountTokens,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"message": {
+		&requestflag.InnerFlag[[]any]{
+			Name:       "message.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "message.role",
+			InnerField: "role",
+		},
+	},
+})
 
 func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)

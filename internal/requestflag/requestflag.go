@@ -15,8 +15,8 @@ import (
 // common interfaces used by urfave/cli. Additionally, it allows specifying
 // where in an HTTP request the flag values should be placed (e.g. query, body, etc.).
 type Flag[
-	T []any | []DateTimeValue | []DateValue | []TimeValue | []string |
-		[]float64 | []int64 | []bool | any | DateTimeValue | DateValue | TimeValue |
+	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string |
+		[]float64 | []int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue |
 		string | float64 | int64 | bool,
 ] struct {
 	Name        string        // name of the flag
@@ -129,7 +129,7 @@ func (f *Flag[T]) PostParse() error {
 	return nil
 }
 
-func (f *Flag[T]) Set(_ string, val string) error {
+func (f *Flag[T]) Set(name string, val string) error {
 	// Initialize flag if needed
 	if !f.applied {
 		if err := f.PreParse(); err != nil {
@@ -310,137 +310,33 @@ func (f *Flag[T]) Count() int {
 
 // cliValue is a generic implementation of cli.Value for common types
 type cliValue[
-	T []any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
-		[]int64 | []bool | any | DateTimeValue | DateValue | TimeValue | string |
+	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
+		[]int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue | string |
 		float64 | int64 | bool,
 ] struct {
 	value T
 }
 
-// Set parses the input string and sets the value
-func (c *cliValue[T]) Set(value string) error {
+// Take an argument string for a single argument and convert it into a typed
+// value for one of the supported CLI argument types
+func parseCLIArg[
+	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
+		[]int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue | string |
+		float64 | int64 | bool,
+](value string) (T, error) {
 	var parsedValue any
 	var err error
 
-	switch any(c.value).(type) {
-	case []string:
-		// Append to existing slice if it exists
-		existingSlice, ok := any(c.value).([]string)
-		if !ok {
-			existingSlice = []string{}
-		}
-		parsedValue = append(existingSlice, value)
-
-	case []int64:
-		var i int64
-		i, err = strconv.ParseInt(value, 0, 64)
-		if err == nil {
-			// Append to existing slice if it exists
-			existingSlice, ok := any(c.value).([]int64)
-			if !ok {
-				existingSlice = []int64{}
-			}
-			parsedValue = append(existingSlice, i)
-		}
-
-	case []float64:
-		var f float64
-		f, err = strconv.ParseFloat(value, 64)
-		if err == nil {
-			// Append to existing slice if it exists
-			existingSlice, ok := any(c.value).([]float64)
-			if !ok {
-				existingSlice = []float64{}
-			}
-			parsedValue = append(existingSlice, f)
-		}
-
-	case []bool:
-		var b bool
-		b, err = strconv.ParseBool(value)
-		if err == nil {
-			// Append to existing slice if it exists
-			existingSlice, ok := any(c.value).([]bool)
-			if !ok {
-				existingSlice = []bool{}
-			}
-			parsedValue = append(existingSlice, b)
-		}
-
-	case []DateTimeValue:
-		var dt DateTimeValue
-		err = (&dt).Parse(value)
-		if err == nil {
-			// Append to existing slice if it exists
-			existingSlice, ok := any(c.value).([]DateTimeValue)
-			if !ok {
-				existingSlice = []DateTimeValue{}
-			}
-			parsedValue = append(existingSlice, dt)
-		}
-
-	case []DateValue:
-		var d DateValue
-		err = (&d).Parse(value)
-		if err == nil {
-			// Append to existing slice if it exists
-			existingSlice, ok := any(c.value).([]DateValue)
-			if !ok {
-				existingSlice = []DateValue{}
-			}
-			parsedValue = append(existingSlice, d)
-		}
-
-	case []TimeValue:
-		var t TimeValue
-		err = (&t).Parse(value)
-		if err == nil {
-			// Append to existing slice if it exists
-			existingSlice, ok := any(c.value).([]TimeValue)
-			if !ok {
-				existingSlice = []TimeValue{}
-			}
-			parsedValue = append(existingSlice, t)
-		}
-
-	case []any:
-		var yamlValue any
-		err = yaml.Unmarshal([]byte(value), &yamlValue)
-		if err != nil {
-			return fmt.Errorf("failed to parse as YAML: %v", err)
-		}
-
-		// Append to existing slice if it exists
-		existingSlice, ok := any(c.value).([]any)
-		if !ok {
-			existingSlice = []any{}
-		}
-		parsedValue = append(existingSlice, yamlValue)
-
+	var empty T
+	switch any(empty).(type) {
 	case string:
 		parsedValue = value
-
 	case int64:
-		var i int64
-		i, err = strconv.ParseInt(value, 0, 64)
-		if err == nil {
-			parsedValue = i
-		}
-
+		parsedValue, err = strconv.ParseInt(value, 0, 64)
 	case float64:
-		var f float64
-		f, err = strconv.ParseFloat(value, 64)
-		if err == nil {
-			parsedValue = f
-		}
-
+		parsedValue, err = strconv.ParseFloat(value, 64)
 	case bool:
-		var b bool
-		b, err = strconv.ParseBool(value)
-		if err == nil {
-			parsedValue = b
-		}
-
+		parsedValue, err = strconv.ParseBool(value)
 	case DateTimeValue:
 		var dt DateTimeValue
 		err = (&dt).Parse(value)
@@ -462,21 +358,97 @@ func (c *cliValue[T]) Set(value string) error {
 			parsedValue = t
 		}
 
-	case any:
 	default:
-		var yamlValue any
+		var yamlValue T
 		err = yaml.Unmarshal([]byte(value), &yamlValue)
 		if err != nil {
-			return fmt.Errorf("failed to parse as YAML: %v", err)
+			err = fmt.Errorf("failed to parse as YAML: %w", err)
 		}
 		parsedValue = yamlValue
 	}
 
-	if err != nil {
-		return err
+	// Nil needs to be handled specially because unmarshalling a YAML `null`
+	// causes problems when doing type assertions.
+	if parsedValue == nil {
+		parsedValue = (*struct{})(nil)
 	}
 
-	c.value = parsedValue.(T)
+	if err == nil {
+		if typedValue, ok := parsedValue.(T); ok {
+			return typedValue, nil
+		} else {
+			expectedType := reflect.TypeFor[T]()
+			err = fmt.Errorf("Couldn't convert %q (%v) to expected type %v", value, parsedValue, expectedType)
+		}
+	}
+	return empty, err
+
+}
+
+// Parse the input string and set result as the cliValue's value
+func (c *cliValue[T]) Set(value string) error {
+	valueType := reflect.TypeOf(c.value)
+	// When setting slice values, we append to the existing values
+	// e.g. --foo 10 --foo 20 --foo 30 => [10, 20, 30]
+	if valueType != nil && valueType.Kind() == reflect.Slice {
+		elemType := valueType.Elem()
+
+		var singleElem any
+		var err error
+		switch elemType.Kind() {
+		case reflect.String:
+			singleElem, err = parseCLIArg[string](value)
+		case reflect.Int64:
+			singleElem, err = parseCLIArg[int64](value)
+		case reflect.Float64:
+			singleElem, err = parseCLIArg[float64](value)
+		case reflect.Bool:
+			singleElem, err = parseCLIArg[bool](value)
+		default:
+			// Check for special types by name
+			switch elemType.Name() {
+			case "DateTimeValue":
+				singleElem, err = parseCLIArg[DateTimeValue](value)
+			case "DateValue":
+				singleElem, err = parseCLIArg[DateValue](value)
+			case "TimeValue":
+				singleElem, err = parseCLIArg[TimeValue](value)
+			default:
+				// This handles []map[string]any
+				if elemType.Kind() == reflect.Map && elemType.Key().Kind() == reflect.String {
+					singleElem, err = parseCLIArg[map[string]any](value)
+				} else {
+					singleElem, err = parseCLIArg[any](value)
+				}
+			}
+		}
+
+		if err != nil {
+			return err
+		}
+
+		// Append the new element to the slice
+		sliceValue := reflect.ValueOf(c.value)
+		if !sliceValue.IsValid() || sliceValue.IsNil() {
+			// Create a new slice if the current one is nil
+			sliceValue = reflect.MakeSlice(valueType, 0, 1)
+		}
+
+		// Append the new element
+		newElem := reflect.ValueOf(singleElem)
+		sliceValue = reflect.Append(sliceValue, newElem)
+
+		// Set the updated slice back to c.value
+		c.value = sliceValue.Interface().(T)
+	} else {
+		// For non-slice types, simply parse and set the value
+		if parsedValue, err := parseCLIArg[T](value); err != nil {
+			return err
+		} else {
+			c.value = parsedValue
+		}
+	}
+
 	return nil
 }
 
@@ -493,7 +465,7 @@ func (c *cliValue[T]) String() string {
 
 	default:
 		// For complex types, convert to YAML
-		yamlBytes, err := yaml.Marshal(c.value)
+		yamlBytes, err := yaml.MarshalWithOptions(c.value, yaml.Flow(true))
 		if err != nil {
 			// Fall back to standard format if YAML conversion fails
 			return fmt.Sprintf("%v", c.value)
@@ -594,4 +566,63 @@ func (t *TimeValue) Parse(s string) error {
 
 	*t = TimeValue(parsedTime.Format("15:04:05"))
 	return nil
+}
+
+// Allow setting inner fields on other flags (e.g. --foo.baz can set the "baz"
+// field on the --foo flag)
+type SettableInnerField interface {
+	SetInnerField(string, any)
+}
+
+func (f *Flag[T]) SetInnerField(field string, val any) {
+	if f.value == nil {
+		f.value = &cliValue[T]{}
+	}
+
+	if settableInnerField, ok := f.value.(SettableInnerField); ok {
+		settableInnerField.SetInnerField(field, val)
+		f.hasBeenSet = true
+	} else {
+		panic(fmt.Sprintf("Cannot set inner field: %v", f.value))
+	}
+}
+
+func (c *cliValue[T]) SetInnerField(field string, val any) {
+	flagVal := c.value
+	flagValReflect := reflect.ValueOf(flagVal)
+	switch flagValReflect.Kind() {
+	case reflect.Slice:
+		if flagValReflect.Type().Elem().Kind() != reflect.Map {
+			return
+		}
+
+		sliceLen := flagValReflect.Len()
+		if sliceLen > 0 {
+			// Check if the last element already has the InnerField
+			lastElement := flagValReflect.Index(sliceLen - 1).Interface().(map[string]any)
+			if _, hasInnerField := lastElement[field]; !hasInnerField {
+				// Last element doesn't have the field, set it
+				lastElement[field] = val
+				return
+			}
+		}
+
+		// Create a new map and append it to the slice
+		newMap := map[string]any{field: val}
+		switch sliceVal := any(c.value).(type) {
+		case []map[string]any:
+			c.value = any(append(sliceVal, newMap)).(T)
+		case []any:
+			c.value = any(append(sliceVal, newMap)).(T)
+		}
+
+	case reflect.Map:
+		mapVal, ok := any(flagVal).(map[string]any)
+		if !ok || mapVal == nil {
+			mapVal = map[string]any{field: val}
+			c.value = any(mapVal).(T)
+		} else {
+			mapVal[field] = val
+		}
+	}
 }
