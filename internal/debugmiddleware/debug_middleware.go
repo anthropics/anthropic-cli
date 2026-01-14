@@ -1,11 +1,13 @@
 package debugmiddleware
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"reflect"
 	"strings"
-	"sync"
 )
 
 // For the time being these type definitions are duplicated here so that we can
@@ -38,7 +40,11 @@ func NewRequestLogger() *RequestLogger {
 
 func (m *RequestLogger) Middleware() Middleware {
 	return func(req *http.Request, mn MiddlewareNext) (*http.Response, error) {
-		if reqBytes, err := httputil.DumpRequest(m.redactRequest(req), true); err == nil {
+		redacted, err := m.redactRequest(req)
+		if err != nil {
+			return nil, err
+		}
+		if reqBytes, err := httputil.DumpRequest(redacted, true); err == nil {
 			m.logger.Printf("Request Content:\n%s\n", reqBytes)
 		}
 
@@ -59,42 +65,64 @@ func (m *RequestLogger) Middleware() Middleware {
 // purposes. If redaction is necessary, the request is cloned before mutating
 // the original and that clone is returned. As a small optimization, the
 // original is request is returned unchanged if no redaction is necessary.
-func (m *RequestLogger) redactRequest(req *http.Request) *http.Request {
-	cloneReq := sync.OnceFunc(func() {
-		req = req.Clone(req.Context())
-	})
+func (m *RequestLogger) redactRequest(req *http.Request) (*http.Request, error) {
+	redactedHeaders := req.Header.Clone()
 
 	// Notably, the clauses below are written so they can redact multiple
 	// headers of the same name if necessary.
-	if values := req.Header.Values("Authorization"); len(values) > 0 {
-		cloneReq()
-		req.Header.Del("Authorization")
+	if values := redactedHeaders.Values("Authorization"); len(values) > 0 {
+		redactedHeaders.Del("Authorization")
 
 		for _, value := range values {
 			// In case we're using something like a bearer token (e.g. `Bearer
 			// <my_token>`), keep the `Bearer` part for more debugging
 			// information.
 			if authKind, _, ok := strings.Cut(value, " "); ok {
-				req.Header.Add("Authorization", authKind+" "+redactedPlaceholder)
+				redactedHeaders.Add("Authorization", authKind+" "+redactedPlaceholder)
 			} else {
-				req.Header.Add("Authorization", redactedPlaceholder)
+				redactedHeaders.Add("Authorization", redactedPlaceholder)
 			}
 		}
 	}
 
 	for _, header := range m.sensitiveHeaders {
-		values := req.Header.Values(header)
+		values := redactedHeaders.Values(header)
 		if len(values) == 0 {
 			continue
 		}
 
-		cloneReq()
-		req.Header.Del(header)
+		redactedHeaders.Del(header)
 
 		for range values {
-			req.Header.Add(header, redactedPlaceholder)
+			redactedHeaders.Add(header, redactedPlaceholder)
 		}
 	}
 
-	return req
+	if reflect.DeepEqual(req.Header, redactedHeaders) {
+		return req, nil
+	}
+
+	redacted := req.Clone(req.Context())
+	redacted.Header = redactedHeaders
+	var err error
+	redacted.Body, req.Body, err = cloneBody(req.Body)
+	return redacted, err
+}
+
+// This function returns two copies of an HTTP request body that can each be
+// read independently without affecting the other.
+// This logic is taken from `drainBody` in net/http/httputil.
+func cloneBody(b io.ReadCloser) (r1, r2 io.ReadCloser, err error) {
+	if b == nil || b == http.NoBody {
+		// No copying needed. Preserve the magic sentinel meaning of NoBody.
+		return http.NoBody, http.NoBody, nil
+	}
+	var buf bytes.Buffer
+	if _, err = buf.ReadFrom(b); err != nil {
+		return nil, b, err
+	}
+	if err = b.Close(); err != nil {
+		return nil, b, err
+	}
+	return io.NopCloser(&buf), io.NopCloser(bytes.NewReader(buf.Bytes())), nil
 }

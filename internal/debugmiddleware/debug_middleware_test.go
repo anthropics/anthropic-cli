@@ -2,6 +2,7 @@ package debugmiddleware
 
 import (
 	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -165,5 +166,36 @@ func TestDebugMiddleware(t *testing.T) {
 
 		require.True(t, nextMiddlewareRan)
 		require.Equal(t, 2, strings.Count(logBuf.String(), customAPIKeyHeader+": "+redactedPlaceholder))
+	})
+
+	t.Run("DoesNotConsumeRequestBodyWhenIoReader", func(t *testing.T) {
+		t.Parallel()
+
+		middleware, logBuf := setup()
+		middleware.sensitiveHeaders = []string{customAPIKeyHeader}
+
+		const bodyContent = "test request body content"
+		bodyReader := strings.NewReader(bodyContent)
+
+		req := httptest.NewRequest("POST", "https://example.com", bodyReader)
+		req.Header.Set("Authorization", secretToken)
+
+		var nextMiddlewareRan bool
+		middleware.Middleware()(req, func(req *http.Request) (*http.Response, error) {
+			nextMiddlewareRan = true
+
+			// The request body should still be fully readable after the middleware runs
+			body, err := io.ReadAll(req.Body)
+			require.NoError(t, err)
+			require.Equal(t, bodyContent, string(body))
+
+			// The request sent down through middleware shouldn't be mutated.
+			require.Equal(t, secretToken, req.Header.Get("Authorization"))
+
+			return &http.Response{}, nil
+		})
+
+		require.True(t, nextMiddlewareRan)
+		require.Contains(t, logBuf.String(), "Authorization: "+redactedPlaceholder)
 	})
 }
