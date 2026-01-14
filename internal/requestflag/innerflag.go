@@ -192,19 +192,17 @@ func WithInnerFlags(cmd cli.Command, innerFlagMap map[string][]HasOuterFlag) cli
 
 	updatedFlags := make([]cli.Flag, 0, len(cmd.Flags))
 	for _, flag := range cmd.Flags {
+		updatedFlags = append(updatedFlags, flag)
 		for _, name := range flag.Names() {
 			// Check if this flag has inner flags in our map
 			innerFlags, hasInnerFlags := innerFlagMap[name]
 			if !hasInnerFlags {
-				// No inner flags for this one, add it as-is
-				updatedFlags = append(updatedFlags, flag)
 				continue
 			}
 
 			// Mark this inner flag key as used
 			delete(unusedInnerFlagKeys, name)
 
-			updatedFlags = append(updatedFlags, flag)
 			for _, innerFlag := range innerFlags {
 				innerFlag.SetOuterFlag(flag)
 				updatedFlags = append(updatedFlags, innerFlag)
