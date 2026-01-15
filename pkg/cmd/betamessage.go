@@ -175,6 +175,10 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "All possible effort levels.",
 			InnerField: "effort",
 		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "output-config.format",
+			InnerField: "format",
+		},
 	},
 	"output-format": {
 		&requestflag.InnerFlag[map[string]any]{
@@ -296,6 +300,10 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:       "output-config.effort",
 			Usage:      "All possible effort levels.",
 			InnerField: "effort",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "output-config.format",
+			InnerField: "format",
 		},
 	},
 	"output-format": {
