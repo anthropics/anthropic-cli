@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
@@ -33,9 +34,16 @@ const (
 	ApplicationOctetStream
 )
 
-func embedFiles(obj any) (any, error) {
+type FileEmbedStyle int
+
+const (
+	EmbedText FileEmbedStyle = iota
+	EmbedIOReader
+)
+
+func embedFiles(obj any, embedStyle FileEmbedStyle) (any, error) {
 	v := reflect.ValueOf(obj)
-	result, err := embedFilesValue(v)
+	result, err := embedFilesValue(v, embedStyle)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +51,7 @@ func embedFiles(obj any) (any, error) {
 }
 
 // Replace "@file.txt" with the file's contents inside a value
-func embedFilesValue(v reflect.Value) (reflect.Value, error) {
+func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value, error) {
 	// Unwrap interface values to get the concrete type
 	if v.Kind() == reflect.Interface {
 		if v.IsNil() {
@@ -57,12 +65,14 @@ func embedFilesValue(v reflect.Value) (reflect.Value, error) {
 		if v.Len() == 0 {
 			return v, nil
 		}
-		result := reflect.MakeMap(v.Type())
+		// Always create map[string]any to handle potential type changes when embedding files
+		result := reflect.MakeMap(reflect.TypeOf(map[string]any{}))
+
 		iter := v.MapRange()
 		for iter.Next() {
 			key := iter.Key()
 			val := iter.Value()
-			newVal, err := embedFilesValue(val)
+			newVal, err := embedFilesValue(val, embedStyle)
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -74,9 +84,10 @@ func embedFilesValue(v reflect.Value) (reflect.Value, error) {
 		if v.Len() == 0 {
 			return v, nil
 		}
-		result := reflect.MakeSlice(v.Type(), v.Len(), v.Len())
+		// Use `[]any` to allow for types to change when embedding files
+		result := reflect.MakeSlice(reflect.TypeOf([]any{}), v.Len(), v.Len())
 		for i := 0; i < v.Len(); i++ {
-			newVal, err := embedFilesValue(v.Index(i))
+			newVal, err := embedFilesValue(v.Index(i), embedStyle)
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -86,51 +97,78 @@ func embedFilesValue(v reflect.Value) (reflect.Value, error) {
 
 	case reflect.String:
 		s := v.String()
-
 		if literal, ok := strings.CutPrefix(s, "\\@"); ok {
 			// Allow for escaped @ signs if you don't want them to be treated as files
 			return reflect.ValueOf("@" + literal), nil
-		} else if filename, ok := strings.CutPrefix(s, "@data://"); ok {
-			// The "@data://" prefix is for files you explicitly want to upload
-			// as base64-encoded (even if the file itself is plain text)
-			content, err := os.ReadFile(filename)
-			if err != nil {
-				return v, err
-			}
-			return reflect.ValueOf(base64.StdEncoding.EncodeToString(content)), nil
-		} else if filename, ok := strings.CutPrefix(s, "@file://"); ok {
-			// The "@file://" prefix is for files that you explicitly want to
-			// upload as a string literal with backslash escapes (not base64
-			// encoded)
-			content, err := os.ReadFile(filename)
-			if err != nil {
-				return v, err
-			}
-			return reflect.ValueOf(string(content)), nil
-		} else if filename, ok := strings.CutPrefix(s, "@"); ok {
-			content, err := os.ReadFile(filename)
-			if err != nil {
-				// If the string is "@username", it's probably supposed to be a
-				// string literal and not a file reference. However, if the
-				// string looks like "@file.txt" or "@/tmp/file", then it's
-				// probably supposed to be a file.
-				probablyFile := strings.Contains(filename, ".") || strings.Contains(filename, "/")
-				if probablyFile {
-					// Give a useful error message if the user tried to upload a
-					// file, but the file couldn't be read (e.g. mistyped
-					// filename or permission error)
+		}
+
+		if embedStyle == EmbedText {
+			if filename, ok := strings.CutPrefix(s, "@data://"); ok {
+				// The "@data://" prefix is for files you explicitly want to upload
+				// as base64-encoded (even if the file itself is plain text)
+				content, err := os.ReadFile(filename)
+				if err != nil {
 					return v, err
 				}
-				// Fall back to the raw value if the user provided something
-				// like "@username" that's not intended to be a file.
-				return v, nil
-			}
-			// If the file looks like a plain text UTF8 file format, then use the contents directly.
-			if isUTF8TextFile(content) {
+				return reflect.ValueOf(base64.StdEncoding.EncodeToString(content)), nil
+			} else if filename, ok := strings.CutPrefix(s, "@file://"); ok {
+				// The "@file://" prefix is for files that you explicitly want to
+				// upload as a string literal with backslash escapes (not base64
+				// encoded)
+				content, err := os.ReadFile(filename)
+				if err != nil {
+					return v, err
+				}
 				return reflect.ValueOf(string(content)), nil
+			} else if filename, ok := strings.CutPrefix(s, "@"); ok {
+				content, err := os.ReadFile(filename)
+				if err != nil {
+					// If the string is "@username", it's probably supposed to be a
+					// string literal and not a file reference. However, if the
+					// string looks like "@file.txt" or "@/tmp/file", then it's
+					// probably supposed to be a file.
+					probablyFile := strings.Contains(filename, ".") || strings.Contains(filename, "/")
+					if probablyFile {
+						// Give a useful error message if the user tried to upload a
+						// file, but the file couldn't be read (e.g. mistyped
+						// filename or permission error)
+						return v, err
+					}
+					// Fall back to the raw value if the user provided something
+					// like "@username" that's not intended to be a file.
+					return v, nil
+				}
+				// If the file looks like a plain text UTF8 file format, then use the contents directly.
+				if isUTF8TextFile(content) {
+					return reflect.ValueOf(string(content)), nil
+				}
+				// Otherwise it's a binary file, so encode it with base64
+				return reflect.ValueOf(base64.StdEncoding.EncodeToString(content)), nil
 			}
-			// Otherwise it's a binary file, so encode it with base64
-			return reflect.ValueOf(base64.StdEncoding.EncodeToString(content)), nil
+		} else {
+			if filename, ok := strings.CutPrefix(s, "@"); ok {
+				// Behavior is the same for @file, @data://file, and @file://file, except that
+				// @username will be treated as a literal string if no "username" file exists
+				expectsFile := true
+				if withoutPrefix, ok := strings.CutPrefix(filename, "data://"); ok {
+					filename = withoutPrefix
+				} else if withoutPrefix, ok := strings.CutPrefix(filename, "file://"); ok {
+					filename = withoutPrefix
+				} else {
+					expectsFile = strings.Contains(filename, ".") || strings.Contains(filename, "/")
+				}
+
+				file, err := os.Open(filename)
+				if err != nil {
+					if !expectsFile {
+						// For strings that start with "@" and don't look like a filename, return the string
+						return v, nil
+					}
+					return v, err
+				}
+				reader := bufio.NewReader(file)
+				return reflect.ValueOf(reader), nil
+			}
 		}
 		return v, nil
 
@@ -205,16 +243,20 @@ func flagOptions(
 	}
 
 	// Embed files passed as "@file.jpg" in the request body, headers, and query:
-	bodyData, err := embedFiles(bodyData)
+	embedStyle := EmbedText
+	if bodyType == ApplicationOctetStream || bodyType == MultipartFormEncoded {
+		embedStyle = EmbedIOReader
+	}
+	bodyData, err := embedFiles(bodyData, embedStyle)
 	if err != nil {
 		return nil, err
 	}
-	if headersWithFiles, err := embedFiles(flagContents.Headers); err != nil {
+	if headersWithFiles, err := embedFiles(flagContents.Headers, EmbedText); err != nil {
 		return nil, err
 	} else {
 		flagContents.Headers = headersWithFiles.(map[string]any)
 	}
-	if queriesWithFiles, err := embedFiles(flagContents.Queries); err != nil {
+	if queriesWithFiles, err := embedFiles(flagContents.Queries, EmbedText); err != nil {
 		return nil, err
 	} else {
 		flagContents.Queries = queriesWithFiles.(map[string]any)

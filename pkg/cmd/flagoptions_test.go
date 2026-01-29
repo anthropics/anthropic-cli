@@ -68,11 +68,11 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "map[string]string with file references",
-			input: map[string]string{
+			input: map[string]any{
 				"config": "@" + filepath.Join(tmpDir, "config.txt"),
 				"name":   "test",
 			},
-			want: map[string]string{
+			want: map[string]any{
 				"config": configContent,
 				"name":   "test",
 			},
@@ -96,11 +96,11 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "[]string with file references",
-			input: []string{
+			input: []any{
 				"@" + filepath.Join(tmpDir, "config.txt"),
 				"normal string",
 			},
-			want: []string{
+			want: []any{
 				configContent,
 				"normal string",
 			},
@@ -112,7 +112,7 @@ func TestEmbedFiles(t *testing.T) {
 				"outer": map[string]any{
 					"inner": []any{
 						"@" + filepath.Join(tmpDir, "config.txt"),
-						map[string]string{
+						map[string]any{
 							"data": "@" + filepath.Join(tmpDir, "data.json"),
 						},
 					},
@@ -122,7 +122,7 @@ func TestEmbedFiles(t *testing.T) {
 				"outer": map[string]any{
 					"inner": []any{
 						configContent,
-						map[string]string{
+						map[string]any{
 							"data": dataContent,
 						},
 					},
@@ -132,11 +132,11 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "base64 encoding",
-			input: map[string]string{
+			input: map[string]any{
 				"encoded": "@data://" + filepath.Join(tmpDir, "config.txt"),
 				"image":   "@" + filepath.Join(tmpDir, "image.jpg"),
 			},
-			want: map[string]string{
+			want: map[string]any{
 				"encoded": base64.StdEncoding.EncodeToString([]byte(configContent)),
 				"image":   base64.StdEncoding.EncodeToString(jpegHeader),
 			},
@@ -144,7 +144,7 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "non-existent file with @ prefix",
-			input: map[string]string{
+			input: map[string]any{
 				"missing": "@file.txt",
 			},
 			want:    nil,
@@ -152,11 +152,11 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "non-file-like thing with @ prefix",
-			input: map[string]string{
+			input: map[string]any{
 				"username":        "@user",
 				"favorite_symbol": "@",
 			},
-			want: map[string]string{
+			want: map[string]any{
 				"username":        "@user",
 				"favorite_symbol": "@",
 			},
@@ -164,7 +164,7 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "non-existent file with @file:// prefix (error)",
-			input: map[string]string{
+			input: map[string]any{
 				"missing": "@file:///nonexistent/file.txt",
 			},
 			want:    nil,
@@ -172,13 +172,13 @@ func TestEmbedFiles(t *testing.T) {
 		},
 		{
 			name: "escaping",
-			input: map[string]string{
+			input: map[string]any{
 				"simple":      "\\@file.txt",
 				"file":        "\\@file://file.txt",
 				"data":        "\\@data://file.txt",
 				"keep_escape": "user\\@example.com",
 			},
-			want: map[string]string{
+			want: map[string]any{
 				"simple":      "@file.txt",
 				"file":        "@file://file.txt",
 				"data":        "@data://file.txt",
@@ -207,22 +207,30 @@ func TestEmbedFiles(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "[]int unchanged",
+			name:    "[]int values unchanged",
 			input:   []int{1, 2, 3, 4, 5},
-			want:    []int{1, 2, 3, 4, 5},
+			want:    []any{1, 2, 3, 4, 5},
 			wantErr: false,
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := embedFiles(tt.input)
-
+		t.Run(tt.name+" text", func(t *testing.T) {
+			got, err := embedFiles(tt.input, EmbedText)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				require.NoError(t, err)
 				assert.Equal(t, tt.want, got)
+			}
+		})
+
+		t.Run(tt.name+" io.Reader", func(t *testing.T) {
+			_, err := embedFiles(tt.input, EmbedIOReader)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
