@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
@@ -166,8 +165,7 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 					}
 					return v, err
 				}
-				reader := bufio.NewReader(file)
-				return reflect.ValueOf(reader), nil
+				return reflect.ValueOf(file), nil
 			}
 		}
 		return v, nil
