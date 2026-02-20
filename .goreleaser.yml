@@ -78,3 +78,18 @@ nfpms:
     contents:
       - src: man/man1/*.1.gz
         dst: /usr/share/man/man1/
+homebrew_casks:
+  - name: ant
+    repository:
+      owner: anthropics
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    homepage: anthropic.com
+    license: MIT
+    binary: "ant"
+    completions:
+      bash: "completions/ant.bash"
+      zsh: "completions/ant.zsh"
+      fish: "completions/ant.fish"
+    manpages:
+    - man/man1/ant.1.gz

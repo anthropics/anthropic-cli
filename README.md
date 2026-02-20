@@ -4,6 +4,13 @@ The official CLI for the [Anthropic REST API](https://docs.anthropic.com/claude/
 
 ## Installation
 
+### Installing with Homebrew
+
+```sh
+brew tap anthropics/tap
+brew install ant
+```
+
 ### Installing with Go
 
 To test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.22 or later installed.
