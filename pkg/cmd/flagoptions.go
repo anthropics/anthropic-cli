@@ -282,7 +282,11 @@ func flagOptions(
 	}
 
 	// Add header parameters
-	if values, err := apiquery.MarshalWithSettings(flagContents.Headers, querySettings); err != nil {
+	headerSettings := apiquery.QuerySettings{
+		NestedFormat: apiquery.NestedQueryFormatDots,
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+	}
+	if values, err := apiquery.MarshalWithSettings(flagContents.Headers, headerSettings); err != nil {
 		return nil, err
 	} else {
 		for k, vs := range values {
