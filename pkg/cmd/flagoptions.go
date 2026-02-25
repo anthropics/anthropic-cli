@@ -14,11 +14,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/anthropics/anthropic-cli/internal/apiform"
+	"github.com/anthropics/anthropic-cli/internal/apiquery"
+	"github.com/anthropics/anthropic-cli/internal/debugmiddleware"
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/stainless-sdks/anthropic-cli/internal/apiform"
-	"github.com/stainless-sdks/anthropic-cli/internal/apiquery"
-	"github.com/stainless-sdks/anthropic-cli/internal/debugmiddleware"
-	"github.com/stainless-sdks/anthropic-cli/internal/requestflag"
 
 	"github.com/goccy/go-yaml"
 	"github.com/urfave/cli/v3"

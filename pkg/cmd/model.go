@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/anthropics/anthropic-cli/internal/apiquery"
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/stainless-sdks/anthropic-cli/internal/apiquery"
-	"github.com/stainless-sdks/anthropic-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )

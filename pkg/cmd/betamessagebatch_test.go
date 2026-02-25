@@ -5,8 +5,8 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/anthropic-cli/internal/mocktest"
-	"github.com/stainless-sdks/anthropic-cli/internal/requestflag"
+	"github.com/anthropics/anthropic-cli/internal/mocktest"
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 )
 
 func TestBetaMessagesBatchesCreate(t *testing.T) {

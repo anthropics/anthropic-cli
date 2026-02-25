@@ -2,6 +2,8 @@
 
 The official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api).
 
+<!-- x-release-please-start-version -->
+
 ## Installation
 
 ### Installing with Homebrew
@@ -15,7 +17,7 @@ brew install anthropics/tap/ant
 To test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.22 or later installed.
 
 ```sh
-go install 'github.com/stainless-sdks/anthropic-cli/cmd/ant@latest'
+go install 'github.com/anthropics/anthropic-cli/cmd/ant@latest'
 ```
 
 Once you have run `go install`, the binary is placed in your Go bin directory:
@@ -29,6 +31,8 @@ If commands aren't found after installation, add the Go bin directory to your PA
 # Add to your shell profile (.zshrc, .bashrc, etc.)
 export PATH="$PATH:$(go env GOPATH)/bin"
 ```
+
+<!-- x-release-please-end -->
 
 ### Running Locally
 

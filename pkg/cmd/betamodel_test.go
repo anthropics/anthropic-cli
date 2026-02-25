@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/anthropic-cli/internal/mocktest"
+	"github.com/anthropics/anthropic-cli/internal/mocktest"
 )
 
 func TestBetaModelsRetrieve(t *testing.T) {

@@ -9,7 +9,7 @@ on:
 jobs:
   release:
     name: release
-    if: github.ref == 'refs/heads/main' && github.repository == 'stainless-sdks/anthropic-cli'
+    if: github.ref == 'refs/heads/main' && github.repository == 'anthropics/anthropic-cli'
     runs-on: ubuntu-latest
     environment: production-release
     permissions:
