@@ -75,7 +75,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Whether to incrementally stream the response using server-sent events.\n\nSee [streaming](https://docs.claude.com/en/api/messages-streaming) for details.",
 			BodyPath: "stream",
 		},
-		&requestflag.Flag[[]map[string]any]{
+		&requestflag.Flag[any]{
 			Name:     "system",
 			Usage:    "System prompt.\n\nA system prompt is a way of providing context and instructions to Claude, such as specifying a particular goal or role. See our [guide to system prompts](https://docs.claude.com/en/docs/system-prompts).",
 			BodyPath: "system",
