@@ -1,4 +1,4 @@
-module github.com/stainless-sdks/anthropic-cli
+module github.com/anthropics/anthropic-cli
 
 go 1.25
 

@@ -14,8 +14,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/anthropics/anthropic-cli/internal/jsonview"
 	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/stainless-sdks/anthropic-cli/internal/jsonview"
 
 	"github.com/charmbracelet/x/term"
 	"github.com/itchyny/json2yaml"
