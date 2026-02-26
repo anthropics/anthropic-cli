@@ -217,13 +217,16 @@ func flagOptions(
 	flagContents := requestflag.ExtractRequestContents(cmd)
 
 	var bodyData any
+	var pipeData []byte
 	if isInputPiped() && !stdinInUse {
 		var err error
-		pipeData, err := io.ReadAll(os.Stdin)
+		pipeData, err = io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err
 		}
+	}
 
+	if len(pipeData) > 0 {
 		if err := yaml.Unmarshal(pipeData, &bodyData); err == nil {
 			if bodyMap, ok := bodyData.(map[string]any); ok {
 				if flagMap, ok := flagContents.Body.(map[string]any); ok {
