@@ -5,10 +5,15 @@ BINARY_NAME="ant"
 DIST_DIR="dist"
 FILENAME="dist.zip"
 
-mapfile -d '' files < <(
-  find "$DIST_DIR" -regextype posix-extended -type f \
-    -regex ".*/[^/]*(amd64|arm64)[^/]*/${BINARY_NAME}(\\.exe)?$" -print0
-)
+files=()
+while IFS= read -r -d '' file; do
+  files+=("$file")
+done < <(find "$DIST_DIR" -type f \( \
+  -path "*amd64*/$BINARY_NAME" -o \
+  -path "*arm64*/$BINARY_NAME" -o \
+  -path "*amd64*/${BINARY_NAME}.exe" -o \
+  -path "*arm64*/${BINARY_NAME}.exe" \
+  \) -print0)
 
 if [[ ${#files[@]} -eq 0 ]]; then
   echo -e "\033[31mNo binaries found for packaging.\033[0m"
@@ -20,7 +25,8 @@ rm -f "${DIST_DIR}/${FILENAME}"
 while IFS= read -r -d '' dir; do
   printf "Remove the quarantine attribute before running the executable:\n\nxattr -d com.apple.quarantine %s\n" \
     "$BINARY_NAME" >"${dir}/README.txt"
-done < <(find "$DIST_DIR" -type d -name '*macos*' -print0)
+  files+=("${dir}/README.txt")
+done < <(find "$DIST_DIR" -type d -path '*macos*' -print0)
 
 relative_files=()
 for file in "${files[@]}"; do
@@ -46,7 +52,7 @@ UPLOAD_RESPONSE=$(curl -v -X PUT \
 
 if echo "$UPLOAD_RESPONSE" | grep -q "HTTP/[0-9.]* 200"; then
   echo -e "\033[32mUploaded build to Stainless storage.\033[0m"
-  echo -e "\033[32mInstallation: Download and unzip: 'https://pkg.stainless.com/s/anthropic-cli/$SHA/$FILENAME'. On macOS, run `xattr -d com.apple.quarantine {executable name}.`\033[0m"
+  echo -e "\033[32mInstallation: Download and unzip: 'https://pkg.stainless.com/s/anthropic-cli/$SHA/$FILENAME'. On macOS, run 'xattr -d com.apple.quarantine {executable name}'.\033[0m"
 else
   echo -e "\033[31mFailed to upload artifact.\033[0m"
   exit 1
