@@ -13,6 +13,7 @@ func TestMessagesCreate(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"messages", "create",
+		"--api-key", "string",
 		"--max-tokens", "1024",
 		"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 		"--model", "claude-opus-4-6",
@@ -68,6 +69,7 @@ func TestMessagesCountTokens(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"messages", "count-tokens",
+		"--api-key", "string",
 		"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 		"--model", "claude-opus-4-6",
 		"--cache-control", "{type: ephemeral, ttl: 5m}",

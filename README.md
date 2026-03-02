@@ -53,30 +53,25 @@ ant [resource] <command> [flags...]
 
 ```sh
 ant messages create \
+  --api-key my-anthropic-api-key \
   --max-tokens 1024 \
-  --message '{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}' \
-  --model claude-sonnet-4-5-20250929 \
-  --cache-control '{type: ephemeral, ttl: 5m}' \
-  --container container \
-  --inference-geo inference_geo \
-  --metadata '{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}' \
-  --output-config '{effort: low, format: {schema: {foo: bar}, type: json_schema}}' \
-  --service-tier auto \
-  --stop-sequence string \
-  --stream false \
-  --system "{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}" \
-  --temperature 1 \
-  --thinking '{budget_tokens: 1024, type: enabled}' \
-  --tool-choice '{type: auto, disable_parallel_tool_use: true}' \
-  --tool '{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}' \
-  --top-k 5 \
-  --top-p 0.7
+  --message '{content: [{text: x, type: text}], role: user}' \
+  --model claude-sonnet-4-5-20250929
 ```
 
 For details about specific commands, use the `--help` flag.
 
-### Global Flags
+### Environment variables
 
+| Environment variable   | Required | Default value |
+| ---------------------- | -------- | ------------- |
+| `ANTHROPIC_API_KEY`    | no       | `null`        |
+| `ANTHROPIC_AUTH_TOKEN` | no       | `null`        |
+
+### Global flags
+
+- `--api-key` (can also be set with `ANTHROPIC_API_KEY` env var)
+- `--auth-token` (can also be set with `ANTHROPIC_AUTH_TOKEN` env var)
 - `--help` - Show command line usage
 - `--debug` - Enable debug logging (includes HTTP request/response details)
 - `--version`, `-v` - Show the CLI version

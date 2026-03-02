@@ -13,6 +13,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:skills", "create",
+		"--api-key", "string",
 		"--display-title", "display_title",
 		"--file", "[null]",
 		"--beta", "message-batches-2024-09-24",
@@ -23,6 +24,7 @@ func TestBetaSkillsRetrieve(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:skills", "retrieve",
+		"--api-key", "string",
 		"--skill-id", "skill_id",
 		"--beta", "message-batches-2024-09-24",
 	)
@@ -32,6 +34,7 @@ func TestBetaSkillsList(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:skills", "list",
+		"--api-key", "string",
 		"--limit", "0",
 		"--page", "page",
 		"--source", "source",
@@ -43,6 +46,7 @@ func TestBetaSkillsDelete(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:skills", "delete",
+		"--api-key", "string",
 		"--skill-id", "skill_id",
 		"--beta", "message-batches-2024-09-24",
 	)

@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/anthropics/anthropic-cli/internal/autocomplete"
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 	docs "github.com/urfave/cli-docs/v3"
 	"github.com/urfave/cli/v3"
 )
@@ -65,6 +66,14 @@ func init() {
 			&cli.StringFlag{
 				Name:  "transform-error",
 				Usage: "The GJSON transformation for errors.",
+			},
+			&requestflag.Flag[string]{
+				Name:    "api-key",
+				Sources: cli.EnvVars("ANTHROPIC_API_KEY"),
+			},
+			&requestflag.Flag[string]{
+				Name:    "auth-token",
+				Sources: cli.EnvVars("ANTHROPIC_AUTH_TOKEN"),
 			},
 		},
 		Commands: []*cli.Command{
@@ -145,6 +154,7 @@ func init() {
 				Commands: []*cli.Command{
 					&betaFilesList,
 					&betaFilesDelete,
+					&betaFilesDownload,
 					&betaFilesRetrieveMetadata,
 					&betaFilesUpload,
 				},

@@ -13,6 +13,7 @@ func TestCompletionsCreate(t *testing.T) {
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"completions", "create",
+		"--api-key", "string",
 		"--max-tokens-to-sample", "256",
 		"--model", "claude-opus-4-6",
 		"--prompt", "\n\nHuman: Hello, world!\n\nAssistant:",

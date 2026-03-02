@@ -20,16 +20,17 @@ type Flag[
 		[]float64 | []int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue |
 		string | float64 | int64 | bool,
 ] struct {
-	Name        string        // name of the flag
-	Category    string        // category of the flag, if any
-	DefaultText string        // default text of the flag for usage purposes
-	HideDefault bool          // whether to hide the default value in output
-	Usage       string        // usage string for help output
-	Required    bool          // whether the flag is required or not
-	Hidden      bool          // whether to hide the flag in help output
-	Default     T             // default value for this flag if not set by from any source
-	Aliases     []string      // aliases that are allowed for this flag
-	Validator   func(T) error // custom function to validate this flag value
+	Name        string               // name of the flag
+	Category    string               // category of the flag, if any
+	DefaultText string               // default text of the flag for usage purposes
+	HideDefault bool                 // whether to hide the default value in output
+	Usage       string               // usage string for help output
+	Sources     cli.ValueSourceChain // sources to load flag value from
+	Required    bool                 // whether the flag is required or not
+	Hidden      bool                 // whether to hide the flag in help output
+	Default     T                    // default value for this flag if not set by from any source
+	Aliases     []string             // aliases that are allowed for this flag
+	Validator   func(T) error        // custom function to validate this flag value
 
 	QueryPath  string // location in the request query string to put this flag's value
 	HeaderPath string // location in the request header to put this flag's value
@@ -127,6 +128,22 @@ func (f *Flag[T]) PreParse() error {
 }
 
 func (f *Flag[T]) PostParse() error {
+	if !f.hasBeenSet {
+		if val, source, found := f.Sources.LookupWithSource(); found {
+			if val != "" || reflect.TypeOf(f.value).Kind() == reflect.String {
+				if err := f.Set(f.Name, val); err != nil {
+					return fmt.Errorf(
+						"could not parse %[1]q as %[2]T value from %[3]s for flag %[4]s: %[5]s",
+						val, f.value, source, f.Name, err,
+					)
+				}
+			} else if val == "" && reflect.TypeOf(f.value).Kind() == reflect.Bool {
+				_ = f.Set(f.Name, "false")
+			}
+
+			f.hasBeenSet = true
+		}
+	}
 	return nil
 }
 
@@ -230,8 +247,9 @@ func (f *Flag[T]) GetDefaultText() string {
 	return f.DefaultText
 }
 
+// GetEnvVars returns the env vars for this flag
 func (f *Flag[T]) GetEnvVars() []string {
-	return nil
+	return f.Sources.EnvKeys()
 }
 
 func (f *Flag[T]) IsDefaultVisible() bool {

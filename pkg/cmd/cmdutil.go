@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"net/http/httputil"
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -34,6 +36,8 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		option.WithHeader("X-Stainless-Package-Version", Version),
 		option.WithHeader("X-Stainless-Runtime", "cli"),
 		option.WithHeader("X-Stainless-CLI-Command", cmd.FullName()),
+		option.WithAPIKey(cmd.String("api-key")),
+		option.WithAuthToken(cmd.String("auth-token")),
 	}
 
 	// Override base URL if the --base-url flag is provided
@@ -151,6 +155,108 @@ func streamToStdout(generateOutput func(w *os.File) error) error {
 		return nil
 	}
 	return err
+}
+
+func writeBinaryResponse(response *http.Response, outfile string) (string, error) {
+	defer response.Body.Close()
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return "", err
+	}
+	switch outfile {
+	case "-", "/dev/stdout":
+		_, err := os.Stdout.Write(body)
+		return "", err
+	case "":
+		// If output file is unspecified, then print to stdout for plain text or
+		// if stdout is not a terminal:
+		if !isTerminal(os.Stdout) || isUTF8TextFile(body) {
+			_, err := os.Stdout.Write(body)
+			return "", err
+		}
+
+		// If response has a suggested filename in the content-disposition
+		// header, then use that (with an optional suffix to ensure uniqueness):
+		file, err := createDownloadFile(response, body)
+		if err != nil {
+			return "", err
+		}
+		defer file.Close()
+		if _, err := file.Write(body); err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("Wrote output to: %s", file.Name()), nil
+	default:
+		if err := os.WriteFile(outfile, body, 0644); err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("Wrote output to: %s", outfile), nil
+	}
+}
+
+// Return a writable file handle to a new file, which attempts to choose a good filename
+// based on the Content-Disposition header or sniffing the MIME filetype of the response.
+func createDownloadFile(response *http.Response, data []byte) (*os.File, error) {
+	filename := "file"
+	// If the header provided an output filename, use that
+	disp := response.Header.Get("Content-Disposition")
+	_, params, err := mime.ParseMediaType(disp)
+	if err == nil {
+		if dispFilename, ok := params["filename"]; ok {
+			// Only use the last path component to prevent directory traversal
+			filename = filepath.Base(dispFilename)
+			// Try to create the file with exclusive flag to avoid race conditions
+			file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+			if err == nil {
+				return file, nil
+			}
+		}
+	}
+
+	// If file already exists, create a unique filename using CreateTemp
+	ext := filepath.Ext(filename)
+	if ext == "" {
+		ext = guessExtension(data)
+	}
+	base := strings.TrimSuffix(filename, ext)
+	return os.CreateTemp(".", base+"-*"+ext)
+}
+
+func guessExtension(data []byte) string {
+	ct := http.DetectContentType(data)
+
+	// Prefer common extensions over obscure ones
+	switch ct {
+	case "application/gzip":
+		return ".gz"
+	case "application/pdf":
+		return ".pdf"
+	case "application/zip":
+		return ".zip"
+	case "audio/mpeg":
+		return ".mp3"
+	case "image/bmp":
+		return ".bmp"
+	case "image/gif":
+		return ".gif"
+	case "image/jpeg":
+		return ".jpg"
+	case "image/png":
+		return ".png"
+	case "image/webp":
+		return ".webp"
+	case "video/mp4":
+		return ".mp4"
+	}
+
+	exts, err := mime.ExtensionsByType(ct)
+	if err == nil && len(exts) > 0 {
+		return exts[0]
+	} else if isUTF8TextFile(data) {
+		return ".txt"
+	} else {
+		return ".bin"
+	}
 }
 
 func shouldUseColors(w io.Writer) bool {
