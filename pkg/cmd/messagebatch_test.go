@@ -68,7 +68,6 @@ func TestMessagesBatchesCancel(t *testing.T) {
 }
 
 func TestMessagesBatchesResults(t *testing.T) {
-	t.Skip("Mock server doesn't support application/x-jsonl responses")
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"messages:batches", "results",

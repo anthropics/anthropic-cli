@@ -31,7 +31,6 @@ func TestBetaFilesDelete(t *testing.T) {
 }
 
 func TestBetaFilesDownload(t *testing.T) {
-	t.Skip("Mock server doesn't support application/binary responses")
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:files", "download",
