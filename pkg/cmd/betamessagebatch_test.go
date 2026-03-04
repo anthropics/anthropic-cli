@@ -10,7 +10,6 @@ import (
 )
 
 func TestBetaMessagesBatchesCreate(t *testing.T) {
-	t.Skip("prism validates based on the non-beta endpoint")
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:messages:batches", "create",

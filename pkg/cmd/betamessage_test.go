@@ -10,7 +10,6 @@ import (
 )
 
 func TestBetaMessagesCreate(t *testing.T) {
-	t.Skip("prism validates based on the non-beta endpoint")
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:messages", "create",
@@ -82,7 +81,6 @@ func TestBetaMessagesCreate(t *testing.T) {
 }
 
 func TestBetaMessagesCountTokens(t *testing.T) {
-	t.Skip("prism validates based on the non-beta endpoint")
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:messages", "count-tokens",

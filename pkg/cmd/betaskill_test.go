@@ -9,7 +9,7 @@ import (
 )
 
 func TestBetaSkillsCreate(t *testing.T) {
-	t.Skip("prism binary unsupported")
+	t.Skip("CLI multipart serialization does not handle complex array elements (e.g. --file [null])")
 	mocktest.TestRunMockTestWithFlags(
 		t,
 		"beta:skills", "create",
