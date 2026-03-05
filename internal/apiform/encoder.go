@@ -101,6 +101,15 @@ func (e *encoder) encodeArray(key string, val reflect.Value, writer *multipart.W
 		var values []string
 		for i := 0; i < val.Len(); i++ {
 			item := val.Index(i)
+			if (item.Kind() == reflect.Pointer || item.Kind() == reflect.Interface) && item.IsNil() {
+				// Null values are sent as an empty string
+				values = append(values, "")
+				continue
+			}
+			// If item is an interface, reduce it to the concrete type
+			if item.Kind() == reflect.Interface {
+				item = item.Elem()
+			}
 			var strValue string
 			switch item.Kind() {
 			case reflect.String:
