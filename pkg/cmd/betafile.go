@@ -41,6 +41,10 @@ var betaFilesList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
 	},
 	Action:          handleBetaFilesList,
 	HideHelpCommand: true,
@@ -166,7 +170,11 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(os.Stdout, "beta:files list", obj, format, transform)
 	} else {
 		iter := client.Beta.Files.ListAutoPaging(ctx, params, options...)
-		return ShowJSONIterator(os.Stdout, "beta:files list", iter, format, transform)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(os.Stdout, "beta:files list", iter, format, transform, maxItems)
 	}
 }
 

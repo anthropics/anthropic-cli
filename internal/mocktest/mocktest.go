@@ -1,6 +1,7 @@
 package mocktest
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net"
@@ -14,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -54,8 +56,14 @@ func restoreNetwork(origClient, origDefault http.RoundTripper) {
 }
 
 // TestRunMockTestWithFlags runs a test against a mock server with the provided
-// CLI flags and ensures it succeeds
-func TestRunMockTestWithFlags(t *testing.T, flags ...string) {
+// CLI args and ensures it succeeds
+func TestRunMockTestWithFlags(t *testing.T, args ...string) {
+	TestRunMockTestWithPipeAndFlags(t, nil, args...)
+}
+
+// TestRunMockTestWithPipeAndFlags runs a test against a mock server with the provided
+// data piped over stdin and CLI args and ensures it succeeds
+func TestRunMockTestWithPipeAndFlags(t *testing.T, pipeData []byte, args ...string) {
 	origClient, origDefault := blockNetworkExceptMockServer()
 	defer restoreNetwork(origClient, origDefault)
 
@@ -71,52 +79,18 @@ func TestRunMockTestWithFlags(t *testing.T, flags ...string) {
 	_, filename, _, ok := runtime.Caller(0)
 	require.True(t, ok, "Could not get current file path")
 	dirPath := filepath.Dir(filename)
-	project := filepath.Join(dirPath, "..", "..", "cmd", "...")
+	project := filepath.Join(dirPath, "..", "..", "cmd", "ant")
 
-	args := []string{"run", project, "--base-url", mockServerURL.String()}
-	args = append(args, flags...)
+	args = append([]string{"run", project, "--base-url", mockServerURL.String()}, args...)
 
-	t.Logf("Testing command: ant %s", strings.Join(args[4:], " "))
+	t.Logf("Testing command: go run ./cmd/ant %s", strings.Join(args[2:], " "))
 
-	cliCmd := exec.Command("go", args...)
+	cmd := exec.Command("go", args...)
+	cmd.Stdin = bytes.NewReader(pipeData)
+	output, err := cmd.CombinedOutput()
+	assert.NoError(t, err, "Test failed\nError: %v\nOutput: %s", err, output)
 
-	// Pipe the CLI tool's output into `head` so it doesn't hang when simulating
-	// paginated or streamed endpoints. 100 lines of output should be enough to
-	// test that the API endpoint worked, or report back a meaningful amount of
-	// data if something went wrong.
-	headCmd := exec.Command("head", "-n", "100")
-	pipe, err := cliCmd.StdoutPipe()
-	require.NoError(t, err, "Failed to create pipe for CLI command")
-	headCmd.Stdin = pipe
-
-	// Capture `head` output and CLI command stderr outputs:
-	var output strings.Builder
-	headCmd.Stdout = &output
-	headCmd.Stderr = &output
-	cliCmd.Stderr = &output
-
-	// First start `head`, so it's ready for data to come in:
-	err = headCmd.Start()
-	require.NoError(t, err, "Failed to start `head` command")
-
-	// Next start the CLI command so it can pipe data to `head` without
-	// buffering any data in advance:
-	err = cliCmd.Start()
-	require.NoError(t, err, "Failed to start CLI command")
-
-	// Ensure that the stdout pipe is closed as soon as `head` exits, to let the
-	// CLI tool know that no more output is needed and it can stop streaming
-	// test data for streaming/paginated endpoints. This needs to happen before
-	// calling `cliCmd.Wait()`, otherwise there will be a deadlock.
-	err = headCmd.Wait()
-	pipe.Close()
-	require.NoError(t, err, "`head` command finished with an error")
-
-	// Finally, wait for the CLI tool to finish up:
-	err = cliCmd.Wait()
-	require.NoError(t, err, "CLI command failed\n%s", output.String())
-
-	t.Logf("Test passed successfully\nOutput:\n%s", output.String())
+	t.Logf("Test passed successfully\nOutput:\n%s", string(output))
 }
 
 func TestFile(t *testing.T, contents string) string {

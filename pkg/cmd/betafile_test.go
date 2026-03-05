@@ -9,54 +9,70 @@ import (
 )
 
 func TestBetaFilesList(t *testing.T) {
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"beta:files", "list",
-		"--api-key", "string",
-		"--after-id", "after_id",
-		"--before-id", "before_id",
-		"--limit", "1",
-		"--beta", "message-batches-2024-09-24",
-	)
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t, "beta:files", "list",
+			"--api-key", "string",
+			"--max-items", "10",
+			"--after-id", "after_id",
+			"--before-id", "before_id",
+			"--limit", "1",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
 }
 
 func TestBetaFilesDelete(t *testing.T) {
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"beta:files", "delete",
-		"--api-key", "string",
-		"--file-id", "file_id",
-		"--beta", "message-batches-2024-09-24",
-	)
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t, "beta:files", "delete",
+			"--api-key", "string",
+			"--file-id", "file_id",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
 }
 
 func TestBetaFilesDownload(t *testing.T) {
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"beta:files", "download",
-		"--api-key", "string",
-		"--file-id", "file_id",
-		"--beta", "message-batches-2024-09-24",
-		"--output", "/dev/null",
-	)
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t, "beta:files", "download",
+			"--api-key", "string",
+			"--file-id", "file_id",
+			"--beta", "message-batches-2024-09-24",
+			"--output", "/dev/null",
+		)
+	})
 }
 
 func TestBetaFilesRetrieveMetadata(t *testing.T) {
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"beta:files", "retrieve-metadata",
-		"--api-key", "string",
-		"--file-id", "file_id",
-		"--beta", "message-batches-2024-09-24",
-	)
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t, "beta:files", "retrieve-metadata",
+			"--api-key", "string",
+			"--file-id", "file_id",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
 }
 
 func TestBetaFilesUpload(t *testing.T) {
-	mocktest.TestRunMockTestWithFlags(
-		t,
-		"beta:files", "upload",
-		"--api-key", "string",
-		"--file", "...",
-		"--beta", "message-batches-2024-09-24",
-	)
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t, "beta:files", "upload",
+			"--api-key", "string",
+			"--file", "...",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
+
+	t.Run("piping data", func(t *testing.T) {
+		// Test piping YAML data over stdin
+		pipeData := []byte("{}")
+		mocktest.TestRunMockTestWithPipeAndFlags(
+			t, pipeData, "beta:files", "upload",
+			"--api-key", "string",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
 }

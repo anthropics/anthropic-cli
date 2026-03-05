@@ -110,6 +110,40 @@ func ExtractRequestContents(cmd *cli.Command) RequestContents {
 	return res
 }
 
+func GetMissingRequiredFlags(cmd *cli.Command, body any) []cli.Flag {
+	missing := []cli.Flag{}
+	for _, flag := range cmd.Flags {
+		if flag.IsSet() {
+			continue
+		}
+
+		if required, ok := flag.(cli.RequiredFlag); ok && required.IsRequired() {
+			missing = append(missing, flag)
+			continue
+		}
+
+		if r, ok := flag.(RequiredFlagOrStdin); !ok || !r.IsRequiredAsFlagOrStdin() {
+			continue
+		}
+
+		if toSend, ok := flag.(InRequest); ok {
+			if toSend.IsBodyRoot() {
+				if body != nil {
+					continue
+				}
+			} else if bodyPath := toSend.GetBodyPath(); bodyPath != "" {
+				if bodyMap, ok := body.(map[string]any); ok {
+					if _, found := bodyMap[bodyPath]; found {
+						continue
+					}
+				}
+			}
+		}
+		missing = append(missing, flag)
+	}
+	return missing
+}
+
 // Implementation of the cli.Flag interface
 var _ cli.Flag = (*Flag[any])(nil) // Type assertion to ensure interface compliance
 
@@ -221,6 +255,19 @@ func (f *Flag[T]) SetCategory(c string) {
 var _ cli.RequiredFlag = (*Flag[any])(nil) // Type assertion to ensure interface compliance
 
 func (f *Flag[T]) IsRequired() bool {
+	// Intentionally don't use `f.Required`, because request flags may be passed
+	// over stdin as well as by flag.
+	if f.BodyPath != "" || f.BodyRoot {
+		return false
+	}
+	return f.Required
+}
+
+type RequiredFlagOrStdin interface {
+	IsRequiredAsFlagOrStdin() bool
+}
+
+func (f *Flag[T]) IsRequiredAsFlagOrStdin() bool {
 	return f.Required
 }
 

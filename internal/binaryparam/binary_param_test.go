@@ -28,57 +28,32 @@ func TestFileOrStdin(t *testing.T) {
 		require.False(t, stdinInUse)
 	})
 
-	t.Run("WithStdinGlyph", func(t *testing.T) {
-		tempFile := t.TempDir() + "/test_file.txt"
-		require.NoError(t, os.WriteFile(tempFile, []byte(expectedContents), 0600))
+	stdinTests := []struct {
+		testName string
+		path     string
+	}{
+		{"TestEmptyString", ""},
+		{"TestDash", "-"},
+		{"TestDevStdin", "/dev/stdin"},
+		{"TestDevFD0", "/dev/fd/0"},
+	}
+	for _, test := range stdinTests {
+		t.Run(test.testName, func(t *testing.T) {
+			tempFile := t.TempDir() + "/test_file.txt"
+			require.NoError(t, os.WriteFile(tempFile, []byte(expectedContents), 0600))
 
-		stubStdin, err := os.Open(tempFile)
-		require.NoError(t, err)
-		t.Cleanup(func() { require.NoError(t, stubStdin.Close()) })
+			stubStdin, err := os.Open(tempFile)
+			require.NoError(t, err)
+			t.Cleanup(func() { require.NoError(t, stubStdin.Close()) })
 
-		readCloser, stdinInUse, err := FileOrStdin(stubStdin, "-")
-		require.NoError(t, err)
+			readCloser, stdinInUse, err := FileOrStdin(stubStdin, test.path)
+			require.NoError(t, err)
 
-		actualContents, err := io.ReadAll(readCloser)
-		require.NoError(t, err)
-		require.Equal(t, expectedContents, string(actualContents))
+			actualContents, err := io.ReadAll(readCloser)
+			require.NoError(t, err)
+			require.Equal(t, expectedContents, string(actualContents))
 
-		require.True(t, stdinInUse)
-	})
-
-	t.Run("WithDevFD0File", func(t *testing.T) {
-		tempFile := t.TempDir() + "/dev_fd_0"
-		require.NoError(t, os.WriteFile(tempFile, []byte(expectedContents), 0600))
-
-		stubStdin, err := os.Open(tempFile)
-		require.NoError(t, err)
-		t.Cleanup(func() { require.NoError(t, stubStdin.Close()) })
-
-		readCloser, stdinInUse, err := FileOrStdin(stubStdin, "/dev/fd/0")
-		require.NoError(t, err)
-
-		actualContents, err := io.ReadAll(readCloser)
-		require.NoError(t, err)
-		require.Equal(t, expectedContents, string(actualContents))
-
-		require.True(t, stdinInUse)
-	})
-
-	t.Run("WithDevStdinFile", func(t *testing.T) {
-		tempFile := t.TempDir() + "/dev_stdin"
-		require.NoError(t, os.WriteFile(tempFile, []byte(expectedContents), 0600))
-
-		stubStdin, err := os.Open(tempFile)
-		require.NoError(t, err)
-		t.Cleanup(func() { require.NoError(t, stubStdin.Close()) })
-
-		readCloser, stdinInUse, err := FileOrStdin(stubStdin, "/dev/stdin")
-		require.NoError(t, err)
-
-		actualContents, err := io.ReadAll(readCloser)
-		require.NoError(t, err)
-		require.Equal(t, expectedContents, string(actualContents))
-
-		require.True(t, stdinInUse)
-	})
+			require.True(t, stdinInUse)
+		})
+	}
 }
