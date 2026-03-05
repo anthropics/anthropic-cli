@@ -25,11 +25,11 @@ var (
 
 func init() {
 	Command = &cli.Command{
-		Name:    "ant",
-		Usage:   "CLI for the Claude Developer Platform",
-		Suggest: true,
-		Version: Version,
-    ErrWriter: &CommandErrorBuffer,
+		Name:      "ant",
+		Usage:     "CLI for the Claude Developer Platform",
+		Suggest:   true,
+		Version:   Version,
+		ErrWriter: &CommandErrorBuffer,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:  "debug",
