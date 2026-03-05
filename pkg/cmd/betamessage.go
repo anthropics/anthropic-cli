@@ -133,6 +133,10 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
 	},
 	Action:          handleBetaMessagesCreate,
 	HideHelpCommand: true,
@@ -389,7 +393,11 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	transform := cmd.Root().String("transform")
 	if cmd.Bool("stream") {
 		stream := client.Beta.Messages.NewStreaming(ctx, params, options...)
-		return ShowJSONIterator(os.Stdout, "beta:messages create", stream, format, transform)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(os.Stdout, "beta:messages create", stream, format, transform, maxItems)
 	} else {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))

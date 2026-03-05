@@ -42,7 +42,11 @@ func main() {
 				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			}
 		} else {
-			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			if cmd.CommandErrorBuffer.Len() > 0 {
+				os.Stderr.Write(cmd.CommandErrorBuffer.Bytes())
+			} else {
+				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			}
 		}
 		os.Exit(exitCode)
 	}

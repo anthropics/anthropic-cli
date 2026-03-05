@@ -41,6 +41,9 @@ const (
 )
 
 func embedFiles(obj any, embedStyle FileEmbedStyle) (any, error) {
+	if obj == nil {
+		return obj, nil
+	}
 	v := reflect.ValueOf(obj)
 	result, err := embedFilesValue(v, embedStyle)
 	if err != nil {
@@ -207,40 +210,53 @@ func flagOptions(
 
 	// This parameter is true if stdin is already in use to pass a binary parameter by using the special value
 	// "-". In this case, we won't attempt to read it as a JSON/YAML blob for options setting.
-	stdinInUse bool,
+	ignoreStdin bool,
 ) ([]option.RequestOption, error) {
 	var options []option.RequestOption
 	if cmd.Bool("debug") {
 		options = append(options, option.WithMiddleware(debugmiddleware.NewRequestLogger().Middleware()))
 	}
 
-	flagContents := requestflag.ExtractRequestContents(cmd)
+	requestContents := requestflag.ExtractRequestContents(cmd)
 
-	var bodyData any
-	var pipeData []byte
-	if isInputPiped() && !stdinInUse {
-		var err error
-		pipeData, err = io.ReadAll(os.Stdin)
+	if bodyType != ApplicationOctetStream && isInputPiped() && !ignoreStdin {
+		pipeData, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	if len(pipeData) > 0 {
-		if err := yaml.Unmarshal(pipeData, &bodyData); err == nil {
-			if bodyMap, ok := bodyData.(map[string]any); ok {
-				if flagMap, ok := flagContents.Body.(map[string]any); ok {
-					maps.Copy(bodyMap, flagMap)
+		if len(pipeData) > 0 {
+			var bodyData any
+			if err := yaml.Unmarshal(pipeData, &bodyData); err == nil {
+				if bodyMap, ok := bodyData.(map[string]any); ok {
+					if flagMap, ok := requestContents.Body.(map[string]any); ok {
+						maps.Copy(bodyMap, flagMap)
+						requestContents.Body = bodyMap
+					} else {
+						bodyData = requestContents.Body
+					}
+				} else if flagMap, ok := requestContents.Body.(map[string]any); ok && len(flagMap) > 0 {
+					return nil, fmt.Errorf("Cannot merge flags with a body that is not a map: %v", bodyData)
 				} else {
-					bodyData = flagContents.Body
+					requestContents.Body = bodyData
 				}
-			} else if flagMap, ok := flagContents.Body.(map[string]any); ok && len(flagMap) > 0 {
-				return nil, fmt.Errorf("Cannot merge flags with a body that is not a map: %v", bodyData)
 			}
 		}
-	} else {
-		// No piped input, just use body flag values as a map
-		bodyData = flagContents.Body
+	}
+
+	if missingFlags := requestflag.GetMissingRequiredFlags(cmd, requestContents.Body); len(missingFlags) > 0 {
+		var buf bytes.Buffer
+		cli.HelpPrinter(&buf, cli.SubcommandHelpTemplate, cmd)
+		usage := buf.String()
+		if len(missingFlags) == 1 {
+			return nil, fmt.Errorf("%sRequired flag %q not set", usage, missingFlags[0].Names()[0])
+		} else {
+			names := []string{}
+			for _, flag := range missingFlags {
+				names = append(names, flag.Names()[0])
+			}
+			return nil, fmt.Errorf("%sRequired flags %q not set", usage, strings.Join(names, ", "))
+		}
 	}
 
 	// Embed files passed as "@file.jpg" in the request body, headers, and query:
@@ -248,19 +264,22 @@ func flagOptions(
 	if bodyType == ApplicationOctetStream || bodyType == MultipartFormEncoded {
 		embedStyle = EmbedIOReader
 	}
-	bodyData, err := embedFiles(bodyData, embedStyle)
-	if err != nil {
-		return nil, err
-	}
-	if headersWithFiles, err := embedFiles(flagContents.Headers, EmbedText); err != nil {
+
+	if embedded, err := embedFiles(requestContents.Body, embedStyle); err != nil {
 		return nil, err
 	} else {
-		flagContents.Headers = headersWithFiles.(map[string]any)
+		requestContents.Body = embedded
 	}
-	if queriesWithFiles, err := embedFiles(flagContents.Queries, EmbedText); err != nil {
+
+	if headersWithFiles, err := embedFiles(requestContents.Headers, EmbedText); err != nil {
 		return nil, err
 	} else {
-		flagContents.Queries = queriesWithFiles.(map[string]any)
+		requestContents.Headers = headersWithFiles.(map[string]any)
+	}
+	if queriesWithFiles, err := embedFiles(requestContents.Queries, EmbedText); err != nil {
+		return nil, err
+	} else {
+		requestContents.Queries = queriesWithFiles.(map[string]any)
 	}
 
 	querySettings := apiquery.QuerySettings{
@@ -269,7 +288,7 @@ func flagOptions(
 	}
 
 	// Add query parameters:
-	if values, err := apiquery.MarshalWithSettings(flagContents.Queries, querySettings); err != nil {
+	if values, err := apiquery.MarshalWithSettings(requestContents.Queries, querySettings); err != nil {
 		return nil, err
 	} else {
 		for k, vs := range values {
@@ -289,7 +308,7 @@ func flagOptions(
 		NestedFormat: apiquery.NestedQueryFormatDots,
 		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
 	}
-	if values, err := apiquery.MarshalWithSettings(flagContents.Headers, headerSettings); err != nil {
+	if values, err := apiquery.MarshalWithSettings(requestContents.Headers, headerSettings); err != nil {
 		return nil, err
 	} else {
 		for k, vs := range values {
@@ -312,9 +331,9 @@ func flagOptions(
 		writer := multipart.NewWriter(buf)
 
 		// For multipart/form-encoded, we need a map structure
-		bodyMap, ok := bodyData.(map[string]any)
+		bodyMap, ok := requestContents.Body.(map[string]any)
 		if !ok {
-			return nil, fmt.Errorf("Cannot send a non-map value to a form-encoded endpoint: %v\n", bodyData)
+			return nil, fmt.Errorf("Cannot send a non-map value to a form-encoded endpoint: %v\n", requestContents.Body)
 		}
 		encodingFormat := apiform.FormatComma
 		if err := apiform.MarshalWithSettings(bodyMap, writer, encodingFormat); err != nil {
@@ -326,19 +345,25 @@ func flagOptions(
 		options = append(options, option.WithRequestBody(writer.FormDataContentType(), buf))
 
 	case ApplicationJSON:
-		bodyBytes, err := json.Marshal(bodyData)
+		bodyBytes, err := json.Marshal(requestContents.Body)
 		if err != nil {
 			return nil, err
 		}
 		options = append(options, option.WithRequestBody("application/json", bodyBytes))
 
 	case ApplicationOctetStream:
-		if bodyBytes, ok := bodyData.([]byte); ok {
+		// If there is a body root parameter, that will handle setting the request body, we don't need to do it here.
+		for _, flag := range cmd.Flags {
+			if toSend, ok := flag.(requestflag.InRequest); ok && toSend.IsBodyRoot() {
+				return options, nil
+			}
+		}
+		if bodyBytes, ok := requestContents.Body.([]byte); ok {
 			options = append(options, option.WithRequestBody("application/octet-stream", bodyBytes))
-		} else if bodyStr, ok := bodyData.(string); ok {
+		} else if bodyStr, ok := requestContents.Body.(string); ok {
 			options = append(options, option.WithRequestBody("application/octet-stream", []byte(bodyStr)))
 		} else {
-			return nil, fmt.Errorf("Unsupported body for application/octet-stream: %v", bodyData)
+			return nil, fmt.Errorf("Unsupported body for application/octet-stream: %v", requestContents.Body)
 		}
 
 	default:

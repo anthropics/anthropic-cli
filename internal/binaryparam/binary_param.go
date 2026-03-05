@@ -17,7 +17,7 @@ func FileOrStdin(stdin io.ReadCloser, path string) (io.ReadCloser, bool, error) 
 	// When the special glyph "-" is used, read from stdin. Although probably less necessary, also support
 	// special Unix files that refer to stdin.
 	switch path {
-	case stdinGlyph, "/dev/fd/0", "/dev/stdin":
+	case "", stdinGlyph, "/dev/fd/0", "/dev/stdin":
 		return stdin, true, nil
 	}
 

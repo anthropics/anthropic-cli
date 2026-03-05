@@ -110,6 +110,10 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Use nucleus sampling.\n\nIn nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by `top_p`. You should either alter `temperature` or `top_p`, but not both.\n\nRecommended for advanced use cases only. You usually only need to use `temperature`.",
 			BodyPath: "top_p",
 		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
 	},
 	Action:          handleMessagesCreate,
 	HideHelpCommand: true,
@@ -263,7 +267,11 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	transform := cmd.Root().String("transform")
 	if cmd.Bool("stream") {
 		stream := client.Messages.NewStreaming(ctx, params, options...)
-		return ShowJSONIterator(os.Stdout, "messages create", stream, format, transform)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(os.Stdout, "messages create", stream, format, transform, maxItems)
 	} else {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))

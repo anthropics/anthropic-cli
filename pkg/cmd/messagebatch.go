@@ -80,6 +80,10 @@ var messagesBatchesList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
 	},
 	Action:          handleMessagesBatchesList,
 	HideHelpCommand: true,
@@ -124,6 +128,10 @@ var messagesBatchesResults = cli.Command{
 			Name:     "message-batch-id",
 			Usage:    "ID of the Message Batch.",
 			Required: true,
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
 	Action:          handleMessagesBatchesResults,
@@ -233,7 +241,11 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(os.Stdout, "messages:batches list", obj, format, transform)
 	} else {
 		iter := client.Messages.Batches.ListAutoPaging(ctx, params, options...)
-		return ShowJSONIterator(os.Stdout, "messages:batches list", iter, format, transform)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(os.Stdout, "messages:batches list", iter, format, transform, maxItems)
 	}
 }
 
@@ -332,5 +344,9 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	transform := cmd.Root().String("transform")
 	stream := client.Messages.Batches.ResultsStreaming(ctx, cmd.Value("message-batch-id").(string), options...)
-	return ShowJSONIterator(os.Stdout, "messages:batches results", stream, format, transform)
+	maxItems := int64(-1)
+	if cmd.IsSet("max-items") {
+		maxItems = cmd.Value("max-items").(int64)
+	}
+	return ShowJSONIterator(os.Stdout, "messages:batches results", stream, format, transform, maxItems)
 }
