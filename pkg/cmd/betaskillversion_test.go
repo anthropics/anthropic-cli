@@ -15,7 +15,7 @@ func TestBetaSkillsVersionsCreate(t *testing.T) {
 			t, "beta:skills:versions", "create",
 			"--api-key", "string",
 			"--skill-id", "skill_id",
-			"--file", "[null]",
+			"--file", "[Example data]",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -24,7 +24,7 @@ func TestBetaSkillsVersionsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"files:\n" +
-			"  - null\n")
+			"  - Example data\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData, "beta:skills:versions", "create",
 			"--api-key", "string",

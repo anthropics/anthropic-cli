@@ -15,7 +15,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 			t, "beta:skills", "create",
 			"--api-key", "string",
 			"--display-title", "display_title",
-			"--file", "[null]",
+			"--file", "[Example data]",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -25,7 +25,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"display_title: display_title\n" +
 			"files:\n" +
-			"  - null\n")
+			"  - Example data\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData, "beta:skills", "create",
 			"--api-key", "string",

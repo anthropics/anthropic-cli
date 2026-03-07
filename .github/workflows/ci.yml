@@ -61,14 +61,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get GitHub OIDC Token
-        if: github.repository == 'stainless-sdks/anthropic-cli'
+        if: |-
+          github.repository == 'stainless-sdks/anthropic-cli' &&
+          !startsWith(github.ref, 'refs/heads/stl/')
         id: github-oidc
         uses: actions/github-script@v8
         with:
           script: core.setOutput('github_token', await core.getIDToken());
 
       - name: Upload tarball
-        if: github.repository == 'stainless-sdks/anthropic-cli'
+        if: |-
+          github.repository == 'stainless-sdks/anthropic-cli' &&
+          !startsWith(github.ref, 'refs/heads/stl/')
         env:
           URL: https://pkg.stainless.com/s
           AUTH: ${{ steps.github-oidc.outputs.github_token }}
