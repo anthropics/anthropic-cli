@@ -227,19 +227,20 @@ func flagOptions(
 
 		if len(pipeData) > 0 {
 			var bodyData any
-			if err := yaml.Unmarshal(pipeData, &bodyData); err == nil {
-				if bodyMap, ok := bodyData.(map[string]any); ok {
-					if flagMap, ok := requestContents.Body.(map[string]any); ok {
-						maps.Copy(bodyMap, flagMap)
-						requestContents.Body = bodyMap
-					} else {
-						bodyData = requestContents.Body
-					}
-				} else if flagMap, ok := requestContents.Body.(map[string]any); ok && len(flagMap) > 0 {
-					return nil, fmt.Errorf("Cannot merge flags with a body that is not a map: %v", bodyData)
+			if err := yaml.Unmarshal(pipeData, &bodyData); err != nil {
+				return nil, fmt.Errorf("Failed to parse piped data as YAML/JSON:\n%w", err)
+			}
+			if bodyMap, ok := bodyData.(map[string]any); ok {
+				if flagMap, ok := requestContents.Body.(map[string]any); ok {
+					maps.Copy(bodyMap, flagMap)
+					requestContents.Body = bodyMap
 				} else {
-					requestContents.Body = bodyData
+					bodyData = requestContents.Body
 				}
+			} else if flagMap, ok := requestContents.Body.(map[string]any); ok && len(flagMap) > 0 {
+				return nil, fmt.Errorf("Cannot merge flags with a body that is not a map: %v", bodyData)
+			} else {
+				requestContents.Body = bodyData
 			}
 		}
 	}
