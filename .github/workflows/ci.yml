@@ -12,6 +12,9 @@ on:
       - 'stl-preview-head/**'
       - 'stl-preview-base/**'
 
+env:
+  GOPRIVATE: github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go
+
 jobs:
   lint:
     timeout-minutes: 10
@@ -22,10 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup go
-        uses: actions/setup-go@v5
+      - uses: ./.github/actions/setup-go
         with:
-          go-version-file: ./go.mod
+          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+
+      - name: Link staging branch
+        if: github.repository == 'stainless-sdks/anthropic-cli'
+        run: |
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}'
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -44,10 +51,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup go
-        uses: actions/setup-go@v5
+      - uses: ./.github/actions/setup-go
         with:
-          go-version-file: ./go.mod
+          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+
+      - name: Link staging branch
+        if: github.repository == 'stainless-sdks/anthropic-cli'
+        run: |
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}'
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -135,10 +146,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup go
-        uses: actions/setup-go@v5
+      - uses: ./.github/actions/setup-go
         with:
-          go-version-file: ./go.mod
+          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+
+      - name: Link staging branch
+        if: github.repository == 'stainless-sdks/anthropic-cli'
+        run: |
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}'
 
       - name: Bootstrap
         run: ./scripts/bootstrap
