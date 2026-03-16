@@ -28,7 +28,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--stream=false",
 			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--temperature", "1",
-			"--thinking", "{budget_tokens: 1024, type: enabled}",
+			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
@@ -61,7 +61,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--stream=false",
 			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--temperature", "1",
-			"--thinking", "{budget_tokens: 1024, type: enabled}",
+			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
@@ -121,8 +121,8 @@ func TestMessagesCreate(t *testing.T) {
 			"        type: char_location\n" +
 			"temperature: 1\n" +
 			"thinking:\n" +
-			"  budget_tokens: 1024\n" +
-			"  type: enabled\n" +
+			"  type: adaptive\n" +
+			"  display: summarized\n" +
 			"tool_choice:\n" +
 			"  type: auto\n" +
 			"  disable_parallel_tool_use: true\n" +
@@ -167,7 +167,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}}",
 			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
-			"--thinking", "{budget_tokens: 1024, type: enabled}",
+			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 		)
@@ -189,7 +189,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"--output-config.effort", "low",
 			"--output-config.format", "{schema: {foo: bar}, type: json_schema}",
 			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
-			"--thinking", "{budget_tokens: 1024, type: enabled}",
+			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 		)
@@ -237,8 +237,8 @@ func TestMessagesCountTokens(t *testing.T) {
 			"        start_char_index: 0\n" +
 			"        type: char_location\n" +
 			"thinking:\n" +
-			"  budget_tokens: 1024\n" +
-			"  type: enabled\n" +
+			"  type: adaptive\n" +
+			"  display: summarized\n" +
 			"tool_choice:\n" +
 			"  type: auto\n" +
 			"  disable_parallel_tool_use: true\n" +
