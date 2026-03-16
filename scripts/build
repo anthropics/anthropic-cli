@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")/.."
+
+# Mark the necessary Go modules as private to avoid Go's proxy
+export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go"
 
 echo "==> Building ant"
 go build ./cmd/ant
