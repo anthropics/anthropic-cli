@@ -11,8 +11,9 @@ import (
 func TestBetaModelsRetrieve(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:models", "retrieve",
+			t,
 			"--api-key", "string",
+			"beta:models", "retrieve",
 			"--model-id", "model_id",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -22,8 +23,9 @@ func TestBetaModelsRetrieve(t *testing.T) {
 func TestBetaModelsList(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:models", "list",
+			t,
 			"--api-key", "string",
+			"beta:models", "list",
 			"--max-items", "10",
 			"--after-id", "after_id",
 			"--before-id", "before_id",

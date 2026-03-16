@@ -12,8 +12,9 @@ import (
 func TestMessagesCreate(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "messages", "create",
+			t,
 			"--api-key", "string",
+			"messages", "create",
 			"--max-items", "10",
 			"--max-tokens", "1024",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
@@ -42,8 +43,9 @@ func TestMessagesCreate(t *testing.T) {
 
 		// Alternative argument passing style using inner flags
 		mocktest.TestRunMockTestWithFlags(
-			t, "messages", "create",
+			t,
 			"--api-key", "string",
+			"messages", "create",
 			"--max-items", "10",
 			"--max-tokens", "1024",
 			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
@@ -150,8 +152,9 @@ func TestMessagesCreate(t *testing.T) {
 			"top_k: 5\n" +
 			"top_p: 0.7\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
-			t, pipeData, "messages", "create",
+			t, pipeData,
 			"--api-key", "string",
+			"messages", "create",
 			"--max-items", "10",
 		)
 	})
@@ -160,8 +163,9 @@ func TestMessagesCreate(t *testing.T) {
 func TestMessagesCountTokens(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "messages", "count-tokens",
+			t,
 			"--api-key", "string",
+			"messages", "count-tokens",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-4-6",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
@@ -179,8 +183,9 @@ func TestMessagesCountTokens(t *testing.T) {
 
 		// Alternative argument passing style using inner flags
 		mocktest.TestRunMockTestWithFlags(
-			t, "messages", "count-tokens",
+			t,
 			"--api-key", "string",
+			"messages", "count-tokens",
 			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
 			"--model", "claude-opus-4-6",
@@ -264,8 +269,9 @@ func TestMessagesCountTokens(t *testing.T) {
 			"    strict: true\n" +
 			"    type: custom\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
-			t, pipeData, "messages", "count-tokens",
+			t, pipeData,
 			"--api-key", "string",
+			"messages", "count-tokens",
 		)
 	})
 }

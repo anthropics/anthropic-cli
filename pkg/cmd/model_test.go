@@ -11,8 +11,9 @@ import (
 func TestModelsRetrieve(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "models", "retrieve",
+			t,
 			"--api-key", "string",
+			"models", "retrieve",
 			"--model-id", "model_id",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -22,8 +23,9 @@ func TestModelsRetrieve(t *testing.T) {
 func TestModelsList(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "models", "list",
+			t,
 			"--api-key", "string",
+			"models", "list",
 			"--max-items", "10",
 			"--after-id", "after_id",
 			"--before-id", "before_id",

@@ -374,6 +374,14 @@ func (f *Flag[T]) Count() int {
 	return f.count
 }
 
+// Implementation for the cli.LocalFlag interface
+var _ cli.LocalFlag = (*Flag[any])(nil) // Type assertion to ensure interface compliance
+
+func (f Flag[T]) IsLocal() bool {
+	// By default, all request flags are local, i.e. can be provided at any part of the CLI command.
+	return true
+}
+
 // cliValue is a generic implementation of cli.Value for common types
 type cliValue[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |

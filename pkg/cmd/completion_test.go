@@ -12,8 +12,9 @@ import (
 func TestCompletionsCreate(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "completions", "create",
+			t,
 			"--api-key", "string",
+			"completions", "create",
 			"--max-items", "10",
 			"--max-tokens-to-sample", "256",
 			"--model", "claude-opus-4-6",
@@ -34,8 +35,9 @@ func TestCompletionsCreate(t *testing.T) {
 
 		// Alternative argument passing style using inner flags
 		mocktest.TestRunMockTestWithFlags(
-			t, "completions", "create",
+			t,
 			"--api-key", "string",
+			"completions", "create",
 			"--max-items", "10",
 			"--max-tokens-to-sample", "256",
 			"--model", "claude-opus-4-6",
@@ -70,8 +72,9 @@ func TestCompletionsCreate(t *testing.T) {
 			"top_k: 5\n" +
 			"top_p: 0.7\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
-			t, pipeData, "completions", "create",
+			t, pipeData,
 			"--api-key", "string",
+			"completions", "create",
 			"--max-items", "10",
 			"--beta", "message-batches-2024-09-24",
 		)

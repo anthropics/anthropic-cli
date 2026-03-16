@@ -11,8 +11,9 @@ import (
 func TestBetaFilesList(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:files", "list",
+			t,
 			"--api-key", "string",
+			"beta:files", "list",
 			"--max-items", "10",
 			"--after-id", "after_id",
 			"--before-id", "before_id",
@@ -25,8 +26,9 @@ func TestBetaFilesList(t *testing.T) {
 func TestBetaFilesDelete(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:files", "delete",
+			t,
 			"--api-key", "string",
+			"beta:files", "delete",
 			"--file-id", "file_id",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -36,8 +38,9 @@ func TestBetaFilesDelete(t *testing.T) {
 func TestBetaFilesDownload(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:files", "download",
+			t,
 			"--api-key", "string",
+			"beta:files", "download",
 			"--file-id", "file_id",
 			"--beta", "message-batches-2024-09-24",
 			"--output", "/dev/null",
@@ -48,8 +51,9 @@ func TestBetaFilesDownload(t *testing.T) {
 func TestBetaFilesRetrieveMetadata(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:files", "retrieve-metadata",
+			t,
 			"--api-key", "string",
+			"beta:files", "retrieve-metadata",
 			"--file-id", "file_id",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -59,8 +63,9 @@ func TestBetaFilesRetrieveMetadata(t *testing.T) {
 func TestBetaFilesUpload(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
-			t, "beta:files", "upload",
+			t,
 			"--api-key", "string",
+			"beta:files", "upload",
 			"--file", "Example data",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -70,8 +75,9 @@ func TestBetaFilesUpload(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("file: Example data")
 		mocktest.TestRunMockTestWithPipeAndFlags(
-			t, pipeData, "beta:files", "upload",
+			t, pipeData,
 			"--api-key", "string",
+			"beta:files", "upload",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
