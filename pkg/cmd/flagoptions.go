@@ -219,7 +219,7 @@ func flagOptions(
 
 	requestContents := requestflag.ExtractRequestContents(cmd)
 
-	if bodyType != ApplicationOctetStream && isInputPiped() && !ignoreStdin {
+	if (bodyType == MultipartFormEncoded || bodyType == ApplicationJSON) && !ignoreStdin && isInputPiped() {
 		pipeData, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err
