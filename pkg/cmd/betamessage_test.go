@@ -20,7 +20,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-4-6",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
-			"--container", "{id: id, skills: [{skill_id: x, type: anthropic, version: x}]}",
+			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
 			"--inference-geo", "inference_geo",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
@@ -58,7 +58,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--model", "claude-opus-4-6",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
-			"--container", "{id: id, skills: [{skill_id: x, type: anthropic, version: x}]}",
+			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
 			"--context-management.edits", "[{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]",
 			"--inference-geo", "inference_geo",
 			"--mcp-server.name", "name",
@@ -112,9 +112,9 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"container:\n" +
 			"  id: id\n" +
 			"  skills:\n" +
-			"    - skill_id: x\n" +
+			"    - skill_id: pdf\n" +
 			"      type: anthropic\n" +
-			"      version: x\n" +
+			"      version: latest\n" +
 			"context_management:\n" +
 			"  edits:\n" +
 			"    - type: clear_tool_uses_20250919\n" +
