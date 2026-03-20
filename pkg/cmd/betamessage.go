@@ -148,12 +148,14 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
+			Usage:      `Allowed values: "user", "assistant".`,
 			InnerField: "role",
 		},
 	},
 	"cache-control": {
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.type",
+			Usage:      `Allowed values: "ephemeral".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{
@@ -176,6 +178,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "mcp-server.type",
+			Usage:      `Allowed values: "url".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{
@@ -217,6 +220,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "output-format.type",
+			Usage:      `Allowed values: "json_schema".`,
 			InnerField: "type",
 		},
 	},
@@ -301,12 +305,14 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
+			Usage:      `Allowed values: "user", "assistant".`,
 			InnerField: "role",
 		},
 	},
 	"cache-control": {
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.type",
+			Usage:      `Allowed values: "ephemeral".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{
@@ -329,6 +335,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "mcp-server.type",
+			Usage:      `Allowed values: "url".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{
@@ -363,6 +370,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "output-format.type",
+			Usage:      `Allowed values: "json_schema".`,
 			InnerField: "type",
 		},
 	},

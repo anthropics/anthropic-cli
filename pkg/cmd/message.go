@@ -125,12 +125,14 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
+			Usage:      `Allowed values: "user", "assistant".`,
 			InnerField: "role",
 		},
 	},
 	"cache-control": {
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.type",
+			Usage:      `Allowed values: "ephemeral".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{
@@ -215,12 +217,14 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
+			Usage:      `Allowed values: "user", "assistant".`,
 			InnerField: "role",
 		},
 	},
 	"cache-control": {
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.type",
+			Usage:      `Allowed values: "ephemeral".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{
