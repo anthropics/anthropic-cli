@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 10
     name: lint
     runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
 
     steps:
       - uses: actions/checkout@v6
@@ -49,7 +49,7 @@ jobs:
       contents: read
       id-token: write
     runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
     steps:
       - uses: actions/checkout@v6
 
