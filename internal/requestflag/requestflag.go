@@ -37,6 +37,12 @@ type Flag[
 	BodyPath   string // location in the request body to put this flag's value
 	BodyRoot   bool   // if true, then use this value as the entire request body
 
+	// Const, when true, marks this flag as a constant. The flag's Default value is used as the fixed value
+	// and always included in the request (IsSet returns true). The user can still see and override the flag,
+	// but isn't required to provide it. This is used for single-value enums and `x-stainless-const`
+	// parameters.
+	Const bool
+
 	// unexported fields for internal use
 	count      int       // number of times the flag has been set
 	hasBeenSet bool      // whether the flag has been set from env or file
@@ -229,7 +235,7 @@ func (f *Flag[T]) String() string {
 }
 
 func (f *Flag[T]) IsSet() bool {
-	return f.hasBeenSet
+	return f.hasBeenSet || f.Const
 }
 
 func (f *Flag[T]) Names() []string {
@@ -255,6 +261,10 @@ func (f *Flag[T]) SetCategory(c string) {
 var _ cli.RequiredFlag = (*Flag[any])(nil) // Type assertion to ensure interface compliance
 
 func (f *Flag[T]) IsRequired() bool {
+	// Const flags are always auto-set, so never required from the user.
+	if f.Const {
+		return false
+	}
 	// Intentionally don't use `f.Required`, because request flags may be passed
 	// over stdin as well as by flag.
 	if f.BodyPath != "" || f.BodyRoot {
@@ -268,6 +278,10 @@ type RequiredFlagOrStdin interface {
 }
 
 func (f *Flag[T]) IsRequiredAsFlagOrStdin() bool {
+	// Const flags are always auto-set, so never required from the user.
+	if f.Const {
+		return false
+	}
 	return f.Required
 }
 
