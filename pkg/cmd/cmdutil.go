@@ -381,6 +381,7 @@ type HasRawJSON interface {
 
 // For an iterator over different value types, display its values to the user in
 // different formats.
+// -1 is used to signal no limit of items to display
 func ShowJSONIterator[T any](stdout *os.File, title string, iter jsonview.Iterator[T], format string, transform string, itemsToDisplay int64) error {
 	if format == "explore" {
 		return jsonview.ExploreJSONStream(title, iter)
@@ -396,10 +397,8 @@ func ShowJSONIterator[T any](stdout *os.File, title string, iter jsonview.Iterat
 	usePager := false
 	output := []byte{}
 	numberOfNewlines := 0
-	for iter.Next() {
-		if itemsToDisplay == 0 {
-			break
-		}
+	// -1 is used to signal no limit of items to display
+	for itemsToDisplay != 0 && iter.Next() {
 		item := iter.Current()
 		var obj gjson.Result
 		if hasRaw, ok := any(item).(HasRawJSON); ok {
