@@ -1,4 +1,4 @@
-# Claude Developer Platform CLI
+# Claude Platform CLI
 
 The official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api).
 

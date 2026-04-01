@@ -85,7 +85,7 @@ homebrew_casks:
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     homepage: anthropic.com
-    description: CLI for the Claude Developer Platform
+    description: CLI for the Claude Platform
     license: MIT
     binary: "ant"
     completions:
