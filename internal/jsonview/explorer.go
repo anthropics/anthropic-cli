@@ -406,6 +406,10 @@ func (v *JSONViewer) navigateForward() (tea.Model, tea.Cmd) {
 		return v, nil
 	}
 
+	if len(tableView.rowData) < 1 {
+		return v, nil
+	}
+
 	cursor := tableView.table.Cursor()
 	selected := tableView.rowData[cursor]
 	if !v.canNavigateInto(selected) {
