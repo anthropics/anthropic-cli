@@ -17,7 +17,10 @@ type (
 	MiddlewareNext = func(*http.Request) (*http.Response, error)
 )
 
-const redactedPlaceholder = "<REDACTED>"
+const (
+	redactedPlaceholder = "<REDACTED>"
+	maxDebugBodySize    = 10 * 1024 * 1024 // 10MB limit for debug logging
+)
 
 // Headers known to contain sensitive information like an API key. Note that this exclude `Authorization`,
 // which is handled specially in `redactRequest` below.
@@ -106,20 +109,23 @@ func (m *RequestLogger) redactRequest(req *http.Request) (*http.Request, error) 
 	redacted := req.Clone(req.Context())
 	redacted.Header = redactedHeaders
 	var err error
-	redacted.Body, req.Body, err = cloneBody(req.Body)
+	redacted.Body, req.Body, err = cloneBody(req.Body, maxDebugBodySize)
 	return redacted, err
 }
 
 // This function returns two copies of an HTTP request body that can each be
 // read independently without affecting the other.
 // This logic is taken from `drainBody` in net/http/httputil.
-func cloneBody(b io.ReadCloser) (r1, r2 io.ReadCloser, err error) {
+// The maxSize parameter prevents memory exhaustion from extremely large bodies.
+func cloneBody(b io.ReadCloser, maxSize int64) (r1, r2 io.ReadCloser, err error) {
 	if b == nil || b == http.NoBody {
 		// No copying needed. Preserve the magic sentinel meaning of NoBody.
 		return http.NoBody, http.NoBody, nil
 	}
 	var buf bytes.Buffer
-	if _, err = buf.ReadFrom(b); err != nil {
+	// Limit reader to prevent memory exhaustion from large request/response bodies
+	limited := io.LimitReader(b, maxSize)
+	if _, err = buf.ReadFrom(limited); err != nil {
 		return nil, b, err
 	}
 	if err = b.Close(); err != nil {

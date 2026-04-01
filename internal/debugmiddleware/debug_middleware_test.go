@@ -198,4 +198,41 @@ func TestDebugMiddleware(t *testing.T) {
 		require.True(t, nextMiddlewareRan)
 		require.Contains(t, logBuf.String(), "Authorization: "+redactedPlaceholder)
 	})
+
+	t.Run("RespectsBodySizeLimit", func(t *testing.T) {
+		t.Parallel()
+
+		middleware, logBuf := setup()
+
+		// Create a body larger than maxDebugBodySize (10MB)
+		largeBody := make([]byte, maxDebugBodySize+1024)
+		for i := range largeBody {
+			largeBody[i] = byte('a')
+		}
+		bodyReader := bytes.NewReader(largeBody)
+
+		req := httptest.NewRequest("POST", "https://example.com", io.NopCloser(bodyReader))
+
+		var nextMiddlewareRan bool
+		middleware.Middleware()(req, func(req *http.Request) (*http.Response, error) {
+			nextMiddlewareRan = true
+
+			// The original request body should still be fully readable (not truncated)
+			body, err := io.ReadAll(req.Body)
+			require.NoError(t, err)
+			require.Equal(t, len(largeBody), len(body), "Original body should not be truncated for the actual request")
+
+			return &http.Response{
+				StatusCode: 200,
+				Body:       io.NopCloser(strings.NewReader("response")),
+			}, nil
+		})
+
+		require.True(t, nextMiddlewareRan)
+		// Log should only contain up to maxDebugBodySize bytes
+		logContent := logBuf.String()
+		require.Contains(t, logContent, "Request Content:")
+		// The logged body should be truncated at maxDebugBodySize
+		require.Less(t, len(logContent), len(largeBody)+1000, "Logged body should be truncated to prevent memory issues")
+	})
 }

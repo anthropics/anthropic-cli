@@ -29,6 +29,39 @@ import (
 
 var OutputFormats = []string{"auto", "explore", "json", "jsonl", "pretty", "raw", "yaml"}
 
+// reservedNames contains Windows reserved device names that could cause security issues
+// or unexpected behavior when used as filenames.
+var reservedNames = []string{
+	"CON", "PRN", "AUX", "NUL",
+	"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+	"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+}
+
+// isValidFilename checks if a filename is safe to use (not a reserved name,
+// not empty, doesn't contain path traversal components).
+func isValidFilename(name string) error {
+	if name == "" {
+		return fmt.Errorf("filename cannot be empty")
+	}
+
+	// Check for path traversal attempts
+	if strings.Contains(name, "..") || strings.Contains(name, "/") || strings.Contains(name, "\\") {
+		return fmt.Errorf("filename contains path traversal characters: %s", name)
+	}
+
+	// Check for reserved Windows device names (case-insensitive)
+	upperName := strings.ToUpper(name)
+	// Remove extension for comparison (e.g., "CON.txt" is still reserved)
+	baseName := strings.SplitN(upperName, ".", 2)[0]
+	for _, reserved := range reservedNames {
+		if baseName == reserved {
+			return fmt.Errorf("filename is a reserved device name: %s", name)
+		}
+	}
+
+	return nil
+}
+
 func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 	opts := []option.RequestOption{
 		option.WithHeader("User-Agent", fmt.Sprintf("Anthropic/CLI %s", Version)),
@@ -235,10 +268,16 @@ func createDownloadFile(response *http.Response, data []byte) (*os.File, error) 
 		if dispFilename, ok := params["filename"]; ok {
 			// Only use the last path component to prevent directory traversal
 			filename = filepath.Base(dispFilename)
-			// Try to create the file with exclusive flag to avoid race conditions
-			file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
-			if err == nil {
-				return file, nil
+			// Validate filename to prevent reserved name attacks
+			if err := isValidFilename(filename); err != nil {
+				// Fall back to default filename if validation fails
+				filename = "file"
+			} else {
+				// Try to create the file with exclusive flag to avoid race conditions
+				file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+				if err == nil {
+					return file, nil
+				}
 			}
 		}
 	}
