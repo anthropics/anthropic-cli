@@ -1,0 +1,45 @@
+name: Dagger CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Dagger
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: "0.14.0"
+          verb: call
+          args: "lint"
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Dagger
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: "0.14.0"
+          verb: call
+          args: "test"
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Dagger
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: "0.14.0"
+          verb: call
+          args: "build-all"
