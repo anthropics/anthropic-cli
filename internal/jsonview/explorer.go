@@ -1,6 +1,7 @@
 package jsonview
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -309,6 +310,10 @@ func ExploreJSON(title string, json gjson.Result) error {
 	return err
 }
 
+type hasRawJSON interface {
+	RawJSON() string
+}
+
 // ExploreJSONStream explores JSON data loaded incrementally via an iterator
 func ExploreJSONStream[T any](title string, it Iterator[T]) error {
 	anyIt := genericToAnyIterator(it)
@@ -327,12 +332,12 @@ func ExploreJSONStream[T any](title string, it Iterator[T]) error {
 		return err
 	}
 
-	// Convert items to JSON array
-	jsonBytes, err := json.Marshal(items)
+	arrayJSONBytes, err := marshalItemsToJSONArray(items)
 	if err != nil {
 		return err
 	}
-	arrayJSON := gjson.ParseBytes(jsonBytes)
+
+	arrayJSON := gjson.ParseBytes(arrayJSONBytes)
 	view, err := newTableView("", arrayJSON, false)
 	if err != nil {
 		return err
@@ -350,6 +355,29 @@ func ExploreJSONStream[T any](title string, it Iterator[T]) error {
 		err = errors.Join(err, msgErr)
 	}
 	return err
+}
+
+func marshalItemsToJSONArray(items []any) ([]byte, error) {
+	var buf bytes.Buffer
+	buf.WriteByte('[')
+
+	for i, item := range items {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		if hasRaw, ok := item.(hasRawJSON); ok {
+			buf.WriteString(hasRaw.RawJSON())
+		} else {
+			jsonData, err := json.Marshal(item)
+			if err != nil {
+				return nil, err
+			}
+			buf.Write(jsonData)
+		}
+	}
+
+	buf.WriteByte(']')
+	return buf.Bytes(), nil
 }
 
 func (v *JSONViewer) current() JSONView { return v.stack[len(v.stack)-1] }
