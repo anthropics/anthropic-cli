@@ -19,7 +19,7 @@ jobs:
         uses: dagger/dagger-for-github@v8.4.0
         with:
           version: "latest"
-          call: lint
+          call: lint --source=.
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
 
   test:
@@ -30,7 +30,7 @@ jobs:
         uses: dagger/dagger-for-github@v8.4.0
         with:
           version: "latest"
-          call: test
+          call: test --source=.
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
 
   build:
@@ -41,5 +41,5 @@ jobs:
         uses: dagger/dagger-for-github@v8.4.0
         with:
           version: "latest"
-          call: build-all
+          call: build-all --source=.
           cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}

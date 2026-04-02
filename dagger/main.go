@@ -9,7 +9,6 @@ import (
 
 type AnthropicCli struct {
 	// Source is the source code directory
-	// +defaultPath="/"
 	Source *dagger.Directory
 
 	// Git token for accessing private repositories (optional)
@@ -18,16 +17,12 @@ type AnthropicCli struct {
 }
 
 func New(
-	// Source directory containing the Go project
-	// +optional
+	// Source directory containing the Go project (defaults to current module source)
 	source *dagger.Directory,
 	// Git token for accessing private Go modules
 	// +optional
 	gitToken *dagger.Secret,
 ) *AnthropicCli {
-	if source == nil {
-		source = dag.CurrentModule().Source()
-	}
 	return &AnthropicCli{Source: source, GitToken: gitToken}
 }
 
@@ -35,6 +30,7 @@ func New(
 func (m *AnthropicCli) Lint(ctx context.Context) (string, error) {
 	ctr := dag.Container().
 		From("golang:1.26-alpine").
+		WithExec([]string{"apk", "add", "--no-cache", "git"}).
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src").
 		WithEnvVariable("GOPRIVATE", "github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go")
@@ -51,6 +47,7 @@ func (m *AnthropicCli) Lint(ctx context.Context) (string, error) {
 func (m *AnthropicCli) Test(ctx context.Context) (string, error) {
 	ctr := dag.Container().
 		From("golang:1.26-alpine").
+		WithExec([]string{"apk", "add", "--no-cache", "git"}).
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src").
 		WithEnvVariable("GOPRIVATE", "github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go")
@@ -67,6 +64,7 @@ func (m *AnthropicCli) Test(ctx context.Context) (string, error) {
 func (m *AnthropicCli) TestFast(ctx context.Context) (string, error) {
 	ctr := dag.Container().
 		From("golang:1.26-alpine").
+		WithExec([]string{"apk", "add", "--no-cache", "git"}).
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src").
 		WithEnvVariable("GOPRIVATE", "github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go")
@@ -90,6 +88,7 @@ func (m *AnthropicCli) Build(
 	output := fmt.Sprintf("bin/ant-%s-%s", goos, goarch)
 	ctr := dag.Container().
 		From("golang:1.26-alpine").
+		WithExec([]string{"apk", "add", "--no-cache", "git"}).
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src").
 		WithEnvVariable("GOOS", goos).
