@@ -15,31 +15,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Dagger
-        uses: dagger/dagger-for-github@v5
+      - name: Lint
+        uses: dagger/dagger-for-github@v8.4.0
         with:
-          version: "0.14.0"
-          verb: call
-          args: "lint"
+          version: "latest"
+          call: lint
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Dagger
-        uses: dagger/dagger-for-github@v5
+      - name: Test
+        uses: dagger/dagger-for-github@v8.4.0
         with:
-          version: "0.14.0"
-          verb: call
-          args: "test"
+          version: "latest"
+          call: test
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
 
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Dagger
-        uses: dagger/dagger-for-github@v5
+      - name: Build All
+        uses: dagger/dagger-for-github@v8.4.0
         with:
-          version: "0.14.0"
-          verb: call
-          args: "build-all"
+          version: "latest"
+          call: build-all
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
