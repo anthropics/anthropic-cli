@@ -67,10 +67,7 @@ func TestWriteBinaryResponse(t *testing.T) {
 
 func TestCreateDownloadFile(t *testing.T) {
 	t.Run("creates file with filename from header", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		oldWd, _ := os.Getwd()
-		os.Chdir(tmpDir)
-		defer os.Chdir(oldWd)
+		t.Chdir(t.TempDir())
 
 		resp := &http.Response{
 			Header: http.Header{
@@ -96,10 +93,7 @@ func TestCreateDownloadFile(t *testing.T) {
 	})
 
 	t.Run("creates temp file when no header", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		oldWd, _ := os.Getwd()
-		os.Chdir(tmpDir)
-		defer os.Chdir(oldWd)
+		t.Chdir(t.TempDir())
 
 		resp := &http.Response{Header: http.Header{}}
 		file, err := createDownloadFile(resp, []byte("test content"))
@@ -109,10 +103,7 @@ func TestCreateDownloadFile(t *testing.T) {
 	})
 
 	t.Run("prevents directory traversal", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		oldWd, _ := os.Getwd()
-		os.Chdir(tmpDir)
-		defer os.Chdir(oldWd)
+		t.Chdir(t.TempDir())
 
 		resp := &http.Response{
 			Header: http.Header{
