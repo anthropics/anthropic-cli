@@ -121,10 +121,11 @@ var betaFilesUpload = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "file",
-			Usage:    "The file to upload",
-			Required: true,
-			BodyPath: "file",
+			Name:      "file",
+			Usage:     "The file to upload",
+			Required:  true,
+			BodyPath:  "file",
+			FileInput: true,
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",

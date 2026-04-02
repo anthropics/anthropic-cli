@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/anthropics/anthropic-cli/internal/mocktest"
@@ -16,17 +17,20 @@ func TestBetaSkillsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills", "create",
 			"--display-title", "display_title",
-			"--file", "[Example data]",
+			"--file", mocktest.TestFile(t, "[Example data]"),
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
 
 	t.Run("piping data", func(t *testing.T) {
+		testFile := mocktest.TestFile(t, "Example data")
 		// Test piping YAML data over stdin
-		pipeData := []byte("" +
+		pipeDataStr := "" +
 			"display_title: display_title\n" +
 			"files:\n" +
-			"  - Example data\n")
+			"  - Example data\n"
+		pipeDataStr = strings.ReplaceAll(pipeDataStr, "Example data", testFile)
+		pipeData := []byte(pipeDataStr)
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",

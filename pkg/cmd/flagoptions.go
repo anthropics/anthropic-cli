@@ -98,6 +98,21 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 		return result, nil
 
 	case reflect.String:
+		// FilePathValue is always treated as a file path without needing the "@" prefix.
+		// These only appear on binary upload parameters (multipart/octet-stream), which
+		// always use EmbedIOReader.
+		if v.Type() == reflect.TypeOf(FilePathValue("")) {
+			s := v.String()
+			if s == "" {
+				return v, nil
+			}
+			content, err := os.ReadFile(s)
+			if err != nil {
+				return v, err
+			}
+			return reflect.ValueOf(string(content)), nil
+		}
+
 		s := v.String()
 		if literal, ok := strings.CutPrefix(s, "\\@"); ok {
 			// Allow for escaped @ signs if you don't want them to be treated as files
@@ -258,6 +273,12 @@ func flagOptions(
 		}
 	}
 
+	// For flags marked as FileInput (type: string, format: binary), the value is always
+	// a file path. Wrap with FilePathValue so embedFiles reads the file automatically
+	// without requiring the user to type the "@" prefix. This handles both values set
+	// via explicit CLI flags and values that arrived via piped YAML/JSON data.
+	wrapFileInputValues(cmd, &requestContents)
+
 	// Embed files passed as "@file.jpg" in the request body, headers, and query:
 	embedStyle := EmbedText
 	if bodyType == ApplicationOctetStream || bodyType == MultipartFormEncoded {
@@ -370,4 +391,79 @@ func flagOptions(
 	}
 
 	return options, nil
+}
+
+// FilePathValue is a string wrapper that marks a value as a file path whose contents should be read
+// and embedded in the request. Unlike a regular string, embedFilesValue always treats a FilePathValue
+// as a file path without needing the "@" prefix.
+type FilePathValue string
+
+// wrapFileInputValues replaces string values for FileInput flags (type: string, format: binary) with
+// FilePathValue sentinel values. embedFilesValue recognizes FilePathValue and reads the file contents
+// directly, so the user doesn't need to type the "@" prefix. This handles both values set via explicit
+// CLI flags and values that arrived via piped YAML/JSON data.
+func wrapFileInputValues(cmd *cli.Command, contents *requestflag.RequestContents) {
+	bodyMap, _ := contents.Body.(map[string]any)
+
+	for _, flag := range cmd.Flags {
+		inReq, ok := flag.(requestflag.InRequest)
+		if !ok || !inReq.IsFileInput() || inReq.IsBodyRoot() {
+			continue
+		}
+
+		// Wrap values set via explicit CLI flags.
+		if flag.IsSet() {
+			if wrapped, changed := wrapFileInputValue(flag.Get()); changed {
+				if bodyPath := inReq.GetBodyPath(); bodyPath != "" {
+					if bodyMap != nil {
+						bodyMap[bodyPath] = wrapped
+					}
+				} else if queryPath := inReq.GetQueryPath(); queryPath != "" {
+					contents.Queries[queryPath] = wrapped
+				} else if headerPath := inReq.GetHeaderPath(); headerPath != "" {
+					contents.Headers[headerPath] = wrapped
+				}
+			}
+		}
+
+		// Wrap values that arrived via piped YAML/JSON data in the body map.
+		if bodyPath := inReq.GetBodyPath(); bodyPath != "" && bodyMap != nil {
+			if value, exists := bodyMap[bodyPath]; exists {
+				if wrapped, changed := wrapFileInputValue(value); changed {
+					bodyMap[bodyPath] = wrapped
+				}
+			}
+		}
+	}
+}
+
+func wrapFileInputValue(value any) (any, bool) {
+	switch v := value.(type) {
+	case string:
+		if v == "" {
+			return value, false
+		}
+		return FilePathValue(v), true
+
+	case []string:
+		result := make([]any, len(v))
+		for i, s := range v {
+			result[i] = FilePathValue(s)
+		}
+		return result, true
+
+	case []any:
+		result := make([]any, len(v))
+		for i, elem := range v {
+			if s, ok := elem.(string); ok {
+				result[i] = FilePathValue(s)
+			} else {
+				result[i] = elem
+			}
+		}
+		return result, true
+
+	default:
+		return value, false
+	}
 }

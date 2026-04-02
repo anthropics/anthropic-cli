@@ -26,9 +26,10 @@ var betaSkillsCreate = cli.Command{
 			BodyPath: "display_title",
 		},
 		&requestflag.Flag[any]{
-			Name:     "file",
-			Usage:    "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
-			BodyPath: "files",
+			Name:      "file",
+			Usage:     "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
+			BodyPath:  "files",
+			FileInput: true,
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
