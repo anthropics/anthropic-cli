@@ -5,21 +5,20 @@ site_author: Anthropic
 nav:
   - Home: index.md
   - CLI Reference:
-    - Overview: cli/index.md
-    - Installation: cli/installation.md
-    - Authentication: cli/authentication.md
-    - Global Flags: cli/global-flags.md
-    - Output Formats: cli/output-formats.md
+      - Overview: cli/index.md
+      - Installation: cli/installation.md
+      - Authentication: cli/authentication.md
+      - Global Flags: cli/global-flags.md
+      - Output Formats: cli/output-formats.md
   - Guides:
-    - Quick Start: guides/quickstart.md
-    - Advanced Usage: guides/advanced-usage.md
+      - Quick Start: guides/quickstart.md
+      - Advanced Usage: guides/advanced-usage.md
   - API: api/index.md
 
 theme:
   name: material
   palette:
     primary: custom
-  custom_dir: overrides
 
 extra_css:
   - stylesheets/anthropic.css
