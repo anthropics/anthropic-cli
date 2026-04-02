@@ -1,0 +1,4 @@
+# HonKit ignore patterns
+_book/
+node_modules/
+*.log
