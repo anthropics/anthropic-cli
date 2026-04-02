@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"encoding/base64"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,6 +13,7 @@ import (
 )
 
 func TestIsUTF8TextFile(t *testing.T) {
+
 	tests := []struct {
 		content  []byte
 		expected bool
@@ -32,6 +35,7 @@ func TestIsUTF8TextFile(t *testing.T) {
 }
 
 func TestEmbedFiles(t *testing.T) {
+
 	// Create temporary directory for test files
 	tmpDir := t.TempDir()
 
@@ -216,7 +220,8 @@ func TestEmbedFiles(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name+" text", func(t *testing.T) {
-			got, err := embedFiles(tt.input, EmbedText)
+
+			got, err := embedFiles(tt.input, EmbedText, nil)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -226,7 +231,8 @@ func TestEmbedFiles(t *testing.T) {
 		})
 
 		t.Run(tt.name+" io.Reader", func(t *testing.T) {
-			_, err := embedFiles(tt.input, EmbedIOReader)
+
+			_, err := embedFiles(tt.input, EmbedIOReader, nil)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -236,9 +242,90 @@ func TestEmbedFiles(t *testing.T) {
 	}
 }
 
+func TestEmbedFilesStdin(t *testing.T) {
+
+	t.Run("FilePathValueDash", func(t *testing.T) {
+
+		stdin := &onceStdinReader{stdinReader: strings.NewReader("stdin content")}
+
+		withEmbedded, err := embedFiles(map[string]any{"file": FilePathValue("-")}, EmbedText, stdin)
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"file": "stdin content"}, withEmbedded)
+	})
+
+	t.Run("FilePathValueDevStdin", func(t *testing.T) {
+
+		stdin := &onceStdinReader{stdinReader: strings.NewReader("stdin content")}
+
+		withEmbedded, err := embedFiles(map[string]any{"file": FilePathValue("/dev/stdin")}, EmbedText, stdin)
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"file": "stdin content"}, withEmbedded)
+	})
+
+	t.Run("MultipleFilePathValueDashesError", func(t *testing.T) {
+
+		stdin := &onceStdinReader{stdinReader: strings.NewReader("stdin content")}
+
+		_, err := embedFiles(map[string]any{
+			"file1": FilePathValue("-"),
+			"file2": FilePathValue("-"),
+		}, EmbedText, stdin)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "already been read")
+	})
+
+	t.Run("FilePathValueDashUnavailableStdin", func(t *testing.T) {
+
+		stdin := &onceStdinReader{failureReason: "stdin is already being used for the request body"}
+
+		_, err := embedFiles(map[string]any{"file": FilePathValue("-")}, EmbedText, stdin)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "cannot read from stdin")
+		require.Contains(t, err.Error(), "request body")
+	})
+
+	t.Run("AtDashEmbedText", func(t *testing.T) {
+
+		stdin := &onceStdinReader{stdinReader: strings.NewReader("piped content")}
+
+		withEmbedded, err := embedFiles(map[string]any{"data": "@-"}, EmbedText, stdin)
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"data": "piped content"}, withEmbedded)
+	})
+
+	t.Run("AtDashEmbedIOReader", func(t *testing.T) {
+
+		stdin := &onceStdinReader{stdinReader: strings.NewReader("piped content")}
+
+		withEmbedded, err := embedFiles(map[string]any{"data": "@-"}, EmbedIOReader, stdin)
+		require.NoError(t, err)
+
+		withEmbeddedMap := withEmbedded.(map[string]any)
+		r := withEmbeddedMap["data"].(io.ReadCloser)
+
+		content, err := io.ReadAll(r)
+		require.NoError(t, err)
+		require.Equal(t, "piped content", string(content))
+	})
+
+	t.Run("FilePathValueRealFile", func(t *testing.T) {
+
+		tmpDir := t.TempDir()
+		writeTestFile(t, tmpDir, "test.txt", "file content")
+
+		stdin := &onceStdinReader{stdinReader: strings.NewReader("unused stdin")}
+
+		withEmbedded, err := embedFiles(map[string]any{"file": FilePathValue(filepath.Join(tmpDir, "test.txt"))}, EmbedText, stdin)
+		require.NoError(t, err)
+		require.Equal(t, map[string]any{"file": "file content"}, withEmbedded)
+	})
+}
+
 func writeTestFile(t *testing.T, dir, filename, content string) {
 	t.Helper()
+
 	path := filepath.Join(dir, filename)
+
 	err := os.WriteFile(path, []byte(content), 0644)
 	require.NoError(t, err, "failed to write test file %s", path)
 }
