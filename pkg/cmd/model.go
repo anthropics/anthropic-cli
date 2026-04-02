@@ -149,6 +149,9 @@ func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
+		} else if cmd.IsSet("limit") {
+			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
+			maxItems = cmd.Value("limit").(int64)
 		}
 		return ShowJSONIterator(os.Stdout, "models list", iter, format, transform, maxItems)
 	}
