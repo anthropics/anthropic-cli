@@ -43,6 +43,11 @@ type Flag[
 	// parameters.
 	Const bool
 
+	// FileInput, when true, indicates that the flag value is always treated as a file path. The file is read
+	// automatically without requiring the "@" prefix. This is used for parameters with `type: string, format:
+	// binary` in the OpenAPI spec.
+	FileInput bool
+
 	// unexported fields for internal use
 	count      int       // number of times the flag has been set
 	hasBeenSet bool      // whether the flag has been set from env or file
@@ -59,6 +64,7 @@ type InRequest interface {
 	GetHeaderPath() string
 	GetBodyPath() string
 	IsBodyRoot() bool
+	IsFileInput() bool
 }
 
 func (f Flag[T]) GetQueryPath() string {
@@ -75,6 +81,10 @@ func (f Flag[T]) GetBodyPath() string {
 
 func (f Flag[T]) IsBodyRoot() bool {
 	return f.BodyRoot
+}
+
+func (f Flag[T]) IsFileInput() bool {
+	return f.FileInput
 }
 
 // The values that will be sent in different parts of a request.
