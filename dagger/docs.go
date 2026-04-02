@@ -38,7 +38,7 @@ func (m *AnthropicCli) DocsBuild(ctx context.Context) (*dagger.Directory, error)
 
 	// Install HonKit and plugins
 	container = container.
-		WithExec([]string{"npm", "install", "-g", "honkit", "gitbook-plugin-search-v2", "gitbook-plugin-highlight", "gitbook-plugin-fontsettings", "gitbook-plugin-sharing", "gitbook-plugin-sitemap"})
+		WithExec([]string{"npm", "install", "-g", "honkit@5"})
 
 	// Initialize book if needed and build
 	container = container.
@@ -59,7 +59,7 @@ func (m *AnthropicCli) DocsBuildFast(ctx context.Context) (*dagger.Directory, er
 
 	// Install HonKit and plugins
 	container = container.
-		WithExec([]string{"npm", "install", "-g", "honkit", "gitbook-plugin-search-v2", "gitbook-plugin-highlight", "gitbook-plugin-fontsettings", "gitbook-plugin-sharing", "gitbook-plugin-sitemap"})
+		WithExec([]string{"npm", "install", "-g", "honkit@5"})
 
 	// Build
 	container = container.
@@ -76,7 +76,7 @@ func (m *AnthropicCli) DocsServe(ctx context.Context) error {
 		From("node:20-alpine").
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src/docs").
-		WithExec([]string{"npm", "install", "-g", "honkit", "gitbook-plugin-search-v2", "gitbook-plugin-highlight", "gitbook-plugin-fontsettings"}).
+		WithExec([]string{"npm", "install", "-g", "honkit@5"}).
 		WithExec([]string{"honkit", "serve", "."}).
 		Sync(ctx)
 

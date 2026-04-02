@@ -598,10 +598,3 @@ log_info "Files created in: ${CLI_COMMANDS_DIR}"
 # Count generated files
 generated_count=$(find "${CLI_COMMANDS_DIR}" -name "*.md" | wc -l)
 log_info "Total documentation files: ${generated_count}"
-EOF
-
-# Make script executable
-chmod +x "${SCRIPT_DIR}/generate-docs.sh"
-
-log_info "Documentation generation script created at: ${SCRIPT_DIR}/generate-docs.sh"
-log_info "Run with: ./scripts/generate-docs.sh"
