@@ -1,7 +1,7 @@
 {
   "title": "Anthropic CLI Documentation",
   "author": "Anthropic",
-  "description": "Complete documentation for the Anthropic CLI (ant) - the official CLI for the Claude Developer Platform",
+  "description": "Complete documentation for the Anthropic CLI (ant)",
   "language": "en",
   "gitbook": "3.2.3",
   "structure": {
@@ -10,36 +10,9 @@
   },
   "styles": {
     "website": "styles/website.css",
-    "pdf": "styles/pdf.css",
-    "epub": "styles/epub.css",
-    "mobi": "styles/mobi.css"
+    "pdf": "styles/pdf.css"
   },
-  "plugins": [
-    "-lunr",
-    "-search",
-    "search-v2",
-    "highlight",
-    "fontsettings",
-    "sharing",
-    "sitemap",
-    "ga",
-    "-sharing"
-  ],
-  "pluginsConfig": {
-    "search-v2": {
-      "maxIndexSize": 5000000
-    },
-    "fontsettings": {
-      "theme": "white",
-      "family": "sans"
-    },
-    "sitemap": {
-      "hostname": "https://anthropics.github.io/anthropic-cli/"
-    },
-    "ga": {
-      "token": "UA-XXXX-Y"
-    }
-  },
+  "plugins": [],
   "pdf": {
     "pageNumbers": true,
     "fontSize": 12,
@@ -49,8 +22,6 @@
       "left": 62,
       "top": 56,
       "bottom": 56
-    },
-    "headerTemplate": "_HEADER_",
-    "footerTemplate": "_FOOTER_"
+    }
   }
 }
