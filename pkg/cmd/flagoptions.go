@@ -40,12 +40,48 @@ const (
 	EmbedIOReader
 )
 
-func embedFiles(obj any, embedStyle FileEmbedStyle) (any, error) {
+// onceStdinReader wraps an io.Reader that can only be consumed once, used to ensure stdin is read by at most
+// one parameter (or only for a body root parameter or only for YAML parameter input). If reason is set, stdin
+// is unavailable and read() returns an error explaining why.
+type onceStdinReader struct {
+	stdinReader   io.Reader
+	failureReason string
+}
+
+func (o *onceStdinReader) read() (io.Reader, error) {
+	if o.failureReason != "" {
+		return nil, fmt.Errorf("cannot read from stdin: %s", o.failureReason)
+	}
+	if o.stdinReader == nil {
+		return nil, fmt.Errorf("stdin has already been read by another parameter; it can only be read once")
+	}
+	r := o.stdinReader
+	o.stdinReader = nil
+	return r, nil
+}
+
+func (o *onceStdinReader) readAll() ([]byte, error) {
+	r, err := o.read()
+	if err != nil {
+		return nil, err
+	}
+	return io.ReadAll(r)
+}
+
+func isStdinPath(s string) bool {
+	switch s {
+	case "-", "/dev/fd/0", "/dev/stdin":
+		return true
+	}
+	return false
+}
+
+func embedFiles(obj any, embedStyle FileEmbedStyle, stdin *onceStdinReader) (any, error) {
 	if obj == nil {
 		return obj, nil
 	}
 	v := reflect.ValueOf(obj)
-	result, err := embedFilesValue(v, embedStyle)
+	result, err := embedFilesValue(v, embedStyle, stdin)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +89,7 @@ func embedFiles(obj any, embedStyle FileEmbedStyle) (any, error) {
 }
 
 // Replace "@file.txt" with the file's contents inside a value
-func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value, error) {
+func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdinReader) (reflect.Value, error) {
 	// Unwrap interface values to get the concrete type
 	if v.Kind() == reflect.Interface {
 		if v.IsNil() {
@@ -74,7 +110,7 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 		for iter.Next() {
 			key := iter.Key()
 			val := iter.Value()
-			newVal, err := embedFilesValue(val, embedStyle)
+			newVal, err := embedFilesValue(val, embedStyle, stdin)
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -89,7 +125,7 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 		// Use `[]any` to allow for types to change when embedding files
 		result := reflect.MakeSlice(reflect.TypeOf([]any{}), v.Len(), v.Len())
 		for i := 0; i < v.Len(); i++ {
-			newVal, err := embedFilesValue(v.Index(i), embedStyle)
+			newVal, err := embedFilesValue(v.Index(i), embedStyle, stdin)
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -105,6 +141,13 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 			s := v.String()
 			if s == "" {
 				return v, nil
+			}
+			if isStdinPath(s) {
+				content, err := stdin.readAll()
+				if err != nil {
+					return v, err
+				}
+				return reflect.ValueOf(string(content)), nil
 			}
 			content, err := os.ReadFile(s)
 			if err != nil {
@@ -123,6 +166,13 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 			if filename, ok := strings.CutPrefix(s, "@data://"); ok {
 				// The "@data://" prefix is for files you explicitly want to upload
 				// as base64-encoded (even if the file itself is plain text)
+				if isStdinPath(filename) {
+					content, err := stdin.readAll()
+					if err != nil {
+						return v, err
+					}
+					return reflect.ValueOf(base64.StdEncoding.EncodeToString(content)), nil
+				}
 				content, err := os.ReadFile(filename)
 				if err != nil {
 					return v, err
@@ -132,12 +182,29 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 				// The "@file://" prefix is for files that you explicitly want to
 				// upload as a string literal with backslash escapes (not base64
 				// encoded)
+				if isStdinPath(filename) {
+					content, err := stdin.readAll()
+					if err != nil {
+						return v, err
+					}
+					return reflect.ValueOf(string(content)), nil
+				}
 				content, err := os.ReadFile(filename)
 				if err != nil {
 					return v, err
 				}
 				return reflect.ValueOf(string(content)), nil
 			} else if filename, ok := strings.CutPrefix(s, "@"); ok {
+				if isStdinPath(filename) {
+					content, err := stdin.readAll()
+					if err != nil {
+						return v, err
+					}
+					if isUTF8TextFile(content) {
+						return reflect.ValueOf(string(content)), nil
+					}
+					return reflect.ValueOf(base64.StdEncoding.EncodeToString(content)), nil
+				}
 				content, err := os.ReadFile(filename)
 				if err != nil {
 					// If the string is "@username", it's probably supposed to be a
@@ -173,6 +240,14 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle) (reflect.Value,
 					filename = withoutPrefix
 				} else {
 					expectsFile = strings.Contains(filename, ".") || strings.Contains(filename, "/")
+				}
+
+				if isStdinPath(filename) {
+					r, err := stdin.read()
+					if err != nil {
+						return v, err
+					}
+					return reflect.ValueOf(io.NopCloser(r)), nil
 				}
 
 				file, err := os.Open(filename)
@@ -234,6 +309,7 @@ func flagOptions(
 
 	requestContents := requestflag.ExtractRequestContents(cmd)
 
+	stdinConsumedByPipe := false
 	if (bodyType == MultipartFormEncoded || bodyType == ApplicationJSON) && !ignoreStdin && isInputPiped() {
 		pipeData, err := io.ReadAll(os.Stdin)
 		if err != nil {
@@ -241,6 +317,7 @@ func flagOptions(
 		}
 
 		if len(pipeData) > 0 {
+			stdinConsumedByPipe = true
 			var bodyData any
 			if err := yaml.Unmarshal(pipeData, &bodyData); err != nil {
 				return nil, fmt.Errorf("Failed to parse piped data as YAML/JSON:\n%w", err)
@@ -279,24 +356,34 @@ func flagOptions(
 	// via explicit CLI flags and values that arrived via piped YAML/JSON data.
 	wrapFileInputValues(cmd, &requestContents)
 
+	// Determine stdin availability for FileInput params that use "-".
+	var stdinReader onceStdinReader
+	if ignoreStdin {
+		stdinReader = onceStdinReader{failureReason: "stdin is already being used for the request body"}
+	} else if stdinConsumedByPipe {
+		stdinReader = onceStdinReader{failureReason: "stdin was already consumed by piped YAML/JSON input"}
+	} else {
+		stdinReader = onceStdinReader{stdinReader: os.Stdin}
+	}
+
 	// Embed files passed as "@file.jpg" in the request body, headers, and query:
 	embedStyle := EmbedText
 	if bodyType == ApplicationOctetStream || bodyType == MultipartFormEncoded {
 		embedStyle = EmbedIOReader
 	}
 
-	if embedded, err := embedFiles(requestContents.Body, embedStyle); err != nil {
+	if embedded, err := embedFiles(requestContents.Body, embedStyle, &stdinReader); err != nil {
 		return nil, err
 	} else {
 		requestContents.Body = embedded
 	}
 
-	if headersWithFiles, err := embedFiles(requestContents.Headers, EmbedText); err != nil {
+	if headersWithFiles, err := embedFiles(requestContents.Headers, EmbedText, &stdinReader); err != nil {
 		return nil, err
 	} else {
 		requestContents.Headers = headersWithFiles.(map[string]any)
 	}
-	if queriesWithFiles, err := embedFiles(requestContents.Queries, EmbedText); err != nil {
+	if queriesWithFiles, err := embedFiles(requestContents.Queries, EmbedText, &stdinReader); err != nil {
 		return nil, err
 	} else {
 		requestContents.Queries = queriesWithFiles.(map[string]any)
