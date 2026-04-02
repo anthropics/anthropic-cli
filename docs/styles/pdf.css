@@ -1,0 +1,55 @@
+/* Print-specific styles for PDF generation */
+
+body {
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #000;
+}
+
+h1 {
+  font-size: 24pt;
+  border-bottom: 2pt solid #D97757;
+  page-break-after: avoid;
+}
+
+h2 {
+  font-size: 18pt;
+  border-bottom: 1pt solid #ccc;
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: 14pt;
+  page-break-after: avoid;
+}
+
+pre, blockquote {
+  page-break-inside: avoid;
+}
+
+a {
+  color: #000;
+  text-decoration: none;
+}
+
+a[href]:after {
+  content: " (" attr(href) ")";
+  font-size: 9pt;
+  color: #666;
+}
+
+table {
+  page-break-inside: avoid;
+}
+
+.book-summary,
+.book-header,
+.navigation {
+  display: none !important;
+}
+
+.page-inner {
+  padding: 20pt;
+  max-width: none;
+  margin: 0;
+}

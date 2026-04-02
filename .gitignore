@@ -3,3 +3,7 @@
 dist/
 /ant
 *.exe
+
+# Generated documentation
+docs/_book/
+docs/node_modules/
