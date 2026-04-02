@@ -23,6 +23,13 @@ func main() {
 		prepareForAutocomplete(app)
 	}
 
+	if baseURL, ok := os.LookupEnv("ANTHROPIC_BASE_URL"); ok {
+		if err := cmd.ValidateBaseURL(baseURL, "ANTHROPIC_BASE_URL"); err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			os.Exit(1)
+		}
+	}
+
 	if err := app.Run(context.Background(), os.Args); err != nil {
 		exitCode := 1
 
