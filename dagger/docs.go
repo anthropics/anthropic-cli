@@ -24,60 +24,39 @@ func (m *AnthropicCli) DocsGenerateCLIReference(ctx context.Context) (*dagger.Di
 	return generated, nil
 }
 
-// DocsBuild builds the static documentation site using HonKit
-// It installs dependencies, generates CLI docs, and builds the site
+// DocsBuild builds the static documentation site using MkDocs
 func (m *AnthropicCli) DocsBuild(ctx context.Context) (*dagger.Directory, error) {
-	// Build with HonKit (GitBook CLI)
-	// First, we need to generate CLI docs
 	container := dag.Container().
-		From("node:20-alpine").
+		From("python:3.11-alpine").
+		WithExec([]string{"pip", "install", "mkdocs", "mkdocs-material"}).
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src").
-		WithExec([]string{"mkdir", "-p", "docs/cli/commands"}).
-		WithExec([]string{"sh", "scripts/generate-docs.sh"})
+		WithExec([]string{"sh", "scripts/generate-docs.sh"}).
+		WithExec([]string{"mkdocs", "build", "--site-dir", "site"})
 
-	// Install HonKit and plugins
-	container = container.
-		WithExec([]string{"npm", "install", "-g", "honkit@5"})
-
-	// Initialize book if needed and build
-	container = container.
-		WithWorkdir("/src/docs").
-		WithExec([]string{"honkit", "build", ".", "_book"})
-
-	return container.Directory("/src/docs/_book"), nil
+	return container.Directory("/src/site"), nil
 }
 
 // DocsBuildFast builds docs without regenerating CLI reference (faster)
-// Use this for development when CLI docs haven't changed
 func (m *AnthropicCli) DocsBuildFast(ctx context.Context) (*dagger.Directory, error) {
-	// Build with HonKit without regenerating CLI docs
 	container := dag.Container().
-		From("node:20-alpine").
+		From("python:3.11-alpine").
+		WithExec([]string{"pip", "install", "mkdocs", "mkdocs-material"}).
 		WithMountedDirectory("/src", m.Source).
-		WithWorkdir("/src/docs")
+		WithWorkdir("/src").
+		WithExec([]string{"mkdocs", "build", "--site-dir", "site"})
 
-	// Install HonKit and plugins
-	container = container.
-		WithExec([]string{"npm", "install", "-g", "honkit@5"})
-
-	// Build
-	container = container.
-		WithExec([]string{"honkit", "build", ".", "_book"})
-
-	return container.Directory("/src/docs/_book"), nil
+	return container.Directory("/src/site"), nil
 }
 
-// DocsServe runs the HonKit development server with live reload
-// This starts a local server for previewing documentation during development
+// DocsServe runs the MkDocs development server
 func (m *AnthropicCli) DocsServe(ctx context.Context) error {
-	// Run HonKit serve
 	_, err := dag.Container().
-		From("node:20-alpine").
+		From("python:3.11-alpine").
+		WithExec([]string{"pip", "install", "mkdocs", "mkdocs-material"}).
 		WithMountedDirectory("/src", m.Source).
-		WithWorkdir("/src/docs").
-		WithExec([]string{"npm", "install", "-g", "honkit@5"}).
-		WithExec([]string{"honkit", "serve", "."}).
+		WithWorkdir("/src").
+		WithExec([]string{"mkdocs", "serve", "-a", "0.0.0.0:8000"}).
 		Sync(ctx)
 
 	return err
