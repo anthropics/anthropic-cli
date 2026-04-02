@@ -49,17 +49,17 @@ func (m *AnthropicCli) DocsBuildFast(ctx context.Context) (*dagger.Directory, er
 	return container.Directory("/src/site"), nil
 }
 
-// DocsServe runs the MkDocs development server
-func (m *AnthropicCli) DocsServe(ctx context.Context) error {
-	_, err := dag.Container().
+// DocsServe runs the MkDocs development server and returns a service
+// This starts a local server accessible at http://localhost:8000
+func (m *AnthropicCli) DocsServe() *dagger.Service {
+	return dag.Container().
 		From("python:3.11-alpine").
 		WithExec([]string{"pip", "install", "mkdocs", "mkdocs-material"}).
 		WithMountedDirectory("/src", m.Source).
 		WithWorkdir("/src").
+		WithExposedPort(8000).
 		WithExec([]string{"mkdocs", "serve", "-a", "0.0.0.0:8000"}).
-		Sync(ctx)
-
-	return err
+		AsService()
 }
 
 // DocsDeploy builds and deploys documentation to GitHub Pages
