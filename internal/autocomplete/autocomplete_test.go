@@ -8,6 +8,8 @@ import (
 )
 
 func TestGetCompletions_EmptyArgs(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "generate", Usage: "Generate SDK"},
@@ -26,6 +28,8 @@ func TestGetCompletions_EmptyArgs(t *testing.T) {
 }
 
 func TestGetCompletions_SubcommandPrefix(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "generate", Usage: "Generate SDK"},
@@ -43,6 +47,8 @@ func TestGetCompletions_SubcommandPrefix(t *testing.T) {
 }
 
 func TestGetCompletions_HiddenCommand(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "visible", Usage: "Visible command"},
@@ -57,6 +63,8 @@ func TestGetCompletions_HiddenCommand(t *testing.T) {
 }
 
 func TestGetCompletions_NestedSubcommand(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -79,6 +87,8 @@ func TestGetCompletions_NestedSubcommand(t *testing.T) {
 }
 
 func TestGetCompletions_FlagCompletion(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -102,6 +112,8 @@ func TestGetCompletions_FlagCompletion(t *testing.T) {
 }
 
 func TestGetCompletions_ShortFlagCompletion(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -123,6 +135,8 @@ func TestGetCompletions_ShortFlagCompletion(t *testing.T) {
 }
 
 func TestGetCompletions_FileFlagBehavior(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -142,6 +156,8 @@ func TestGetCompletions_FileFlagBehavior(t *testing.T) {
 }
 
 func TestGetCompletions_NonBoolFlagValue(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -161,6 +177,8 @@ func TestGetCompletions_NonBoolFlagValue(t *testing.T) {
 }
 
 func TestGetCompletions_BoolFlagDoesNotBlockCompletion(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -185,6 +203,8 @@ func TestGetCompletions_BoolFlagDoesNotBlockCompletion(t *testing.T) {
 }
 
 func TestGetCompletions_ColonCommands_NoColonTyped(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "config:get", Usage: "Get config value"},
@@ -202,6 +222,8 @@ func TestGetCompletions_ColonCommands_NoColonTyped(t *testing.T) {
 }
 
 func TestGetCompletions_ColonCommands_ColonTyped_Bash(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "config:get", Usage: "Get config value"},
@@ -221,6 +243,8 @@ func TestGetCompletions_ColonCommands_ColonTyped_Bash(t *testing.T) {
 }
 
 func TestGetCompletions_ColonCommands_ColonTyped_Zsh(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "config:get", Usage: "Get config value"},
@@ -240,6 +264,8 @@ func TestGetCompletions_ColonCommands_ColonTyped_Zsh(t *testing.T) {
 }
 
 func TestGetCompletions_BashStyleColonCompletion(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "config:get", Usage: "Get config value"},
@@ -257,6 +283,8 @@ func TestGetCompletions_BashStyleColonCompletion(t *testing.T) {
 }
 
 func TestGetCompletions_BashStyleColonCompletion_NoMatch(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "config:get", Usage: "Get config value"},
@@ -271,6 +299,8 @@ func TestGetCompletions_BashStyleColonCompletion_NoMatch(t *testing.T) {
 }
 
 func TestGetCompletions_ZshStyleColonCompletion(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "config:get", Usage: "Get config value"},
@@ -287,6 +317,8 @@ func TestGetCompletions_ZshStyleColonCompletion(t *testing.T) {
 }
 
 func TestGetCompletions_MixedColonAndRegularCommands(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "generate", Usage: "Generate SDK"},
@@ -305,6 +337,8 @@ func TestGetCompletions_MixedColonAndRegularCommands(t *testing.T) {
 }
 
 func TestGetCompletions_FlagWithBoolFlagSkipsValue(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -329,6 +363,8 @@ func TestGetCompletions_FlagWithBoolFlagSkipsValue(t *testing.T) {
 }
 
 func TestGetCompletions_MultipleFlagsBeforeSubcommand(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{
@@ -353,6 +389,8 @@ func TestGetCompletions_MultipleFlagsBeforeSubcommand(t *testing.T) {
 }
 
 func TestGetCompletions_CommandAliases(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{Name: "generate", Aliases: []string{"gen", "g"}, Usage: "Generate SDK"},
@@ -372,6 +410,8 @@ func TestGetCompletions_CommandAliases(t *testing.T) {
 }
 
 func TestGetCompletions_AllFlagsWhenNoPrefix(t *testing.T) {
+	t.Parallel()
+
 	root := &cli.Command{
 		Commands: []*cli.Command{
 			{

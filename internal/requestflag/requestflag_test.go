@@ -11,6 +11,8 @@ import (
 )
 
 func TestDateValueParse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		input   string
@@ -56,6 +58,8 @@ func TestDateValueParse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			var d DateValue
 			err := d.Parse(tt.input)
 
@@ -70,6 +74,8 @@ func TestDateValueParse(t *testing.T) {
 }
 
 func TestDateTimeValueParse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		input   string
@@ -119,6 +125,8 @@ func TestDateTimeValueParse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			var d DateTimeValue
 			err := d.Parse(tt.input)
 
@@ -136,6 +144,8 @@ func TestDateTimeValueParse(t *testing.T) {
 }
 
 func TestTimeValueParse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		input   string
@@ -181,6 +191,8 @@ func TestTimeValueParse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			var tv TimeValue
 			err := tv.Parse(tt.input)
 
@@ -195,7 +207,11 @@ func TestTimeValueParse(t *testing.T) {
 }
 
 func TestRequestParams(t *testing.T) {
+	t.Parallel()
+
 	t.Run("map body type", func(t *testing.T) {
+		t.Parallel()
+
 		// Create a mock command with flags
 		cmd := &cli.Command{
 			Name: "test",
@@ -283,6 +299,8 @@ func TestRequestParams(t *testing.T) {
 	})
 
 	t.Run("non-map body type", func(t *testing.T) {
+		t.Parallel()
+
 		// Create a mock command with flags
 		cmd := &cli.Command{
 			Name: "test",
@@ -304,6 +322,8 @@ func TestRequestParams(t *testing.T) {
 }
 
 func TestFlagSet(t *testing.T) {
+	t.Parallel()
+
 	strFlag := &Flag[string]{
 		Name:    "string-flag",
 		Default: "default-string",
@@ -327,38 +347,52 @@ func TestFlagSet(t *testing.T) {
 
 	// Test initialization and setting
 	t.Run("PreParse initialization", func(t *testing.T) {
+		t.Parallel()
+
 		assert.NoError(t, strFlag.PreParse())
 		assert.True(t, strFlag.applied)
 		assert.Equal(t, "default-string", strFlag.Get())
 	})
 
 	t.Run("Set string flag", func(t *testing.T) {
+		t.Parallel()
+
 		assert.NoError(t, strFlag.Set("string-flag", "new-value"))
 		assert.Equal(t, "new-value", strFlag.Get())
 		assert.True(t, strFlag.IsSet())
 	})
 
 	t.Run("Set int flag with valid value", func(t *testing.T) {
+		t.Parallel()
+
 		assert.NoError(t, superstitiousIntFlag.Set("int-flag", "100"))
 		assert.Equal(t, int64(100), superstitiousIntFlag.Get())
 		assert.True(t, superstitiousIntFlag.IsSet())
 	})
 
 	t.Run("Set int flag with invalid value", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Error(t, superstitiousIntFlag.Set("int-flag", "not-an-int"))
 	})
 
 	t.Run("Set int flag with validator failing", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Error(t, superstitiousIntFlag.Set("int-flag", "13"))
 	})
 
 	t.Run("Set bool flag", func(t *testing.T) {
+		t.Parallel()
+
 		assert.NoError(t, boolFlag.Set("bool-flag", "true"))
 		assert.Equal(t, true, boolFlag.Get())
 		assert.True(t, boolFlag.IsSet())
 	})
 
 	t.Run("Set slice flag with multiple values", func(t *testing.T) {
+		t.Parallel()
+
 		sliceFlag := &Flag[[]int64]{
 			Name:    "slice-flag",
 			Default: []int64{},
@@ -381,6 +415,8 @@ func TestFlagSet(t *testing.T) {
 	})
 
 	t.Run("Set slice flag with a nonempty default", func(t *testing.T) {
+		t.Parallel()
+
 		sliceFlag := &Flag[[]int64]{
 			Name:    "slice-flag",
 			Default: []int64{99, 100},
@@ -400,6 +436,8 @@ func TestFlagSet(t *testing.T) {
 }
 
 func TestParseTimeWithFormats(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		input    string
@@ -439,6 +477,8 @@ func TestParseTimeWithFormats(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := parseTimeWithFormats(tt.input, tt.formats)
 
 			if tt.wantErr {
@@ -452,8 +492,12 @@ func TestParseTimeWithFormats(t *testing.T) {
 }
 
 func TestYamlHandling(t *testing.T) {
+	t.Parallel()
+
 	// Test with any value
 	t.Run("Parse YAML to any", func(t *testing.T) {
+		t.Parallel()
+
 		cv := &cliValue[any]{}
 		err := cv.Set("name: test\nvalue: 42\n")
 		assert.NoError(t, err)
@@ -478,6 +522,8 @@ func TestYamlHandling(t *testing.T) {
 
 	// Test with array
 	t.Run("Parse YAML array", func(t *testing.T) {
+		t.Parallel()
+
 		cv := &cliValue[any]{}
 		err := cv.Set("- item1\n- item2\n- item3\n")
 		assert.NoError(t, err)
@@ -495,6 +541,8 @@ func TestYamlHandling(t *testing.T) {
 	})
 
 	t.Run("Parse @file.txt as YAML", func(t *testing.T) {
+		t.Parallel()
+
 		flag := &Flag[any]{
 			Name:    "file-flag",
 			Default: nil,
@@ -507,6 +555,8 @@ func TestYamlHandling(t *testing.T) {
 	})
 
 	t.Run("Parse @file.txt list as YAML", func(t *testing.T) {
+		t.Parallel()
+
 		flag := &Flag[[]any]{
 			Name:    "file-flag",
 			Default: nil,
@@ -520,6 +570,8 @@ func TestYamlHandling(t *testing.T) {
 	})
 
 	t.Run("Parse identifiers as YAML", func(t *testing.T) {
+		t.Parallel()
+
 		tests := []string{
 			"hello",
 			"e4e355fa-b03b-4c57-a73d-25c9733eec79",
@@ -555,6 +607,8 @@ func TestYamlHandling(t *testing.T) {
 
 	// Test with invalid YAML
 	t.Run("Parse invalid YAML", func(t *testing.T) {
+		t.Parallel()
+
 		invalidYaml := `[not closed`
 		cv := &cliValue[any]{}
 		err := cv.Set(invalidYaml)
@@ -563,6 +617,8 @@ func TestYamlHandling(t *testing.T) {
 }
 
 func TestFlagTypeNames(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		flag     cli.DocGenerationFlag
@@ -583,6 +639,8 @@ func TestFlagTypeNames(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			typeName := tt.flag.TypeName()
 			assert.Equal(t, tt.expected, typeName, "Expected type name %q, got %q", tt.expected, typeName)
 		})
