@@ -13,6 +13,7 @@ import (
 )
 
 func TestIsUTF8TextFile(t *testing.T) {
+	t.Parallel()
 
 	tests := []struct {
 		content  []byte
@@ -35,6 +36,7 @@ func TestIsUTF8TextFile(t *testing.T) {
 }
 
 func TestEmbedFiles(t *testing.T) {
+	t.Parallel()
 
 	// Create temporary directory for test files
 	tmpDir := t.TempDir()
@@ -220,6 +222,7 @@ func TestEmbedFiles(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name+" text", func(t *testing.T) {
+			t.Parallel()
 
 			got, err := embedFiles(tt.input, EmbedText, nil)
 			if tt.wantErr {
@@ -231,6 +234,7 @@ func TestEmbedFiles(t *testing.T) {
 		})
 
 		t.Run(tt.name+" io.Reader", func(t *testing.T) {
+			t.Parallel()
 
 			_, err := embedFiles(tt.input, EmbedIOReader, nil)
 			if tt.wantErr {
@@ -243,8 +247,10 @@ func TestEmbedFiles(t *testing.T) {
 }
 
 func TestEmbedFilesStdin(t *testing.T) {
+	t.Parallel()
 
 	t.Run("FilePathValueDash", func(t *testing.T) {
+		t.Parallel()
 
 		stdin := &onceStdinReader{stdinReader: strings.NewReader("stdin content")}
 
@@ -254,6 +260,7 @@ func TestEmbedFilesStdin(t *testing.T) {
 	})
 
 	t.Run("FilePathValueDevStdin", func(t *testing.T) {
+		t.Parallel()
 
 		stdin := &onceStdinReader{stdinReader: strings.NewReader("stdin content")}
 
@@ -263,6 +270,7 @@ func TestEmbedFilesStdin(t *testing.T) {
 	})
 
 	t.Run("MultipleFilePathValueDashesError", func(t *testing.T) {
+		t.Parallel()
 
 		stdin := &onceStdinReader{stdinReader: strings.NewReader("stdin content")}
 
@@ -275,6 +283,7 @@ func TestEmbedFilesStdin(t *testing.T) {
 	})
 
 	t.Run("FilePathValueDashUnavailableStdin", func(t *testing.T) {
+		t.Parallel()
 
 		stdin := &onceStdinReader{failureReason: "stdin is already being used for the request body"}
 
@@ -285,6 +294,7 @@ func TestEmbedFilesStdin(t *testing.T) {
 	})
 
 	t.Run("AtDashEmbedText", func(t *testing.T) {
+		t.Parallel()
 
 		stdin := &onceStdinReader{stdinReader: strings.NewReader("piped content")}
 
@@ -294,6 +304,7 @@ func TestEmbedFilesStdin(t *testing.T) {
 	})
 
 	t.Run("AtDashEmbedIOReader", func(t *testing.T) {
+		t.Parallel()
 
 		stdin := &onceStdinReader{stdinReader: strings.NewReader("piped content")}
 
@@ -309,6 +320,7 @@ func TestEmbedFilesStdin(t *testing.T) {
 	})
 
 	t.Run("FilePathValueRealFile", func(t *testing.T) {
+		t.Parallel()
 
 		tmpDir := t.TempDir()
 		writeTestFile(t, tmpDir, "test.txt", "file content")
