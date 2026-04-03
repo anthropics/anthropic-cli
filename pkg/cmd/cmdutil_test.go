@@ -32,7 +32,7 @@ func TestWriteBinaryResponse(t *testing.T) {
 			Body: io.NopCloser(bytes.NewReader(body)),
 		}
 
-		msg, err := writeBinaryResponse(resp, outfile)
+		msg, err := writeBinaryResponse(resp, os.Stdout, outfile)
 
 		require.NoError(t, err)
 		assert.Contains(t, msg, outfile)
@@ -43,24 +43,17 @@ func TestWriteBinaryResponse(t *testing.T) {
 	})
 
 	t.Run("write to stdout", func(t *testing.T) {
-		oldStdout := os.Stdout
-		r, w, _ := os.Pipe()
-		os.Stdout = w
+		t.Parallel()
 
+		var buf bytes.Buffer
 		body := []byte("stdout content")
 		resp := &http.Response{
 			Body: io.NopCloser(bytes.NewReader(body)),
 		}
-		msg, err := writeBinaryResponse(resp, "-")
-
-		w.Close()
-		os.Stdout = oldStdout
+		msg, err := writeBinaryResponse(resp, &buf, "-")
 
 		require.NoError(t, err)
 		assert.Empty(t, msg)
-
-		var buf bytes.Buffer
-		_, _ = buf.ReadFrom(r)
 		assert.Equal(t, body, buf.Bytes())
 	})
 }

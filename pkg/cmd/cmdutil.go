@@ -196,7 +196,10 @@ func streamToStdout(generateOutput func(w *os.File) error) error {
 	return err
 }
 
-func writeBinaryResponse(response *http.Response, outfile string) (string, error) {
+// writeBinaryResponse writes a binary response to stdout or a file.
+//
+// Takes in a stdout reference so we can test this function without overriding os.Stdout in tests.
+func writeBinaryResponse(response *http.Response, stdout io.Writer, outfile string) (string, error) {
 	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -204,13 +207,13 @@ func writeBinaryResponse(response *http.Response, outfile string) (string, error
 	}
 	switch outfile {
 	case "-", "/dev/stdout":
-		_, err := os.Stdout.Write(body)
+		_, err := stdout.Write(body)
 		return "", err
 	case "":
 		// If output file is unspecified, then print to stdout for plain text or
 		// if stdout is not a terminal:
 		if !isTerminal(os.Stdout) || isUTF8TextFile(body) {
-			_, err := os.Stdout.Write(body)
+			_, err := stdout.Write(body)
 			return "", err
 		}
 
