@@ -8,6 +8,8 @@ import (
 )
 
 func TestInnerFlagSet(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name      string
 		flagType  string
@@ -27,6 +29,8 @@ func TestInnerFlagSet(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			outerFlag := &Flag[map[string]any]{
 				Name: "test-flag",
 			}
@@ -81,6 +85,8 @@ func TestInnerFlagSet(t *testing.T) {
 }
 
 func TestInnerFlagValidator(t *testing.T) {
+	t.Parallel()
+
 	outerFlag := &Flag[map[string]any]{Name: "test-flag"}
 
 	innerFlag := &InnerFlag[int64]{
@@ -105,6 +111,8 @@ func TestInnerFlagValidator(t *testing.T) {
 }
 
 func TestWithInnerFlags(t *testing.T) {
+	t.Parallel()
+
 	outerFlag := &Flag[map[string]any]{Name: "outer"}
 	innerFlag := &InnerFlag[string]{
 		Name:       "outer.baz",
@@ -126,6 +134,8 @@ func TestWithInnerFlags(t *testing.T) {
 }
 
 func TestInnerFlagTypeNames(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		flag     cli.DocGenerationFlag
@@ -143,6 +153,8 @@ func TestInnerFlagTypeNames(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			typeName := tt.flag.TypeName()
 			assert.Equal(t, tt.expected, typeName, "Expected type name %q, got %q", tt.expected, typeName)
 		})
@@ -150,8 +162,12 @@ func TestInnerFlagTypeNames(t *testing.T) {
 }
 
 func TestInnerYamlHandling(t *testing.T) {
+	t.Parallel()
+
 	// Test with map value
 	t.Run("Parse YAML to map", func(t *testing.T) {
+		t.Parallel()
+
 		outerFlag := &Flag[map[string]any]{Name: "outer"}
 		innerFlag := &InnerFlag[map[string]any]{
 			Name:       "outer.baz",
@@ -176,6 +192,8 @@ func TestInnerYamlHandling(t *testing.T) {
 
 	// Test with invalid YAML
 	t.Run("Parse invalid YAML", func(t *testing.T) {
+		t.Parallel()
+
 		outerFlag := &Flag[map[string]any]{Name: "outer"}
 		innerFlag := &InnerFlag[map[string]any]{
 			Name:       "outer.baz",
@@ -190,6 +208,8 @@ func TestInnerYamlHandling(t *testing.T) {
 
 	// Test setting inner flags on a map multiple times
 	t.Run("Set inner flags on map multiple times", func(t *testing.T) {
+		t.Parallel()
+
 		outerFlag := &Flag[map[string]any]{Name: "outer"}
 
 		// Set first inner flag
@@ -219,6 +239,8 @@ func TestInnerYamlHandling(t *testing.T) {
 
 	// Test setting YAML and then an inner flag
 	t.Run("Set YAML and then inner flag", func(t *testing.T) {
+		t.Parallel()
+
 		outerFlag := &Flag[map[string]any]{Name: "outer"}
 
 		// First set the outer flag with YAML
@@ -246,7 +268,11 @@ func TestInnerYamlHandling(t *testing.T) {
 }
 
 func TestInnerFlagWithSliceType(t *testing.T) {
+	t.Parallel()
+
 	t.Run("Setting inner flags on slice of maps", func(t *testing.T) {
+		t.Parallel()
+
 		outerFlag := &Flag[[]map[string]any]{Name: "outer"}
 
 		// Set first inner flag (should create first item)
@@ -284,6 +310,8 @@ func TestInnerFlagWithSliceType(t *testing.T) {
 	})
 
 	t.Run("Appending to existing slice", func(t *testing.T) {
+		t.Parallel()
+
 		// Initialize with existing items
 		outerFlag := &Flag[[]map[string]any]{Name: "outer"}
 		err := outerFlag.Set(outerFlag.Name, `{name: initial}`)

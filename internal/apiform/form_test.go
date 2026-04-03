@@ -85,8 +85,12 @@ var tests = map[string]struct {
 }
 
 func TestEncode(t *testing.T) {
+	t.Parallel()
+
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			buf := bytes.NewBuffer(nil)
 			writer := multipart.NewWriter(buf)
 			writer.SetBoundary("xxx")
