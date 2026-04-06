@@ -34,7 +34,7 @@ jobs:
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go'
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -60,7 +60,7 @@ jobs:
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go'
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -107,7 +107,7 @@ jobs:
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go'
 
       - name: Bootstrap
         run: ./scripts/bootstrap
