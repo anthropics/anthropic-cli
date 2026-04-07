@@ -17,7 +17,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"completions", "create",
 			"--max-items", "10",
 			"--max-tokens-to-sample", "256",
-			"--model", "claude-opus-4-6",
+			"--model", "claude-mythos-preview",
 			"--prompt", "\n\nHuman: Hello, world!\n\nAssistant:",
 			"--metadata", "{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}",
 			"--stop-sequence", "string",
@@ -40,7 +40,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"completions", "create",
 			"--max-items", "10",
 			"--max-tokens-to-sample", "256",
-			"--model", "claude-opus-4-6",
+			"--model", "claude-mythos-preview",
 			"--prompt", "\n\nHuman: Hello, world!\n\nAssistant:",
 			"--metadata.user-id", "13803d75-b4b5-4c3e-b2a2-6f21399b021b",
 			"--stop-sequence", "string",
@@ -56,7 +56,7 @@ func TestCompletionsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"max_tokens_to_sample: 256\n" +
-			"model: claude-opus-4-6\n" +
+			"model: claude-mythos-preview\n" +
 			"prompt: |-\n" +
 			"\n" +
 			"\n" +
