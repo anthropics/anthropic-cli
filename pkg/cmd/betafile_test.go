@@ -19,6 +19,7 @@ func TestBetaFilesList(t *testing.T) {
 			"--after-id", "after_id",
 			"--before-id", "before_id",
 			"--limit", "1",
+			"--scope-id", "scope_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})

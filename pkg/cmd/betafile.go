@@ -36,6 +36,11 @@ var betaFilesList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[string]{
+			Name:      "scope-id",
+			Usage:     "Filter by scope ID. Only returns files associated with the specified scope (e.g., a session ID).",
+			QueryPath: "scope_id",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
