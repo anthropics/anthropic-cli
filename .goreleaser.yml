@@ -94,7 +94,6 @@ homebrew_casks:
       fish: "completions/ant.fish"
     manpages:
     - man/man1/ant.1.gz
-      - name: foo
     hooks:
       post:
         install: |
