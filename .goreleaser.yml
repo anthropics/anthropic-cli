@@ -84,6 +84,8 @@ homebrew_casks:
       owner: anthropics
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      pull_request:
+        enabled: true
     homepage: anthropic.com
     description: CLI for the Claude Platform
     license: MIT
