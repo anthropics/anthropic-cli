@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"
+
+	"github.com/anthropics/anthropic-cli/internal/jsonview"
 )
 
 func TestStreamOutput(t *testing.T) {
@@ -189,4 +191,80 @@ func TestFormatJSON(t *testing.T) {
 		// Transform path doesn't exist, so original result is returned
 		require.Equal(t, `{"id":"abc123"}`+"\n", string(formatted))
 	})
+}
+
+func TestShowJSONIterator(t *testing.T) {
+	t.Parallel()
+
+	t.Run("RawMultipleItems", func(t *testing.T) {
+		t.Parallel()
+
+		iter := &sliceIterator[map[string]any]{items: []map[string]any{
+			{"id": "abc", "name": "first"},
+			{"id": "def", "name": "second"},
+		}}
+		captured := captureShowJSONIterator(t, iter, "raw", "", -1)
+		assert.Equal(t, `{"id":"abc","name":"first"}`+"\n"+`{"id":"def","name":"second"}`+"\n", captured)
+	})
+
+	t.Run("RawWithTransform", func(t *testing.T) {
+		t.Parallel()
+
+		iter := &sliceIterator[map[string]any]{items: []map[string]any{
+			{"id": "abc", "name": "first"},
+			{"id": "def", "name": "second"},
+		}}
+		captured := captureShowJSONIterator(t, iter, "raw", "id", -1)
+		assert.Equal(t, `"abc"`+"\n"+`"def"`+"\n", captured)
+	})
+
+	t.Run("LimitItems", func(t *testing.T) {
+		t.Parallel()
+
+		iter := &sliceIterator[map[string]any]{items: []map[string]any{
+			{"id": "abc"},
+			{"id": "def"},
+			{"id": "ghi"},
+		}}
+		captured := captureShowJSONIterator(t, iter, "raw", "", 2)
+		assert.Equal(t, `{"id":"abc"}`+"\n"+`{"id":"def"}`+"\n", captured)
+	})
+}
+
+// sliceIterator is a simple iterator over a slice for testing.
+type sliceIterator[T any] struct {
+	index int
+	items []T
+}
+
+func (it *sliceIterator[T]) Next() bool {
+	it.index++
+	return it.index <= len(it.items)
+}
+
+func (it *sliceIterator[T]) Current() T {
+	return it.items[it.index-1]
+}
+
+func (it *sliceIterator[T]) Err() error {
+	return nil
+}
+
+var _ jsonview.Iterator[any] = (*sliceIterator[any])(nil)
+
+// captureShowJSONIterator runs ShowJSONIterator and captures the output written to a file.
+func captureShowJSONIterator[T any](t *testing.T, iter jsonview.Iterator[T], format, transform string, itemsToDisplay int64) string {
+	t.Helper()
+
+	r, w, err := os.Pipe()
+	require.NoError(t, err)
+	defer r.Close()
+
+	err = ShowJSONIterator(w, "test", iter, format, transform, itemsToDisplay)
+	w.Close()
+	require.NoError(t, err)
+
+	var buf bytes.Buffer
+	_, _ = buf.ReadFrom(r)
+	return buf.String()
 }
