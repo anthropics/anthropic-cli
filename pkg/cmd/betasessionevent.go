@@ -62,7 +62,7 @@ var betaSessionsEventsSend = cli.Command{
 			Name:     "session-id",
 			Required: true,
 		},
-		&requestflag.Flag[[]any]{
+		&requestflag.Flag[[]map[string]any]{
 			Name:     "event",
 			Usage:    "Events to send to the `session`.",
 			Required: true,

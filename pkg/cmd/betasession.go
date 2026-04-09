@@ -90,7 +90,7 @@ var betaSessionsUpdate = cli.Command{
 			Name:     "session-id",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omit the field to preserve.",
 			BodyPath: "metadata",

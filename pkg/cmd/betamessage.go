@@ -103,12 +103,12 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Amount of randomness injected into the response.\n\nDefaults to `1.0`. Ranges from `0.0` to `1.0`. Use `temperature` closer to `0.0` for analytical / multiple choice, and closer to `1.0` for creative and generative tasks.\n\nNote that even with `temperature` of `0.0`, the results will not be fully deterministic.",
 			BodyPath: "temperature",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "thinking",
 			Usage:    "Configuration for enabling Claude's extended thinking.\n\nWhen enabled, responses include `thinking` content blocks showing Claude's thinking process before the final answer. Requires a minimum budget of 1,024 tokens and counts towards your `max_tokens` limit.\n\nSee [extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking) for details.",
 			BodyPath: "thinking",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "tool-choice",
 			Usage:    "How the model should use the provided tools. The model can use a specific tool, any available tool, decide by itself, or not use tools at all.",
 			BodyPath: "tool_choice",
@@ -142,7 +142,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
 	"message": {
-		&requestflag.InnerFlag[[]any]{
+		&requestflag.InnerFlag[[]map[string]any]{
 			Name:       "message.content",
 			InnerField: "content",
 		},
@@ -274,12 +274,12 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "System prompt.\n\nA system prompt is a way of providing context and instructions to Claude, such as specifying a particular goal or role. See our [guide to system prompts](https://docs.claude.com/en/docs/system-prompts).",
 			BodyPath: "system",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "thinking",
 			Usage:    "Configuration for enabling Claude's extended thinking.\n\nWhen enabled, responses include `thinking` content blocks showing Claude's thinking process before the final answer. Requires a minimum budget of 1,024 tokens and counts towards your `max_tokens` limit.\n\nSee [extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking) for details.",
 			BodyPath: "thinking",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "tool-choice",
 			Usage:    "How the model should use the provided tools. The model can use a specific tool, any available tool, decide by itself, or not use tools at all.",
 			BodyPath: "tool_choice",
@@ -299,7 +299,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
 	"message": {
-		&requestflag.InnerFlag[[]any]{
+		&requestflag.InnerFlag[[]map[string]any]{
 			Name:       "message.content",
 			InnerField: "content",
 		},

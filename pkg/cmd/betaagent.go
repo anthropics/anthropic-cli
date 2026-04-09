@@ -139,7 +139,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "MCP servers. Full replacement. Omit to preserve; send empty array or null to clear. Names must be unique. Maximum 20.",
 			BodyPath: "mcp_servers",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omit the field to preserve. The stored bag is limited to 16 keys (up to 64 chars each) with values up to 512 chars.",
 			BodyPath: "metadata",

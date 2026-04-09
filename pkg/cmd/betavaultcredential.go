@@ -24,7 +24,7 @@ var betaVaultsCredentialsCreate = cli.Command{
 			Name:     "vault-id",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "auth",
 			Usage:    "Authentication details for creating a credential.",
 			Required: true,
@@ -96,7 +96,7 @@ var betaVaultsCredentialsUpdate = cli.Command{
 			Usage:    "Updated human-readable name for the credential. 1-255 characters.",
 			BodyPath: "display_name",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omitted keys are preserved.",
 			BodyPath: "metadata",
