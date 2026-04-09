@@ -4,6 +4,14 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+# Check for required commands
+for cmd in npm grep cut; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "Error: Required command '$cmd' not found"
+        exit 1
+    fi
+done
+
 if [[ -n "$1" && "$1" != '--'* ]]; then
   URL="$1"
   shift
