@@ -315,7 +315,7 @@ func shouldUseColors(w io.Writer) bool {
 }
 
 func formatJSON(expectedOutput *os.File, title string, res gjson.Result, format string, transform string) ([]byte, error) {
-	if format != "raw" && transform != "" {
+	if transform != "" {
 		transformed := res.Get(transform)
 		if transformed.Exists() {
 			res = transformed
@@ -359,7 +359,7 @@ func formatJSON(expectedOutput *os.File, title string, res gjson.Result, format 
 
 // Display JSON to the user in various different formats
 func ShowJSON(out *os.File, title string, res gjson.Result, format string, transform string) error {
-	if format != "raw" && transform != "" {
+	if transform != "" {
 		transformed := res.Get(transform)
 		if transformed.Exists() {
 			res = transformed
