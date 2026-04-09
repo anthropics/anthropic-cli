@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+#
+# Environment Variables:
+#   GOPRIVATE          - Comma-separated list of Go module patterns to treat as private
+#                        (default: github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go)
+#   TEST_API_BASE_URL  - Override the mock server base URL (optional)
+#                        When set, the script will not start a local mock server
+#
 
 set -euo pipefail
 
