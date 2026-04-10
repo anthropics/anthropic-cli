@@ -217,7 +217,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--api-key", "string",
 			"beta:messages", "count-tokens",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
-			"--model", "claude-mythos-preview",
+			"--model", "claude-opus-4-6",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
@@ -243,7 +243,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"beta:messages", "count-tokens",
 			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
-			"--model", "claude-mythos-preview",
+			"--model", "claude-opus-4-6",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
 			"--context-management.edits", "[{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]",
@@ -283,7 +283,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"            start_char_index: 0\n" +
 			"            type: char_location\n" +
 			"    role: user\n" +
-			"model: claude-mythos-preview\n" +
+			"model: claude-opus-4-6\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +
