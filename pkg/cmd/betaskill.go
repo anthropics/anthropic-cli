@@ -25,7 +25,7 @@ var betaSkillsCreate = cli.Command{
 			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
 			BodyPath: "display_title",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[[]any]{
 			Name:      "file",
 			Usage:     "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
 			BodyPath:  "files",

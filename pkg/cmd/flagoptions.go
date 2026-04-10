@@ -135,12 +135,25 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdi
 
 	case reflect.String:
 		// FilePathValue is always treated as a file path without needing the "@" prefix.
-		// These only appear on binary upload parameters (multipart/octet-stream), which
-		// always use EmbedIOReader.
+		// These appear on binary upload parameters (multipart/octet-stream).
 		if v.Type() == reflect.TypeOf(FilePathValue("")) {
 			s := v.String()
 			if s == "" {
 				return v, nil
+			}
+			if embedStyle == EmbedIOReader {
+				if isStdinPath(s) {
+					r, err := stdin.read()
+					if err != nil {
+						return v, err
+					}
+					return reflect.ValueOf(io.NopCloser(r)), nil
+				}
+				file, err := os.Open(s)
+				if err != nil {
+					return v, err
+				}
+				return reflect.ValueOf(file), nil
 			}
 			if isStdinPath(s) {
 				content, err := stdin.readAll()
