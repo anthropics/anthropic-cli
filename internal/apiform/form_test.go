@@ -122,6 +122,16 @@ type namedReader struct {
 
 func (r *namedReader) Name() string { return r.name }
 
+// filenameReader wraps an io.Reader with a Filename() method.
+// The encoder prefers Filename() over Name(), so this simulates the
+// namedFile wrapper used by the CLI for skill uploads.
+type filenameReader struct {
+	io.Reader
+	filename string
+}
+
+func (r *filenameReader) Filename() string { return r.filename }
+
 func TestEncodeFileUpload(t *testing.T) {
 	t.Parallel()
 
@@ -149,15 +159,17 @@ func TestEncodeFileUpload(t *testing.T) {
 		}
 	})
 
-	t.Run("array of files uses brackets notation", func(t *testing.T) {
+	t.Run("array of files uses brackets notation with Filename", func(t *testing.T) {
 		t.Parallel()
 		buf := bytes.NewBuffer(nil)
 		writer := multipart.NewWriter(buf)
 		writer.SetBoundary("xxx")
 
+		// Use filenameReader (Filename() method) to simulate how the CLI
+		// wraps files for skill uploads with explicit relative paths.
 		files := []any{
-			&namedReader{Reader: strings.NewReader("content A"), name: "skill-dir/SKILL.md"},
-			&namedReader{Reader: strings.NewReader("content B"), name: "skill-dir/ref/doc.md"},
+			&filenameReader{Reader: strings.NewReader("content A"), filename: "skill-dir/SKILL.md"},
+			&filenameReader{Reader: strings.NewReader("content B"), filename: "skill-dir/ref/doc.md"},
 		}
 		form := map[string]any{"files": files}
 		if err := MarshalWithSettings(form, writer, FormatBrackets); err != nil {
@@ -165,24 +177,24 @@ func TestEncodeFileUpload(t *testing.T) {
 		}
 		writer.Close()
 		result := buf.String()
-		// Verify files[] bracket notation for each file
 		if strings.Count(result, `name="files[]"`) != 2 {
 			t.Errorf("expected 2 fields with name=\"files[]\", got:\n%s", result)
 		}
 		if !strings.Contains(result, `filename="skill-dir/SKILL.md"`) {
-			t.Errorf("expected filename with relative path preserved, got:\n%s", result)
+			t.Errorf("expected relative path in Filename(), got:\n%s", result)
 		}
 		if !strings.Contains(result, `filename="skill-dir/ref/doc.md"`) {
-			t.Errorf("expected filename with relative path preserved, got:\n%s", result)
+			t.Errorf("expected relative path in Filename(), got:\n%s", result)
 		}
 	})
 
-	t.Run("absolute path stripped to basename", func(t *testing.T) {
+	t.Run("Name uses path.Base for safety", func(t *testing.T) {
 		t.Parallel()
 		buf := bytes.NewBuffer(nil)
 		writer := multipart.NewWriter(buf)
 		writer.SetBoundary("xxx")
 
+		// Name() (e.g., os.File) goes through path.Base -- safe default
 		file := &namedReader{Reader: strings.NewReader("hello"), name: "/tmp/upload.txt"}
 		form := map[string]any{"file": file}
 		if err := MarshalWithSettings(form, writer, FormatBrackets); err != nil {
@@ -191,20 +203,18 @@ func TestEncodeFileUpload(t *testing.T) {
 		writer.Close()
 		result := buf.String()
 		if !strings.Contains(result, `filename="upload.txt"`) {
-			t.Errorf("expected absolute path stripped to basename, got:\n%s", result)
-		}
-		if strings.Contains(result, `filename="/tmp/upload.txt"`) {
-			t.Errorf("absolute path should not appear in filename, got:\n%s", result)
+			t.Errorf("expected path.Base for Name(), got:\n%s", result)
 		}
 	})
 
-	t.Run("relative path preserved in filename", func(t *testing.T) {
+	t.Run("Filename preferred over Name", func(t *testing.T) {
 		t.Parallel()
 		buf := bytes.NewBuffer(nil)
 		writer := multipart.NewWriter(buf)
 		writer.SetBoundary("xxx")
 
-		file := &namedReader{Reader: strings.NewReader("hello"), name: "my-skill/SKILL.md"}
+		// Filename() takes precedence and preserves the full value
+		file := &filenameReader{Reader: strings.NewReader("hello"), filename: "my-skill/SKILL.md"}
 		form := map[string]any{"file": file}
 		if err := MarshalWithSettings(form, writer, FormatBrackets); err != nil {
 			t.Fatal(err)
@@ -212,7 +222,7 @@ func TestEncodeFileUpload(t *testing.T) {
 		writer.Close()
 		result := buf.String()
 		if !strings.Contains(result, `filename="my-skill/SKILL.md"`) {
-			t.Errorf("expected relative path preserved, got:\n%s", result)
+			t.Errorf("expected Filename() value preserved, got:\n%s", result)
 		}
 	})
 }

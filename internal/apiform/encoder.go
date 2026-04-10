@@ -5,6 +5,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/textproto"
+	"path"
 	"reflect"
 	"sort"
 	"strconv"
@@ -179,17 +180,7 @@ func (e *encoder) encodeReader(key string, val reflect.Value, writer *multipart.
 	if named, ok := reader.(interface{ Filename() string }); ok {
 		filename = named.Filename()
 	} else if named, ok := reader.(interface{ Name() string }); ok {
-		name := named.Name()
-		// Preserve relative directory structure (e.g., "skill-dir/SKILL.md")
-		// but strip absolute path prefixes (e.g., "/tmp/file.txt" -> "file.txt")
-		if strings.HasPrefix(name, "/") {
-			// Find the last path component for absolute paths
-			if idx := strings.LastIndex(name, "/"); idx >= 0 {
-				filename = name[idx+1:]
-			}
-		} else {
-			filename = name
-		}
+		filename = path.Base(named.Name())
 	}
 
 	// Get content type if available
