@@ -15,16 +15,25 @@ permissions:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
-    # Scopes HOMEBREW_TAP_GITHUB_TOKEN / RELEASE_APP_* to this environment.
-    # Tag creation is restricted to the Stainless App via a repository tag ruleset.
+    # Scopes RELEASE_APP_* to this environment. Tag creation is restricted
+    # to the Stainless App via a repository tag ruleset.
     environment: production-release
     steps:
-    - name: Generate release app token
+    - name: Generate release app token (this repo)
       id: app-token
       uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
       with:
         app-id: ${{ secrets.RELEASE_APP_ID }}
         private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+    - name: Generate release app token (homebrew-tap)
+      id: tap-token
+      uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+      with:
+        app-id: ${{ secrets.RELEASE_APP_ID }}
+        private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+        owner: anthropics
+        repositories: homebrew-tap
 
     - name: Checkout
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -43,4 +52,4 @@ jobs:
         args: release --clean
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.tap-token.outputs.token }}
