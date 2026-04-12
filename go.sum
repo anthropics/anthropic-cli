@@ -1,5 +1,5 @@
-github.com/anthropics/anthropic-sdk-go v1.34.0 h1:IV+Wwxkwypit9Md8dr48zc626NS4o9PoQieESoNE0TE=
-github.com/anthropics/anthropic-sdk-go v1.34.0/go.mod h1:dSIO7kSrOI7MA4fE6RRVaw8tyWP7HNQU5/H/KS4cax8=
+github.com/anthropics/anthropic-sdk-go v1.35.0 h1:W6K8mIkD1zIU0VUPMuokWONUvdlt2C//b11Zr6v5Oz4=
+github.com/anthropics/anthropic-sdk-go v1.35.0/go.mod h1:dSIO7kSrOI7MA4fE6RRVaw8tyWP7HNQU5/H/KS4cax8=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ2ASbcXHWsFqH8hp8=
 github.com/aymanbagabas/go-udiff v0.2.0 h1:TK0fH4MteXUDspT88n8CKzvK0X9O2xu9yQjWpi6yML8=
