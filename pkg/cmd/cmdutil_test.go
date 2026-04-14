@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
 )
 
 func TestStreamOutput(t *testing.T) {
@@ -146,5 +147,46 @@ func TestValidateBaseURL(t *testing.T) {
 		err := ValidateBaseURL("api.example.com", "--base-url")
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "--base-url")
+	})
+}
+
+func TestFormatJSON(t *testing.T) {
+	t.Parallel()
+
+	t.Run("RawWithTransform", func(t *testing.T) {
+		t.Parallel()
+
+		res := gjson.Parse(`{"id":"abc123","name":"test"}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "id")
+		require.NoError(t, err)
+		require.Equal(t, `"abc123"`+"\n", string(formatted))
+	})
+
+	t.Run("RawWithoutTransform", func(t *testing.T) {
+		t.Parallel()
+
+		res := gjson.Parse(`{"id":"abc123","name":"test"}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "")
+		require.NoError(t, err)
+		require.Equal(t, `{"id":"abc123","name":"test"}`+"\n", string(formatted))
+	})
+
+	t.Run("RawWithNestedTransform", func(t *testing.T) {
+		t.Parallel()
+
+		res := gjson.Parse(`{"data":{"items":[1,2,3]}}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "data.items")
+		require.NoError(t, err)
+		require.Equal(t, "[1,2,3]\n", string(formatted))
+	})
+
+	t.Run("RawWithNonexistentTransform", func(t *testing.T) {
+		t.Parallel()
+
+		res := gjson.Parse(`{"id":"abc123"}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "missing")
+		require.NoError(t, err)
+		// Transform path doesn't exist, so original result is returned
+		require.Equal(t, `{"id":"abc123"}`+"\n", string(formatted))
 	})
 }
