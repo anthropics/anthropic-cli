@@ -168,8 +168,9 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "messages:batches create", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "messages:batches create", obj, format, explicitFormat, transform)
 }
 
 func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -203,8 +204,9 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "messages:batches retrieve", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "messages:batches retrieve", obj, format, explicitFormat, transform)
 }
 
 func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
@@ -229,6 +231,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -238,7 +241,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "messages:batches list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "messages:batches list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Messages.Batches.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
@@ -248,7 +251,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
 			maxItems = cmd.Value("limit").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "messages:batches list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "messages:batches list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -283,8 +286,9 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "messages:batches delete", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "messages:batches delete", obj, format, explicitFormat, transform)
 }
 
 func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
@@ -318,8 +322,9 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "messages:batches cancel", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "messages:batches cancel", obj, format, explicitFormat, transform)
 }
 
 func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
@@ -345,11 +350,12 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	stream := client.Messages.Batches.ResultsStreaming(ctx, cmd.Value("message-batch-id").(string), options...)
 	maxItems := int64(-1)
 	if cmd.IsSet("max-items") {
 		maxItems = cmd.Value("max-items").(int64)
 	}
-	return ShowJSONIterator(os.Stdout, "messages:batches results", stream, format, transform, maxItems)
+	return ShowJSONIterator(os.Stdout, os.Stderr, "messages:batches results", stream, format, explicitFormat, transform, maxItems)
 }

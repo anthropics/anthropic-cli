@@ -249,8 +249,9 @@ func handleBetaEnvironmentsCreate(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:environments create", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:environments create", obj, format, explicitFormat, transform)
 }
 
 func handleBetaEnvironmentsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -291,8 +292,9 @@ func handleBetaEnvironmentsRetrieve(ctx context.Context, cmd *cli.Command) error
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:environments retrieve", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:environments retrieve", obj, format, explicitFormat, transform)
 }
 
 func handleBetaEnvironmentsUpdate(ctx context.Context, cmd *cli.Command) error {
@@ -333,8 +335,9 @@ func handleBetaEnvironmentsUpdate(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:environments update", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:environments update", obj, format, explicitFormat, transform)
 }
 
 func handleBetaEnvironmentsList(ctx context.Context, cmd *cli.Command) error {
@@ -359,6 +362,7 @@ func handleBetaEnvironmentsList(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -368,14 +372,14 @@ func handleBetaEnvironmentsList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "beta:environments list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "beta:environments list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Beta.Environments.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "beta:environments list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:environments list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -417,8 +421,9 @@ func handleBetaEnvironmentsDelete(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:environments delete", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:environments delete", obj, format, explicitFormat, transform)
 }
 
 func handleBetaEnvironmentsArchive(ctx context.Context, cmd *cli.Command) error {
@@ -459,6 +464,7 @@ func handleBetaEnvironmentsArchive(ctx context.Context, cmd *cli.Command) error 
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:environments archive", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:environments archive", obj, format, explicitFormat, transform)
 }

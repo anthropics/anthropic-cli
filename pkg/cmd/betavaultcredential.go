@@ -233,8 +233,9 @@ func handleBetaVaultsCredentialsCreate(ctx context.Context, cmd *cli.Command) er
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:vaults:credentials create", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials create", obj, format, explicitFormat, transform)
 }
 
 func handleBetaVaultsCredentialsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -277,8 +278,9 @@ func handleBetaVaultsCredentialsRetrieve(ctx context.Context, cmd *cli.Command) 
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:vaults:credentials retrieve", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials retrieve", obj, format, explicitFormat, transform)
 }
 
 func handleBetaVaultsCredentialsUpdate(ctx context.Context, cmd *cli.Command) error {
@@ -321,8 +323,9 @@ func handleBetaVaultsCredentialsUpdate(ctx context.Context, cmd *cli.Command) er
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:vaults:credentials update", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials update", obj, format, explicitFormat, transform)
 }
 
 func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) error {
@@ -350,6 +353,7 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -364,7 +368,7 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "beta:vaults:credentials list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Beta.Vaults.Credentials.ListAutoPaging(
 			ctx,
@@ -376,7 +380,7 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "beta:vaults:credentials list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:vaults:credentials list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -420,8 +424,9 @@ func handleBetaVaultsCredentialsDelete(ctx context.Context, cmd *cli.Command) er
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:vaults:credentials delete", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials delete", obj, format, explicitFormat, transform)
 }
 
 func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) error {
@@ -464,6 +469,7 @@ func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) e
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:vaults:credentials archive", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials archive", obj, format, explicitFormat, transform)
 }

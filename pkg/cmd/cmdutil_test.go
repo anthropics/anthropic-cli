@@ -231,6 +231,73 @@ func TestShowJSONIterator(t *testing.T) {
 	})
 }
 
+func TestExploreFallback(t *testing.T) {
+	t.Parallel()
+
+	t.Run("ShowJSONFallsBackToJsonOnNonTTY", func(t *testing.T) {
+		t.Parallel()
+
+		// os.Pipe() produces a *os.File that isn't a terminal, so explore should fall back.
+		r, w, err := os.Pipe()
+		require.NoError(t, err)
+		defer r.Close()
+
+		var stderr bytes.Buffer
+		res := gjson.Parse(`{"id":"abc"}`)
+		err = ShowJSON(w, &stderr, "test", res, "explore", false, "")
+		w.Close()
+		require.NoError(t, err)
+
+		var buf bytes.Buffer
+		_, _ = buf.ReadFrom(r)
+		assert.Contains(t, buf.String(), `"id"`)
+		assert.Contains(t, buf.String(), `"abc"`)
+	})
+
+	t.Run("ShowJSONIteratorFallsBackToJsonOnNonTTY", func(t *testing.T) {
+		t.Parallel()
+
+		iter := &sliceIterator[map[string]any]{items: []map[string]any{
+			{"id": "abc"},
+		}}
+		captured := captureShowJSONIterator(t, iter, "explore", "", -1)
+		assert.Contains(t, captured, `"id"`)
+		assert.Contains(t, captured, `"abc"`)
+	})
+
+	t.Run("ShowJSONWarnsWhenExplicitFormatOnNonTTY", func(t *testing.T) {
+		t.Parallel()
+
+		r, w, err := os.Pipe()
+		require.NoError(t, err)
+		defer r.Close()
+
+		var stderr bytes.Buffer
+		res := gjson.Parse(`{"id":"abc"}`)
+		err = ShowJSON(w, &stderr, "test", res, "explore", true, "")
+		w.Close()
+		require.NoError(t, err)
+
+		assert.Equal(t, warningExploreNotSupported, stderr.String())
+	})
+
+	t.Run("ShowJSONSilentWhenDefaultFormatOnNonTTY", func(t *testing.T) {
+		t.Parallel()
+
+		r, w, err := os.Pipe()
+		require.NoError(t, err)
+		defer r.Close()
+
+		var stderr bytes.Buffer
+		res := gjson.Parse(`{"id":"abc"}`)
+		err = ShowJSON(w, &stderr, "test", res, "explore", false, "")
+		w.Close()
+		require.NoError(t, err)
+
+		assert.Empty(t, stderr.String(), "no warning expected when format was not explicit")
+	})
+}
+
 // sliceIterator is a simple iterator over a slice for testing.
 type sliceIterator[T any] struct {
 	index int
@@ -260,7 +327,8 @@ func captureShowJSONIterator[T any](t *testing.T, iter jsonview.Iterator[T], for
 	require.NoError(t, err)
 	defer r.Close()
 
-	err = ShowJSONIterator(w, "test", iter, format, transform, itemsToDisplay)
+	var stderr bytes.Buffer
+	err = ShowJSONIterator(w, &stderr, "test", iter, format, false, transform, itemsToDisplay)
 	w.Close()
 	require.NoError(t, err)
 
