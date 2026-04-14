@@ -111,6 +111,7 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if cmd.Bool("stream") {
 		stream := client.Completions.NewStreaming(ctx, params, options...)
@@ -118,7 +119,7 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "completions create", stream, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "completions create", stream, format, explicitFormat, transform, maxItems)
 	} else {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
@@ -128,6 +129,6 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 		}
 
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "completions create", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "completions create", obj, format, explicitFormat, transform)
 	}
 }

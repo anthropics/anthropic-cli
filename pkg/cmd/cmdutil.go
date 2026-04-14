@@ -357,8 +357,13 @@ func formatJSON(expectedOutput *os.File, title string, res gjson.Result, format 
 	}
 }
 
-// Display JSON to the user in various different formats
-func ShowJSON(out *os.File, title string, res gjson.Result, format string, transform string) error {
+const warningExploreNotSupported = "Warning: Output format 'explore' not supported for non-terminal output; falling back to 'json'\n"
+
+// Display JSON to the user in various different formats. The explicitFormat parameter indicates
+// whether the format was explicitly set by the user (via --format), which controls whether we
+// silently fall back to json when explore is requested on non-terminal output. Warnings are
+// written to stderr.
+func ShowJSON(out *os.File, stderr io.Writer, title string, res gjson.Result, format string, explicitFormat bool, transform string) error {
 	if transform != "" {
 		transformed := res.Get(transform)
 		if transformed.Exists() {
@@ -368,8 +373,14 @@ func ShowJSON(out *os.File, title string, res gjson.Result, format string, trans
 
 	switch strings.ToLower(format) {
 	case "auto":
-		return ShowJSON(out, title, res, "json", "")
+		return ShowJSON(out, stderr, title, res, "json", explicitFormat, "")
 	case "explore":
+		if !isTerminal(out) {
+			if explicitFormat {
+				fmt.Fprint(stderr, warningExploreNotSupported)
+			}
+			return ShowJSON(out, stderr, title, res, "json", explicitFormat, transform)
+		}
 		return jsonview.ExploreJSON(title, res)
 	default:
 		bytes, err := formatJSON(out, title, res, format, transform)
@@ -394,9 +405,15 @@ type hasRawJSON interface {
 // For an iterator over different value types, display its values to the user in
 // different formats.
 // -1 is used to signal no limit of items to display
-func ShowJSONIterator[T any](stdout *os.File, title string, iter jsonview.Iterator[T], format string, transform string, itemsToDisplay int64) error {
+func ShowJSONIterator[T any](stdout *os.File, stderr io.Writer, title string, iter jsonview.Iterator[T], format string, explicitFormat bool, transform string, itemsToDisplay int64) error {
 	if format == "explore" {
-		return jsonview.ExploreJSONStream(title, iter)
+		if isTerminal(stdout) {
+			return jsonview.ExploreJSONStream(title, iter)
+		}
+		if explicitFormat {
+			fmt.Fprint(stderr, warningExploreNotSupported)
+		}
+		format = "json"
 	}
 
 	terminalWidth, terminalHeight, err := term.GetSize(os.Stdout.Fd())
@@ -469,7 +486,7 @@ func ShowJSONIterator[T any](stdout *os.File, title string, iter jsonview.Iterat
 				}
 				obj = gjson.ParseBytes(jsonData)
 			}
-			if err := ShowJSON(pager, title, obj, format, transform); err != nil {
+			if err := ShowJSON(pager, stderr, title, obj, format, explicitFormat, transform); err != nil {
 				return err
 			}
 			itemsToDisplay -= 1

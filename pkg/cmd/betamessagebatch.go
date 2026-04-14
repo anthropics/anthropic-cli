@@ -198,8 +198,9 @@ func handleBetaMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) erro
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:messages:batches create", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:messages:batches create", obj, format, explicitFormat, transform)
 }
 
 func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -240,8 +241,9 @@ func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) er
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:messages:batches retrieve", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:messages:batches retrieve", obj, format, explicitFormat, transform)
 }
 
 func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
@@ -266,6 +268,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -275,7 +278,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "beta:messages:batches list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "beta:messages:batches list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Beta.Messages.Batches.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
@@ -285,7 +288,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
 			maxItems = cmd.Value("limit").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "beta:messages:batches list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:messages:batches list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -327,8 +330,9 @@ func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) erro
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:messages:batches delete", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:messages:batches delete", obj, format, explicitFormat, transform)
 }
 
 func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
@@ -369,8 +373,9 @@ func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) erro
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:messages:batches cancel", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:messages:batches cancel", obj, format, explicitFormat, transform)
 }
 
 func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
@@ -398,6 +403,7 @@ func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) err
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	stream := client.Beta.Messages.Batches.ResultsStreaming(
 		ctx,
@@ -409,5 +415,5 @@ func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) err
 	if cmd.IsSet("max-items") {
 		maxItems = cmd.Value("max-items").(int64)
 	}
-	return ShowJSONIterator(os.Stdout, "beta:messages:batches results", stream, format, transform, maxItems)
+	return ShowJSONIterator(os.Stdout, os.Stderr, "beta:messages:batches results", stream, format, explicitFormat, transform, maxItems)
 }

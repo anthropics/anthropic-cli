@@ -199,8 +199,9 @@ func handleBetaSessionsResourcesRetrieve(ctx context.Context, cmd *cli.Command) 
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:sessions:resources retrieve", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:resources retrieve", obj, format, explicitFormat, transform)
 }
 
 func handleBetaSessionsResourcesUpdate(ctx context.Context, cmd *cli.Command) error {
@@ -243,8 +244,9 @@ func handleBetaSessionsResourcesUpdate(ctx context.Context, cmd *cli.Command) er
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:sessions:resources update", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:resources update", obj, format, explicitFormat, transform)
 }
 
 func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) error {
@@ -272,6 +274,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -286,7 +289,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "beta:sessions:resources list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:resources list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Beta.Sessions.Resources.ListAutoPaging(
 			ctx,
@@ -298,7 +301,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "beta:sessions:resources list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:sessions:resources list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -342,8 +345,9 @@ func handleBetaSessionsResourcesDelete(ctx context.Context, cmd *cli.Command) er
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:sessions:resources delete", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:resources delete", obj, format, explicitFormat, transform)
 }
 
 func handleBetaSessionsResourcesAdd(ctx context.Context, cmd *cli.Command) error {
@@ -384,6 +388,7 @@ func handleBetaSessionsResourcesAdd(ctx context.Context, cmd *cli.Command) error
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:sessions:resources add", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:resources add", obj, format, explicitFormat, transform)
 }
