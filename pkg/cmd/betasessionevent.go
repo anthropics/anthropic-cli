@@ -126,6 +126,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -140,7 +141,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "beta:sessions:events list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:events list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Beta.Sessions.Events.ListAutoPaging(
 			ctx,
@@ -152,7 +153,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "beta:sessions:events list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:sessions:events list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -194,8 +195,9 @@ func handleBetaSessionsEventsSend(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:sessions:events send", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:sessions:events send", obj, format, explicitFormat, transform)
 }
 
 func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error {
@@ -223,6 +225,7 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	stream := client.Beta.Sessions.Events.StreamEvents(
 		ctx,
@@ -234,5 +237,5 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 	if cmd.IsSet("max-items") {
 		maxItems = cmd.Value("max-items").(int64)
 	}
-	return ShowJSONIterator(os.Stdout, "beta:sessions:events stream", stream, format, transform, maxItems)
+	return ShowJSONIterator(os.Stdout, os.Stderr, "beta:sessions:events stream", stream, format, explicitFormat, transform, maxItems)
 }

@@ -164,6 +164,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -173,7 +174,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "beta:files list", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "beta:files list", obj, format, explicitFormat, transform)
 	} else {
 		iter := client.Beta.Files.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
@@ -183,7 +184,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
 			maxItems = cmd.Value("limit").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "beta:files list", iter, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:files list", iter, format, explicitFormat, transform, maxItems)
 	}
 }
 
@@ -225,8 +226,9 @@ func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:files delete", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:files delete", obj, format, explicitFormat, transform)
 }
 
 func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
@@ -307,8 +309,9 @@ func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) erro
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:files retrieve-metadata", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:files retrieve-metadata", obj, format, explicitFormat, transform)
 }
 
 func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
@@ -341,6 +344,7 @@ func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "beta:files upload", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "beta:files upload", obj, format, explicitFormat, transform)
 }

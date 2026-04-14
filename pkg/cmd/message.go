@@ -268,6 +268,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if cmd.Bool("stream") {
 		stream := client.Messages.NewStreaming(ctx, params, options...)
@@ -275,7 +276,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "messages create", stream, format, transform, maxItems)
+		return ShowJSONIterator(os.Stdout, os.Stderr, "messages create", stream, format, explicitFormat, transform, maxItems)
 	} else {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
@@ -285,7 +286,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		}
 
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "messages create", obj, format, transform)
+		return ShowJSON(os.Stdout, os.Stderr, "messages create", obj, format, explicitFormat, transform)
 	}
 }
 
@@ -319,6 +320,7 @@ func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "messages count-tokens", obj, format, transform)
+	return ShowJSON(os.Stdout, os.Stderr, "messages count-tokens", obj, format, explicitFormat, transform)
 }
