@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -193,7 +192,12 @@ func handleBetaVaultsCreate(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults create", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults create",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -236,7 +240,12 @@ func handleBetaVaultsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults retrieve", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsUpdate(ctx context.Context, cmd *cli.Command) error {
@@ -279,7 +288,12 @@ func handleBetaVaultsUpdate(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults update", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults update",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
@@ -314,14 +328,24 @@ func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, os.Stderr, "beta:vaults list", obj, format, explicitFormat, transform)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "beta:vaults list",
+			Transform:      transform,
+		})
 	} else {
 		iter := client.Beta.Vaults.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:vaults list", iter, format, explicitFormat, transform, maxItems)
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "beta:vaults list",
+			Transform:      transform,
+		})
 	}
 }
 
@@ -365,7 +389,12 @@ func handleBetaVaultsDelete(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults delete", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults delete",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsArchive(ctx context.Context, cmd *cli.Command) error {
@@ -408,5 +437,10 @@ func handleBetaVaultsArchive(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults archive", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults archive",
+		Transform:      transform,
+	})
 }

@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -110,7 +109,12 @@ func handleModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "models retrieve", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "models retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleModelsList(ctx context.Context, cmd *cli.Command) error {
@@ -145,7 +149,12 @@ func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, os.Stderr, "models list", obj, format, explicitFormat, transform)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "models list",
+			Transform:      transform,
+		})
 	} else {
 		iter := client.Models.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
@@ -155,6 +164,11 @@ func handleModelsList(ctx context.Context, cmd *cli.Command) error {
 			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
 			maxItems = cmd.Value("limit").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, os.Stderr, "models list", iter, format, explicitFormat, transform, maxItems)
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "models list",
+			Transform:      transform,
+		})
 	}
 }

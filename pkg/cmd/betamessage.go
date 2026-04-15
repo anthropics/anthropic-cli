@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -406,7 +405,12 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:messages create", stream, format, explicitFormat, transform, maxItems)
+		return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "beta:messages create",
+			Transform:      transform,
+		})
 	} else {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
@@ -416,7 +420,12 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		}
 
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, os.Stderr, "beta:messages create", obj, format, explicitFormat, transform)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "beta:messages create",
+			Transform:      transform,
+		})
 	}
 }
 
@@ -452,5 +461,10 @@ func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:messages count-tokens", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:messages count-tokens",
+		Transform:      transform,
+	})
 }

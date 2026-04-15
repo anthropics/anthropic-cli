@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -170,7 +169,12 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "messages:batches create", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "messages:batches create",
+		Transform:      transform,
+	})
 }
 
 func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -206,7 +210,12 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "messages:batches retrieve", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "messages:batches retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
@@ -241,7 +250,12 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, os.Stderr, "messages:batches list", obj, format, explicitFormat, transform)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "messages:batches list",
+			Transform:      transform,
+		})
 	} else {
 		iter := client.Messages.Batches.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
@@ -251,7 +265,12 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
 			maxItems = cmd.Value("limit").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, os.Stderr, "messages:batches list", iter, format, explicitFormat, transform, maxItems)
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "messages:batches list",
+			Transform:      transform,
+		})
 	}
 }
 
@@ -288,7 +307,12 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "messages:batches delete", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "messages:batches delete",
+		Transform:      transform,
+	})
 }
 
 func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
@@ -324,7 +348,12 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "messages:batches cancel", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "messages:batches cancel",
+		Transform:      transform,
+	})
 }
 
 func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
@@ -357,5 +386,10 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	if cmd.IsSet("max-items") {
 		maxItems = cmd.Value("max-items").(int64)
 	}
-	return ShowJSONIterator(os.Stdout, os.Stderr, "messages:batches results", stream, format, explicitFormat, transform, maxItems)
+	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "messages:batches results",
+		Transform:      transform,
+	})
 }

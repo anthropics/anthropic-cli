@@ -244,7 +244,12 @@ func TestExploreFallback(t *testing.T) {
 
 		var stderr bytes.Buffer
 		res := gjson.Parse(`{"id":"abc"}`)
-		err = ShowJSON(w, &stderr, "test", res, "explore", false, "")
+		err = ShowJSON(res, ShowJSONOpts{
+			Format: "explore",
+			Stderr: &stderr,
+			Stdout: w,
+			Title:  "test",
+		})
 		w.Close()
 		require.NoError(t, err)
 
@@ -274,7 +279,13 @@ func TestExploreFallback(t *testing.T) {
 
 		var stderr bytes.Buffer
 		res := gjson.Parse(`{"id":"abc"}`)
-		err = ShowJSON(w, &stderr, "test", res, "explore", true, "")
+		err = ShowJSON(res, ShowJSONOpts{
+			ExplicitFormat: true,
+			Format:         "explore",
+			Stderr:         &stderr,
+			Stdout:         w,
+			Title:          "test",
+		})
 		w.Close()
 		require.NoError(t, err)
 
@@ -290,7 +301,12 @@ func TestExploreFallback(t *testing.T) {
 
 		var stderr bytes.Buffer
 		res := gjson.Parse(`{"id":"abc"}`)
-		err = ShowJSON(w, &stderr, "test", res, "explore", false, "")
+		err = ShowJSON(res, ShowJSONOpts{
+			Format: "explore",
+			Stderr: &stderr,
+			Stdout: w,
+			Title:  "test",
+		})
 		w.Close()
 		require.NoError(t, err)
 
@@ -327,8 +343,13 @@ func captureShowJSONIterator[T any](t *testing.T, iter jsonview.Iterator[T], for
 	require.NoError(t, err)
 	defer r.Close()
 
-	var stderr bytes.Buffer
-	err = ShowJSONIterator(w, &stderr, "test", iter, format, false, transform, itemsToDisplay)
+	err = ShowJSONIterator(iter, itemsToDisplay, ShowJSONOpts{
+		Format:    format,
+		Stderr:    io.Discard,
+		Stdout:    w,
+		Title:     "test",
+		Transform: transform,
+	})
 	w.Close()
 	require.NoError(t, err)
 

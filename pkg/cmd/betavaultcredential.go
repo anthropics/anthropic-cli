@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -235,7 +234,12 @@ func handleBetaVaultsCredentialsCreate(ctx context.Context, cmd *cli.Command) er
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials create", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults:credentials create",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsCredentialsRetrieve(ctx context.Context, cmd *cli.Command) error {
@@ -280,7 +284,12 @@ func handleBetaVaultsCredentialsRetrieve(ctx context.Context, cmd *cli.Command) 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials retrieve", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults:credentials retrieve",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsCredentialsUpdate(ctx context.Context, cmd *cli.Command) error {
@@ -325,7 +334,12 @@ func handleBetaVaultsCredentialsUpdate(ctx context.Context, cmd *cli.Command) er
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials update", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults:credentials update",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) error {
@@ -368,7 +382,12 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 			return err
 		}
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials list", obj, format, explicitFormat, transform)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "beta:vaults:credentials list",
+			Transform:      transform,
+		})
 	} else {
 		iter := client.Beta.Vaults.Credentials.ListAutoPaging(
 			ctx,
@@ -380,7 +399,12 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, os.Stderr, "beta:vaults:credentials list", iter, format, explicitFormat, transform, maxItems)
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "beta:vaults:credentials list",
+			Transform:      transform,
+		})
 	}
 }
 
@@ -426,7 +450,12 @@ func handleBetaVaultsCredentialsDelete(ctx context.Context, cmd *cli.Command) er
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials delete", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults:credentials delete",
+		Transform:      transform,
+	})
 }
 
 func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) error {
@@ -471,5 +500,10 @@ func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) e
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, os.Stderr, "beta:vaults:credentials archive", obj, format, explicitFormat, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "beta:vaults:credentials archive",
+		Transform:      transform,
+	})
 }
