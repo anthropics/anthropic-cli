@@ -84,6 +84,7 @@ homebrew_casks:
       owner: anthropics
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      branch: "ant-{{.Version}}"
       pull_request:
         enabled: true
     homepage: anthropic.com

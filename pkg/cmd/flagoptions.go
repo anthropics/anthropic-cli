@@ -344,6 +344,12 @@ func flagOptions(
 
 	requestContents := requestflag.ExtractRequestContents(cmd)
 
+	// Translate inner-field aliases in YAML values that came from flags (e.g.
+	// `--parent '{"alias": val}'` resolving to the canonical inner field).
+	if bodyMap, ok := requestContents.Body.(map[string]any); ok {
+		applyDataAliases(cmd, bodyMap)
+	}
+
 	stdinConsumedByPipe := false
 	if (bodyType == MultipartFormEncoded || bodyType == ApplicationJSON) && !ignoreStdin && isInputPiped() {
 		pipeData, err := io.ReadAll(os.Stdin)
@@ -358,6 +364,7 @@ func flagOptions(
 				return nil, fmt.Errorf("Failed to parse piped data as YAML/JSON:\n%w", err)
 			}
 			if bodyMap, ok := bodyData.(map[string]any); ok {
+				applyDataAliases(cmd, bodyMap)
 				if flagMap, ok := requestContents.Body.(map[string]any); ok {
 					maps.Copy(bodyMap, flagMap)
 					requestContents.Body = bodyMap
@@ -519,6 +526,46 @@ func flagOptions(
 // and embedded in the request. Unlike a regular string, embedFilesValue always treats a FilePathValue
 // as a file path without needing the "@" prefix.
 type FilePathValue string
+
+// applyDataAliases rewrites keys in a body map based on flag `DataAliases` metadata. For top-level flags,
+// `{alias: value}` becomes `{canonical: value}`. For inner flags (those registered under an outer flag
+// via WithInnerFlags), the alias translation is also applied to the nested map under the outer flag's
+// body path, so values like `--parent '{"alias": val}'` resolve to the canonical inner field name.
+func applyDataAliases(cmd *cli.Command, bodyMap map[string]any) {
+	for _, flag := range cmd.Flags {
+		// Inner flags: rewrite aliases inside the nested map under the outer flag's body path.
+		if inner, ok := flag.(requestflag.HasOuterFlag); ok {
+			outer, outerOk := inner.GetOuterFlag().(requestflag.InRequest)
+			if !outerOk {
+				continue
+			}
+			if nested, ok := bodyMap[outer.GetBodyPath()].(map[string]any); ok && inner.GetInnerField() != "" {
+				rewriteAliases(nested, inner.GetInnerField(), inner.GetDataAliases())
+			}
+			continue
+		}
+		// Top-level flags: rewrite aliases in the body map.
+		if inReq, ok := flag.(requestflag.InRequest); ok && inReq.GetBodyPath() != "" {
+			rewriteAliases(bodyMap, inReq.GetBodyPath(), inReq.GetDataAliases())
+		}
+	}
+}
+
+// rewriteAliases replaces each alias key in m with the canonical key, preserving the value. The
+// "canonical" key is the name the API itself expects (the OpenAPI property/field name) — e.g. for
+// a top-level flag, the parameter's BodyPath; for an inner flag, the inner field name. Aliases are
+// the user-facing alternate names declared via x-stainless-cli-data-alias.
+func rewriteAliases(m map[string]any, canonical string, aliases []string) {
+	for _, alias := range aliases {
+		if alias == "" || alias == canonical {
+			continue
+		}
+		if val, exists := m[alias]; exists {
+			m[canonical] = val
+			delete(m, alias)
+		}
+	}
+}
 
 // wrapFileInputValues replaces string values for FileInput flags (type: string, format: binary) with
 // FilePathValue sentinel values. embedFilesValue recognizes FilePathValue and reads the file contents

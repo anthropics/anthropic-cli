@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -85,12 +84,12 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Amount of randomness injected into the response.\n\nDefaults to `1.0`. Ranges from `0.0` to `1.0`. Use `temperature` closer to `0.0` for analytical / multiple choice, and closer to `1.0` for creative and generative tasks.\n\nNote that even with `temperature` of `0.0`, the results will not be fully deterministic.",
 			BodyPath: "temperature",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "thinking",
 			Usage:    "Configuration for enabling Claude's extended thinking.\n\nWhen enabled, responses include `thinking` content blocks showing Claude's thinking process before the final answer. Requires a minimum budget of 1,024 tokens and counts towards your `max_tokens` limit.\n\nSee [extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking) for details.",
 			BodyPath: "thinking",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "tool-choice",
 			Usage:    "How the model should use the provided tools. The model can use a specific tool, any available tool, decide by itself, or not use tools at all.",
 			BodyPath: "tool_choice",
@@ -119,7 +118,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
 	"message": {
-		&requestflag.InnerFlag[[]any]{
+		&requestflag.InnerFlag[[]map[string]any]{
 			Name:       "message.content",
 			InnerField: "content",
 		},
@@ -191,12 +190,12 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "System prompt.\n\nA system prompt is a way of providing context and instructions to Claude, such as specifying a particular goal or role. See our [guide to system prompts](https://docs.claude.com/en/docs/system-prompts).",
 			BodyPath: "system",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "thinking",
 			Usage:    "Configuration for enabling Claude's extended thinking.\n\nWhen enabled, responses include `thinking` content blocks showing Claude's thinking process before the final answer. Requires a minimum budget of 1,024 tokens and counts towards your `max_tokens` limit.\n\nSee [extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking) for details.",
 			BodyPath: "thinking",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[map[string]any]{
 			Name:     "tool-choice",
 			Usage:    "How the model should use the provided tools. The model can use a specific tool, any available tool, decide by itself, or not use tools at all.",
 			BodyPath: "tool_choice",
@@ -211,7 +210,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
 	"message": {
-		&requestflag.InnerFlag[[]any]{
+		&requestflag.InnerFlag[[]map[string]any]{
 			Name:       "message.content",
 			InnerField: "content",
 		},
@@ -268,6 +267,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if cmd.Bool("stream") {
 		stream := client.Messages.NewStreaming(ctx, params, options...)
@@ -275,7 +275,12 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
 		}
-		return ShowJSONIterator(os.Stdout, "messages create", stream, format, transform, maxItems)
+		return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "messages create",
+			Transform:      transform,
+		})
 	} else {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
@@ -285,7 +290,12 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		}
 
 		obj := gjson.ParseBytes(res)
-		return ShowJSON(os.Stdout, "messages create", obj, format, transform)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			Title:          "messages create",
+			Transform:      transform,
+		})
 	}
 }
 
@@ -319,6 +329,12 @@ func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 
 	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(os.Stdout, "messages count-tokens", obj, format, transform)
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		Title:          "messages count-tokens",
+		Transform:      transform,
+	})
 }
