@@ -167,6 +167,7 @@ func handleBetaSkillsVersionsCreate(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:skills:versions create",
 		Transform:      transform,
 	})
@@ -217,6 +218,7 @@ func handleBetaSkillsVersionsRetrieve(ctx context.Context, cmd *cli.Command) err
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:skills:versions retrieve",
 		Transform:      transform,
 	})
@@ -265,6 +267,7 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:skills:versions list",
 			Transform:      transform,
 		})
@@ -282,6 +285,7 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:skills:versions list",
 			Transform:      transform,
 		})
@@ -333,6 +337,7 @@ func handleBetaSkillsVersionsDelete(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:skills:versions delete",
 		Transform:      transform,
 	})

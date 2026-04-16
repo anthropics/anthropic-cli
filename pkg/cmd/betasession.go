@@ -256,6 +256,7 @@ func handleBetaSessionsCreate(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions create",
 		Transform:      transform,
 	})
@@ -304,6 +305,7 @@ func handleBetaSessionsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions retrieve",
 		Transform:      transform,
 	})
@@ -352,6 +354,7 @@ func handleBetaSessionsUpdate(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions update",
 		Transform:      transform,
 	})
@@ -392,6 +395,7 @@ func handleBetaSessionsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions list",
 			Transform:      transform,
 		})
@@ -404,6 +408,7 @@ func handleBetaSessionsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions list",
 			Transform:      transform,
 		})
@@ -453,6 +458,7 @@ func handleBetaSessionsDelete(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions delete",
 		Transform:      transform,
 	})
@@ -501,6 +507,7 @@ func handleBetaSessionsArchive(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions archive",
 		Transform:      transform,
 	})

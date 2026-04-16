@@ -177,6 +177,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:files list",
 			Transform:      transform,
 		})
@@ -192,6 +193,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:files list",
 			Transform:      transform,
 		})
@@ -241,6 +243,7 @@ func handleBetaFilesDelete(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:files delete",
 		Transform:      transform,
 	})
@@ -329,6 +332,7 @@ func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) erro
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:files retrieve-metadata",
 		Transform:      transform,
 	})
@@ -369,6 +373,7 @@ func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:files upload",
 		Transform:      transform,
 	})

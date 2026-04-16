@@ -278,6 +278,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "messages create",
 			Transform:      transform,
 		})
@@ -293,6 +294,7 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "messages create",
 			Transform:      transform,
 		})
@@ -334,6 +336,7 @@ func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "messages count-tokens",
 		Transform:      transform,
 	})

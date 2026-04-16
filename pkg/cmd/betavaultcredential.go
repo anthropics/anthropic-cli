@@ -237,6 +237,7 @@ func handleBetaVaultsCredentialsCreate(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:vaults:credentials create",
 		Transform:      transform,
 	})
@@ -287,6 +288,7 @@ func handleBetaVaultsCredentialsRetrieve(ctx context.Context, cmd *cli.Command) 
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:vaults:credentials retrieve",
 		Transform:      transform,
 	})
@@ -337,6 +339,7 @@ func handleBetaVaultsCredentialsUpdate(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:vaults:credentials update",
 		Transform:      transform,
 	})
@@ -385,6 +388,7 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:vaults:credentials list",
 			Transform:      transform,
 		})
@@ -402,6 +406,7 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:vaults:credentials list",
 			Transform:      transform,
 		})
@@ -453,6 +458,7 @@ func handleBetaVaultsCredentialsDelete(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:vaults:credentials delete",
 		Transform:      transform,
 	})
@@ -503,6 +509,7 @@ func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) e
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:vaults:credentials archive",
 		Transform:      transform,
 	})

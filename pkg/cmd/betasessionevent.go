@@ -143,6 +143,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:events list",
 			Transform:      transform,
 		})
@@ -160,6 +161,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:events list",
 			Transform:      transform,
 		})
@@ -209,6 +211,7 @@ func handleBetaSessionsEventsSend(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:events send",
 		Transform:      transform,
 	})
@@ -254,6 +257,7 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:events stream",
 		Transform:      transform,
 	})
