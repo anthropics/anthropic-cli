@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.1 (2026-04-16)
+
+Full Changelog: [v1.2.0...v1.2.1](https://github.com/anthropics/anthropic-cli/compare/v1.2.0...v1.2.1)
+
+### Bug Fixes
+
+* **goreleaser:** correct pull request config ([5d6c9ae](https://github.com/anthropics/anthropic-cli/commit/5d6c9aeb2f5552d9bf698b9a7f5b9e8c36c001bd))
+
+
+### Chores
+
+* **ci:** support manually triggering release workflow ([9f53a96](https://github.com/anthropics/anthropic-cli/commit/9f53a96d298248c45822057a6c53ec6dd3e3f768))
+
 ## 1.2.0 (2026-04-16)
 
 Full Changelog: [v1.1.0...v1.2.0](https://github.com/anthropics/anthropic-cli/compare/v1.1.0...v1.2.0)
