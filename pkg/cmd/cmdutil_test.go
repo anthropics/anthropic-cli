@@ -159,7 +159,7 @@ func TestFormatJSON(t *testing.T) {
 		t.Parallel()
 
 		res := gjson.Parse(`{"id":"abc123","name":"test"}`)
-		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "id")
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "id", false)
 		require.NoError(t, err)
 		require.Equal(t, `"abc123"`+"\n", string(formatted))
 	})
@@ -168,7 +168,7 @@ func TestFormatJSON(t *testing.T) {
 		t.Parallel()
 
 		res := gjson.Parse(`{"id":"abc123","name":"test"}`)
-		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "")
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "", false)
 		require.NoError(t, err)
 		require.Equal(t, `{"id":"abc123","name":"test"}`+"\n", string(formatted))
 	})
@@ -177,7 +177,7 @@ func TestFormatJSON(t *testing.T) {
 		t.Parallel()
 
 		res := gjson.Parse(`{"data":{"items":[1,2,3]}}`)
-		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "data.items")
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "data.items", false)
 		require.NoError(t, err)
 		require.Equal(t, "[1,2,3]\n", string(formatted))
 	})
@@ -186,10 +186,39 @@ func TestFormatJSON(t *testing.T) {
 		t.Parallel()
 
 		res := gjson.Parse(`{"id":"abc123"}`)
-		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "missing")
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "missing", false)
 		require.NoError(t, err)
 		// Transform path doesn't exist, so original result is returned
 		require.Equal(t, `{"id":"abc123"}`+"\n", string(formatted))
+	})
+
+	t.Run("RawOutputString", func(t *testing.T) {
+		t.Parallel()
+
+		res := gjson.Parse(`{"id":"abc123","name":"test"}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "json", "id", true)
+		require.NoError(t, err)
+		require.Equal(t, "abc123\n", string(formatted))
+	})
+
+	t.Run("RawOutputNonString", func(t *testing.T) {
+		t.Parallel()
+
+		// --raw-output has no effect on non-string values
+		res := gjson.Parse(`{"count":42}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "count", true)
+		require.NoError(t, err)
+		require.Equal(t, "42\n", string(formatted))
+	})
+
+	t.Run("RawOutputObject", func(t *testing.T) {
+		t.Parallel()
+
+		// --raw-output has no effect on objects
+		res := gjson.Parse(`{"nested":{"a":1}}`)
+		formatted, err := formatJSON(os.Stdout, "test", res, "raw", "nested", true)
+		require.NoError(t, err)
+		require.Equal(t, `{"a":1}`+"\n", string(formatted))
 	})
 }
 

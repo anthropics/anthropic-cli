@@ -314,16 +314,21 @@ func shouldUseColors(w io.Writer) bool {
 	return isTerminal(w)
 }
 
-func formatJSON(expectedOutput *os.File, title string, res gjson.Result, format string, transform string) ([]byte, error) {
+func formatJSON(expectedOutput *os.File, title string, res gjson.Result, format string, transform string, rawOutput bool) ([]byte, error) {
 	if transform != "" {
 		transformed := res.Get(transform)
 		if transformed.Exists() {
 			res = transformed
 		}
 	}
+	// Modeled after `jq -r` (`--raw-output`): if the result is a string, print it without JSON quotes so that
+	// it's easier to pipe into other programs.
+	if rawOutput && res.Type == gjson.String {
+		return []byte(res.Str + "\n"), nil
+	}
 	switch strings.ToLower(format) {
 	case "auto":
-		return formatJSON(expectedOutput, title, res, "json", "")
+		return formatJSON(expectedOutput, title, res, "json", "", rawOutput)
 	case "pretty":
 		return []byte(jsonview.RenderJSON(title, res) + "\n"), nil
 	case "json":
@@ -363,6 +368,7 @@ const warningExploreNotSupported = "Warning: Output format 'explore' not support
 type ShowJSONOpts struct {
 	ExplicitFormat bool      // true if the user explicitly passed --format
 	Format         string    // output format (auto, explore, json, jsonl, pretty, raw, yaml)
+	RawOutput      bool      // like jq -r: print strings without JSON quotes
 	Stderr         io.Writer // stderr for warnings; injectable for testing; defaults to os.Stderr
 	Stdout         *os.File  // stdout (or pager); injectable for testing; defaults to os.Stdout
 	Title          string    // display title
@@ -405,7 +411,7 @@ func ShowJSON(res gjson.Result, opts ShowJSONOpts) error {
 		}
 		return jsonview.ExploreJSON(opts.Title, res)
 	default:
-		bytes, err := formatJSON(opts.Stdout, opts.Title, res, opts.Format, opts.Transform)
+		bytes, err := formatJSON(opts.Stdout, opts.Title, res, opts.Format, opts.Transform, opts.RawOutput)
 		if err != nil {
 			return err
 		}
@@ -462,7 +468,7 @@ func ShowJSONIterator[T any](iter jsonview.Iterator[T], itemsToDisplay int64, op
 			}
 			obj = gjson.ParseBytes(jsonData)
 		}
-		json, err := formatJSON(opts.Stdout, opts.Title, obj, format, opts.Transform)
+		json, err := formatJSON(opts.Stdout, opts.Title, obj, format, opts.Transform, opts.RawOutput)
 		if err != nil {
 			return err
 		}
