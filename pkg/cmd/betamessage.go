@@ -423,6 +423,7 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:messages create",
 			Transform:      transform,
 		})
@@ -438,6 +439,7 @@ func handleBetaMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:messages create",
 			Transform:      transform,
 		})
@@ -479,6 +481,7 @@ func handleBetaMessagesCountTokens(ctx context.Context, cmd *cli.Command) error 
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:messages count-tokens",
 		Transform:      transform,
 	})

@@ -175,6 +175,7 @@ func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:user-profiles create",
 		Transform:      transform,
 	})
@@ -223,6 +224,7 @@ func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:user-profiles retrieve",
 		Transform:      transform,
 	})
@@ -271,6 +273,7 @@ func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:user-profiles update",
 		Transform:      transform,
 	})
@@ -311,6 +314,7 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:user-profiles list",
 			Transform:      transform,
 		})
@@ -323,6 +327,7 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:user-profiles list",
 			Transform:      transform,
 		})
@@ -372,6 +377,7 @@ func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Com
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:user-profiles create-enrollment-url",
 		Transform:      transform,
 	})

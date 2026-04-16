@@ -203,6 +203,7 @@ func handleBetaSessionsResourcesRetrieve(ctx context.Context, cmd *cli.Command) 
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources retrieve",
 		Transform:      transform,
 	})
@@ -253,6 +254,7 @@ func handleBetaSessionsResourcesUpdate(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources update",
 		Transform:      transform,
 	})
@@ -301,6 +303,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:resources list",
 			Transform:      transform,
 		})
@@ -318,6 +321,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:resources list",
 			Transform:      transform,
 		})
@@ -369,6 +373,7 @@ func handleBetaSessionsResourcesDelete(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources delete",
 		Transform:      transform,
 	})
@@ -417,6 +422,7 @@ func handleBetaSessionsResourcesAdd(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources add",
 		Transform:      transform,
 	})

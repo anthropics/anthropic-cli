@@ -121,6 +121,7 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "completions create",
 			Transform:      transform,
 		})
@@ -136,6 +137,7 @@ func handleCompletionsCreate(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "completions create",
 			Transform:      transform,
 		})
