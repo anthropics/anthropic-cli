@@ -10,6 +10,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch: {}
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
