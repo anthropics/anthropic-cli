@@ -25,7 +25,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--inference-geo", "inference_geo",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
 			"--metadata", "{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}",
-			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}}",
+			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}",
 			"--output-format", "{schema: {foo: bar}, type: json_schema}",
 			"--service-tier", "auto",
 			"--speed", "standard",
@@ -38,6 +38,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
+			"--user-profile-id", "user_profile_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -69,6 +70,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--metadata.user-id", "13803d75-b4b5-4c3e-b2a2-6f21399b021b",
 			"--output-config.effort", "low",
 			"--output-config.format", "{schema: {foo: bar}, type: json_schema}",
+			"--output-config.task-budget", "{total: 1024, type: tokens, remaining: 0}",
 			"--output-format.schema", "{foo: bar}",
 			"--output-format.type", "json_schema",
 			"--service-tier", "auto",
@@ -82,6 +84,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
+			"--user-profile-id", "user_profile_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -148,6 +151,10 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"    schema:\n" +
 			"      foo: bar\n" +
 			"    type: json_schema\n" +
+			"  task_budget:\n" +
+			"    total: 1024\n" +
+			"    type: tokens\n" +
+			"    remaining: 0\n" +
 			"output_format:\n" +
 			"  schema:\n" +
 			"    foo: bar\n" +
@@ -199,7 +206,8 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"    strict: true\n" +
 			"    type: custom\n" +
 			"top_k: 5\n" +
-			"top_p: 0.7\n")
+			"top_p: 0.7\n" +
+			"user_profile_id: user_profile_id\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -221,7 +229,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
-			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}}",
+			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}",
 			"--output-format", "{schema: {foo: bar}, type: json_schema}",
 			"--speed", "standard",
 			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
@@ -254,6 +262,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--mcp-server.tool-configuration", "{allowed_tools: [string], enabled: true}",
 			"--output-config.effort", "low",
 			"--output-config.format", "{schema: {foo: bar}, type: json_schema}",
+			"--output-config.task-budget", "{total: 1024, type: tokens, remaining: 0}",
 			"--output-format.schema", "{foo: bar}",
 			"--output-format.type", "json_schema",
 			"--speed", "standard",
@@ -317,6 +326,10 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"    schema:\n" +
 			"      foo: bar\n" +
 			"    type: json_schema\n" +
+			"  task_budget:\n" +
+			"    total: 1024\n" +
+			"    type: tokens\n" +
+			"    remaining: 0\n" +
 			"output_format:\n" +
 			"  schema:\n" +
 			"    foo: bar\n" +
