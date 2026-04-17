@@ -22,14 +22,29 @@ type InnerFlag[
 	Aliases     []string      // aliases that are allowed for this flag
 	Validator   func(T) error // custom function to validate this flag value
 
-	OuterFlag  cli.Flag // The flag on which this inner flag will set values
-	InnerField string   // The inner field which this flag will set
+	OuterFlag   cli.Flag // The flag on which this inner flag will set values
+	InnerField  string   // The inner field which this flag will set
+	DataAliases []string // alternate names recognized in YAML values passed as the outer flag
+}
+
+// GetDataAliases returns the aliases recognized when parsing inner field keys from piped or flag YAML.
+func (f *InnerFlag[T]) GetDataAliases() []string {
+	return f.DataAliases
+}
+
+// GetInnerField returns the API field name that this inner flag sets on its outer flag's value.
+// For example, the flag --parent.foo targeting a parameter whose OpenAPI property name is "foo"
+// would return "foo". This is distinct from the flag's CLI name and from any DataAliases entries.
+func (f *InnerFlag[T]) GetInnerField() string {
+	return f.InnerField
 }
 
 type HasOuterFlag interface {
 	cli.Flag
 	SetOuterFlag(cli.Flag)
 	GetOuterFlag() cli.Flag
+	GetInnerField() string
+	GetDataAliases() []string
 }
 
 func (f *InnerFlag[T]) SetOuterFlag(flag cli.Flag) {

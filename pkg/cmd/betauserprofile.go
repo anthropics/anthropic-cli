@@ -14,20 +14,19 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaVaultsCreate = cli.Command{
+var betaUserProfilesCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Create Vault",
+	Usage:   "Create User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[string]{
-			Name:     "display-name",
-			Usage:    "Human-readable name for the vault. 1-255 characters.",
-			Required: true,
-			BodyPath: "display_name",
+		&requestflag.Flag[any]{
+			Name:     "external-id",
+			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
+			BodyPath: "external_id",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
-			Usage:    "Arbitrary key-value metadata to attach to the vault. Maximum 16 pairs, keys up to 64 chars, values up to 512 chars.",
+			Usage:    "Free-form key-value data to attach to this user profile. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters. Values must be non-empty strings.",
 			BodyPath: "metadata",
 		},
 		&requestflag.Flag[[]string]{
@@ -36,17 +35,17 @@ var betaVaultsCreate = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaVaultsCreate,
+	Action:          handleBetaUserProfilesCreate,
 	HideHelpCommand: true,
 }
 
-var betaVaultsRetrieve = cli.Command{
+var betaUserProfilesRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Get Vault",
+	Usage:   "Get User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "vault-id",
+			Name:     "user-profile-id",
 			Required: true,
 		},
 		&requestflag.Flag[[]string]{
@@ -55,27 +54,27 @@ var betaVaultsRetrieve = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaVaultsRetrieve,
+	Action:          handleBetaUserProfilesRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaVaultsUpdate = cli.Command{
+var betaUserProfilesUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Update Vault",
+	Usage:   "Update User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "vault-id",
+			Name:     "user-profile-id",
 			Required: true,
 		},
 		&requestflag.Flag[any]{
-			Name:     "display-name",
-			Usage:    "Updated human-readable name for the vault. 1-255 characters.",
-			BodyPath: "display_name",
+			Name:     "external-id",
+			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters.",
+			BodyPath: "external_id",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
-			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omitted keys are preserved.",
+			Usage:    "Key-value pairs to merge into the stored metadata. Keys provided overwrite existing values. To remove a key, set its value to an empty string. Keys not provided are left unchanged. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters.",
 			BodyPath: "metadata",
 		},
 		&requestflag.Flag[[]string]{
@@ -84,28 +83,28 @@ var betaVaultsUpdate = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaVaultsUpdate,
+	Action:          handleBetaUserProfilesUpdate,
 	HideHelpCommand: true,
 }
 
-var betaVaultsList = cli.Command{
+var betaUserProfilesList = cli.Command{
 	Name:    "list",
-	Usage:   "List Vaults",
+	Usage:   "List User Profiles",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[bool]{
-			Name:      "include-archived",
-			Usage:     "Whether to include archived vaults in the results.",
-			QueryPath: "include_archived",
-		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Maximum number of vaults to return per page. Defaults to 20, maximum 100.",
+			Usage:     "Query parameter for limit",
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
+			Name:      "order",
+			Usage:     "Query parameter for order",
+			QueryPath: "order",
+		},
+		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination token from a previous `list_vaults` response.",
+			Usage:     "Query parameter for page",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{
@@ -118,17 +117,17 @@ var betaVaultsList = cli.Command{
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleBetaVaultsList,
+	Action:          handleBetaUserProfilesList,
 	HideHelpCommand: true,
 }
 
-var betaVaultsDelete = cli.Command{
-	Name:    "delete",
-	Usage:   "Delete Vault",
+var betaUserProfilesCreateEnrollmentURL = cli.Command{
+	Name:    "create-enrollment-url",
+	Usage:   "Create Enrollment URL",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "vault-id",
+			Name:     "user-profile-id",
 			Required: true,
 		},
 		&requestflag.Flag[[]string]{
@@ -137,30 +136,11 @@ var betaVaultsDelete = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaVaultsDelete,
+	Action:          handleBetaUserProfilesCreateEnrollmentURL,
 	HideHelpCommand: true,
 }
 
-var betaVaultsArchive = cli.Command{
-	Name:    "archive",
-	Usage:   "Archive Vault",
-	Suggest: true,
-	Flags: []cli.Flag{
-		&requestflag.Flag[string]{
-			Name:     "vault-id",
-			Required: true,
-		},
-		&requestflag.Flag[[]string]{
-			Name:       "beta",
-			Usage:      "Optional header to specify the beta version(s) you want to use.",
-			HeaderPath: "anthropic-beta",
-		},
-	},
-	Action:          handleBetaVaultsArchive,
-	HideHelpCommand: true,
-}
-
-func handleBetaVaultsCreate(ctx context.Context, cmd *cli.Command) error {
+func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 
@@ -168,7 +148,7 @@ func handleBetaVaultsCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaVaultNewParams{}
+	params := anthropic.BetaUserProfileNewParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -183,7 +163,7 @@ func handleBetaVaultsCreate(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Vaults.New(ctx, params, options...)
+	_, err = client.Beta.UserProfiles.New(ctx, params, options...)
 	if err != nil {
 		return err
 	}
@@ -195,23 +175,23 @@ func handleBetaVaultsCreate(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
-		Title:          "beta:vaults create",
+		Title:          "beta:user-profiles create",
 		Transform:      transform,
 	})
 }
 
-func handleBetaVaultsRetrieve(ctx context.Context, cmd *cli.Command) error {
+func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("vault-id") && len(unusedArgs) > 0 {
-		cmd.Set("vault-id", unusedArgs[0])
+	if !cmd.IsSet("user-profile-id") && len(unusedArgs) > 0 {
+		cmd.Set("user-profile-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaVaultGetParams{}
+	params := anthropic.BetaUserProfileGetParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -226,9 +206,9 @@ func handleBetaVaultsRetrieve(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Vaults.Get(
+	_, err = client.Beta.UserProfiles.Get(
 		ctx,
-		cmd.Value("vault-id").(string),
+		cmd.Value("user-profile-id").(string),
 		params,
 		options...,
 	)
@@ -243,23 +223,23 @@ func handleBetaVaultsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
-		Title:          "beta:vaults retrieve",
+		Title:          "beta:user-profiles retrieve",
 		Transform:      transform,
 	})
 }
 
-func handleBetaVaultsUpdate(ctx context.Context, cmd *cli.Command) error {
+func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("vault-id") && len(unusedArgs) > 0 {
-		cmd.Set("vault-id", unusedArgs[0])
+	if !cmd.IsSet("user-profile-id") && len(unusedArgs) > 0 {
+		cmd.Set("user-profile-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaVaultUpdateParams{}
+	params := anthropic.BetaUserProfileUpdateParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -274,9 +254,9 @@ func handleBetaVaultsUpdate(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Vaults.Update(
+	_, err = client.Beta.UserProfiles.Update(
 		ctx,
-		cmd.Value("vault-id").(string),
+		cmd.Value("user-profile-id").(string),
 		params,
 		options...,
 	)
@@ -291,12 +271,12 @@ func handleBetaVaultsUpdate(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
-		Title:          "beta:vaults update",
+		Title:          "beta:user-profiles update",
 		Transform:      transform,
 	})
 }
 
-func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
+func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 
@@ -304,7 +284,7 @@ func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaVaultListParams{}
+	params := anthropic.BetaUserProfileListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -323,7 +303,7 @@ func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Beta.Vaults.List(ctx, params, options...)
+		_, err = client.Beta.UserProfiles.List(ctx, params, options...)
 		if err != nil {
 			return err
 		}
@@ -331,11 +311,11 @@ func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
-			Title:          "beta:vaults list",
+			Title:          "beta:user-profiles list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Beta.Vaults.ListAutoPaging(ctx, params, options...)
+		iter := client.Beta.UserProfiles.ListAutoPaging(ctx, params, options...)
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
@@ -343,24 +323,24 @@ func handleBetaVaultsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
-			Title:          "beta:vaults list",
+			Title:          "beta:user-profiles list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleBetaVaultsDelete(ctx context.Context, cmd *cli.Command) error {
+func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("vault-id") && len(unusedArgs) > 0 {
-		cmd.Set("vault-id", unusedArgs[0])
+	if !cmd.IsSet("user-profile-id") && len(unusedArgs) > 0 {
+		cmd.Set("user-profile-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaVaultDeleteParams{}
+	params := anthropic.BetaUserProfileNewEnrollmentURLParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -375,9 +355,9 @@ func handleBetaVaultsDelete(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Vaults.Delete(
+	_, err = client.Beta.UserProfiles.NewEnrollmentURL(
 		ctx,
-		cmd.Value("vault-id").(string),
+		cmd.Value("user-profile-id").(string),
 		params,
 		options...,
 	)
@@ -392,55 +372,7 @@ func handleBetaVaultsDelete(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
-		Title:          "beta:vaults delete",
-		Transform:      transform,
-	})
-}
-
-func handleBetaVaultsArchive(ctx context.Context, cmd *cli.Command) error {
-	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
-	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("vault-id") && len(unusedArgs) > 0 {
-		cmd.Set("vault-id", unusedArgs[0])
-		unusedArgs = unusedArgs[1:]
-	}
-	if len(unusedArgs) > 0 {
-		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
-	}
-
-	params := anthropic.BetaVaultArchiveParams{}
-
-	options, err := flagOptions(
-		cmd,
-		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
-		EmptyBody,
-		false,
-	)
-	if err != nil {
-		return err
-	}
-
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Vaults.Archive(
-		ctx,
-		cmd.Value("vault-id").(string),
-		params,
-		options...,
-	)
-	if err != nil {
-		return err
-	}
-
-	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
-	explicitFormat := cmd.Root().IsSet("format")
-	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
-		ExplicitFormat: explicitFormat,
-		Format:         format,
-		Title:          "beta:vaults archive",
+		Title:          "beta:user-profiles create-enrollment-url",
 		Transform:      transform,
 	})
 }
