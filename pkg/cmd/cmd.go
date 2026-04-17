@@ -293,6 +293,18 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:user-profiles",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaUserProfilesCreate,
+					&betaUserProfilesRetrieve,
+					&betaUserProfilesUpdate,
+					&betaUserProfilesList,
+					&betaUserProfilesCreateEnrollmentURL,
+				},
+			},
+			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",
 				UsageText:       "ant @manpages [-o ant.1] [--gzip]",
