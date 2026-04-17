@@ -25,7 +25,7 @@ jobs:
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/setup-go
         with:
@@ -34,7 +34,7 @@ jobs:
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go'
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -51,7 +51,7 @@ jobs:
     runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/setup-go
         with:
@@ -60,15 +60,15 @@ jobs:
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go'
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
 
       - name: Run goreleaser
-        uses: goreleaser/goreleaser-action@v6.1.0
+        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
-          version: latest
+          version: "2.15.2"
           args: release --snapshot --clean --skip=publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
           github.repository == 'stainless-sdks/anthropic-cli' &&
           !startsWith(github.ref, 'refs/heads/stl/')
         id: github-oidc
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: core.setOutput('github_token', await core.getIDToken());
 
@@ -93,7 +93,7 @@ jobs:
         run: ./scripts/utils/upload-artifact.sh
 
       - name: Upload cdp-darwin-arm64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cdp-darwin-arm64
           path: dist/macos_darwin_arm64*/cdp
@@ -101,7 +101,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload cdp-darwin-amd64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cdp-darwin-amd64
           path: dist/macos_darwin_amd64*/cdp
@@ -109,7 +109,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload cdp-linux-amd64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cdp-linux-amd64
           path: dist/linux_linux_amd64*/cdp
@@ -117,7 +117,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload cdp-linux-arm64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cdp-linux-arm64
           path: dist/linux_linux_arm64*/cdp
@@ -125,7 +125,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload cdp-windows-amd64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cdp-windows-amd64
           path: dist/windows_windows_amd64*/cdp.exe
@@ -133,7 +133,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload cdp-windows-arm64
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cdp-windows-arm64
           path: dist/windows_windows_arm64*/cdp.exe
@@ -146,7 +146,7 @@ jobs:
     runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: ./.github/actions/setup-go
         with:
@@ -155,7 +155,7 @@ jobs:
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || go mod edit -dropreplace='github.com/stainless-sdks/anthropic-go'
+          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
