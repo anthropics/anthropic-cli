@@ -9,14 +9,9 @@ jobs:
     name: release
     if: github.ref == 'refs/heads/main' && github.repository == 'anthropics/anthropic-cli'
     runs-on: ubuntu-latest
-    environment: production-release
-    permissions:
-      contents: write
 
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: stainless-api/trigger-release-please@v1
+      - uses: stainless-api/trigger-release-please@656ec30d61e731fcd70e83ac2084a4040770a504
         id: release
         with:
           repo: ${{ github.event.repository.full_name }}
