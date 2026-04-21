@@ -45,11 +45,13 @@ jobs:
     - name: Verify release commit is on main
       # The environment's branch policy matches ref names, not commit
       # ancestry, so a v* tag on a non-main commit would otherwise pass.
-      # Fail before any signing/publish step runs.
+      # Use --first-parent so only mainline commits qualify; with a
+      # plain ancestor check, a commit inside a merged side branch
+      # would pass even though it was never reviewed in isolation.
       run: |
         git fetch origin main
-        if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
-          echo "::error::Ref $GITHUB_REF points at $GITHUB_SHA, which is not reachable from origin/main. Refusing to release."
+        if ! git rev-list --first-parent origin/main | grep -qxF "$GITHUB_SHA"; then
+          echo "::error::Ref $GITHUB_REF points at $GITHUB_SHA, which is not on the first-parent history of origin/main. Refusing to release."
           exit 1
         fi
 
