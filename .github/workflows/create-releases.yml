@@ -1,0 +1,18 @@
+name: Create releases
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: release
+    if: github.ref == 'refs/heads/main' && github.repository == 'anthropics/anthropic-cli'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: stainless-api/trigger-release-please@656ec30d61e731fcd70e83ac2084a4040770a504
+        id: release
+        with:
+          repo: ${{ github.event.repository.full_name }}
+          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
