@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -14,6 +15,21 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
+
+const managedAgentsBeta = "managed-agents-2026-04-01"
+
+// addManagedAgentsBetaForFiles unconditionally appends the managed-agents
+// beta header. Session-scoped files require both the files-api and
+// managed-agents beta headers. Adding managed-agents to non-session file
+// requests is harmless.
+func addManagedAgentsBetaForFiles(cmd *cli.Command, options []option.RequestOption) []option.RequestOption {
+	if cmd.IsSet("scope-id") {
+		if scopeID, ok := cmd.Value("scope-id").(string); ok && strings.HasPrefix(scopeID, "sesn_") {
+			return append(options, option.WithHeaderAdd("anthropic-beta", managedAgentsBeta))
+		}
+	}
+	return options
+}
 
 var betaFilesList = cli.Command{
 	Name:    "list",
@@ -162,6 +178,7 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+	options = addManagedAgentsBetaForFiles(cmd, options)
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -269,6 +286,7 @@ func handleBetaFilesDownload(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+	options = append(options, option.WithHeaderAdd("anthropic-beta", managedAgentsBeta))
 
 	response, err := client.Beta.Files.Download(
 		ctx,
@@ -309,6 +327,7 @@ func handleBetaFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) erro
 	if err != nil {
 		return err
 	}
+	options = append(options, option.WithHeaderAdd("anthropic-beta", managedAgentsBeta))
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

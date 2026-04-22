@@ -24,7 +24,7 @@ var betaSkillsVersionsCreate = cli.Command{
 			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[[]any]{
 			Name:      "file",
 			Usage:     "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
 			BodyPath:  "files",

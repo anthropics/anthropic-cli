@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"unicode/utf8"
@@ -76,6 +77,17 @@ func isStdinPath(s string) bool {
 	return false
 }
 
+// namedFile wraps an io.ReadCloser with an explicit Filename() method.
+// The apiform encoder prefers Filename() over Name() when setting the
+// Content-Disposition filename in multipart uploads, so this lets callers
+// control the filename independently of the underlying file path.
+type namedFile struct {
+	io.ReadCloser
+	filename string
+}
+
+func (f *namedFile) Filename() string { return f.filename }
+
 func embedFiles(obj any, embedStyle FileEmbedStyle, stdin *onceStdinReader) (any, error) {
 	if obj == nil {
 		return obj, nil
@@ -135,12 +147,35 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdi
 
 	case reflect.String:
 		// FilePathValue is always treated as a file path without needing the "@" prefix.
-		// These only appear on binary upload parameters (multipart/octet-stream), which
-		// always use EmbedIOReader.
+		// These appear on binary upload parameters (multipart/octet-stream).
 		if v.Type() == reflect.TypeOf(FilePathValue("")) {
 			s := v.String()
 			if s == "" {
 				return v, nil
+			}
+			if embedStyle == EmbedIOReader {
+				if isStdinPath(s) {
+					r, err := stdin.read()
+					if err != nil {
+						return v, err
+					}
+					return reflect.ValueOf(io.NopCloser(r)), nil
+				}
+				file, err := os.Open(s)
+				if err != nil {
+					return v, err
+				}
+				// Normalize the filename for multipart uploads:
+				// - Absolute paths use basename only (safe for general uploads)
+				// - Relative paths preserve directory structure (needed for skills)
+				// - Strip "./" prefix, clean redundant slashes/dots
+				name := filepath.Clean(s)
+				if filepath.IsAbs(name) {
+					name = filepath.Base(name)
+				} else {
+					name = strings.TrimPrefix(name, "./")
+				}
+				return reflect.ValueOf(&namedFile{ReadCloser: file, filename: name}), nil
 			}
 			if isStdinPath(s) {
 				content, err := stdin.readAll()
