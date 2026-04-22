@@ -43,8 +43,8 @@ jobs:
   goreleaser:
     needs: verify
     runs-on: ubuntu-latest
-    # Scopes RELEASE_APP_* to this environment. Tag creation is restricted
-    # to the Stainless App via a repository tag ruleset.
+    # Scopes RELEASE_APP_* and MACOS_* to this environment. Tag creation
+    # is restricted to the Stainless App via a repository tag ruleset.
     environment: production-release
     steps:
     - name: Generate release app token (this repo)
@@ -82,3 +82,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.tap-token.outputs.token }}
+        MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+        MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }}
+        MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+        MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+        MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
