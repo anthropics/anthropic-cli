@@ -124,8 +124,11 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -241,8 +244,11 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	stream := client.Beta.Sessions.Events.StreamEvents(
 		ctx,
