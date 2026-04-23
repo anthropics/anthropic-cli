@@ -17,6 +17,7 @@ import (
 	"syscall"
 
 	"github.com/anthropics/anthropic-cli/internal/jsonview"
+	"github.com/anthropics/anthropic-cli/internal/retry"
 	"github.com/anthropics/anthropic-sdk-go/option"
 
 	"github.com/charmbracelet/x/term"
@@ -56,6 +57,13 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 	// Override base URL if the --base-url flag is provided
 	if baseURL := cmd.String("base-url"); baseURL != "" {
 		opts = append(opts, option.WithBaseURL(baseURL))
+	}
+
+	// Add retry middleware if max-retries > 0
+	if maxRetries := cmd.Int("max-retries"); maxRetries > 0 {
+		config := retry.DefaultConfig()
+		config.MaxRetries = maxRetries
+		opts = append(opts, option.WithMiddleware(retry.NewMiddleware(config)))
 	}
 
 	return opts
