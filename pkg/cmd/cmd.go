@@ -253,6 +253,41 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:memory-stores",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaMemoryStoresCreate,
+					&betaMemoryStoresRetrieve,
+					&betaMemoryStoresUpdate,
+					&betaMemoryStoresList,
+					&betaMemoryStoresDelete,
+					&betaMemoryStoresArchive,
+				},
+			},
+			{
+				Name:     "beta:memory-stores:memories",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaMemoryStoresMemoriesCreate,
+					&betaMemoryStoresMemoriesRetrieve,
+					&betaMemoryStoresMemoriesUpdate,
+					&betaMemoryStoresMemoriesList,
+					&betaMemoryStoresMemoriesDelete,
+				},
+			},
+			{
+				Name:     "beta:memory-stores:memory-versions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaMemoryStoresMemoryVersionsRetrieve,
+					&betaMemoryStoresMemoryVersionsList,
+					&betaMemoryStoresMemoryVersionsRedact,
+				},
+			},
+			{
 				Name:     "beta:files",
 				Category: "API RESOURCE",
 				Suggest:  true,
@@ -284,18 +319,6 @@ func init() {
 					&betaSkillsVersionsRetrieve,
 					&betaSkillsVersionsList,
 					&betaSkillsVersionsDelete,
-				},
-			},
-			{
-				Name:     "beta:user-profiles",
-				Category: "API RESOURCE",
-				Suggest:  true,
-				Commands: []*cli.Command{
-					&betaUserProfilesCreate,
-					&betaUserProfilesRetrieve,
-					&betaUserProfilesUpdate,
-					&betaUserProfilesList,
-					&betaUserProfilesCreateEnrollmentURL,
 				},
 			},
 			{

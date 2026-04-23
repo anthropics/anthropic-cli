@@ -14,20 +14,29 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaUserProfilesCreate = cli.Command{
+var betaMemoryStoresMemoriesCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Create User Profile",
+	Usage:   "CreateMemory",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
-			Name:     "external-id",
-			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
-			BodyPath: "external_id",
+		&requestflag.Flag[string]{
+			Name:     "memory-store-id",
+			Required: true,
 		},
-		&requestflag.Flag[map[string]any]{
-			Name:     "metadata",
-			Usage:    "Free-form key-value data to attach to this user profile. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters. Values must be non-empty strings.",
-			BodyPath: "metadata",
+		&requestflag.Flag[any]{
+			Name:     "content",
+			Required: true,
+			BodyPath: "content",
+		},
+		&requestflag.Flag[string]{
+			Name:     "path",
+			Required: true,
+			BodyPath: "path",
+		},
+		&requestflag.Flag[string]{
+			Name:      "view",
+			Usage:     "MemoryView enum",
+			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -35,18 +44,27 @@ var betaUserProfilesCreate = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaUserProfilesCreate,
+	Action:          handleBetaMemoryStoresMemoriesCreate,
 	HideHelpCommand: true,
 }
 
-var betaUserProfilesRetrieve = cli.Command{
+var betaMemoryStoresMemoriesRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Get User Profile",
+	Usage:   "GetMemory",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "user-profile-id",
+			Name:     "memory-store-id",
 			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:     "memory-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:      "view",
+			Usage:     "MemoryView enum",
+			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -54,28 +72,39 @@ var betaUserProfilesRetrieve = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaUserProfilesRetrieve,
+	Action:          handleBetaMemoryStoresMemoriesRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaUserProfilesUpdate = cli.Command{
+var betaMemoryStoresMemoriesUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
-	Usage:   "Update User Profile",
+	Usage:   "UpdateMemory",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "user-profile-id",
+			Name:     "memory-store-id",
 			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:     "memory-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:      "view",
+			Usage:     "MemoryView enum",
+			QueryPath: "view",
 		},
 		&requestflag.Flag[any]{
-			Name:     "external-id",
-			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters.",
-			BodyPath: "external_id",
+			Name:     "content",
+			BodyPath: "content",
+		},
+		&requestflag.Flag[any]{
+			Name:     "path",
+			BodyPath: "path",
 		},
 		&requestflag.Flag[map[string]any]{
-			Name:     "metadata",
-			Usage:    "Key-value pairs to merge into the stored metadata. Keys provided overwrite existing values. To remove a key, set its value to an empty string. Keys not provided are left unchanged. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters.",
-			BodyPath: "metadata",
+			Name:     "precondition",
+			BodyPath: "precondition",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -83,15 +112,36 @@ var betaUserProfilesUpdate = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaUserProfilesUpdate,
+	Action:          handleBetaMemoryStoresMemoriesUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"precondition": {
+		&requestflag.InnerFlag[string]{
+			Name:       "precondition.type",
+			Usage:      `Allowed values: "content_sha256".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "precondition.content-sha256",
+			InnerField: "content_sha256",
+		},
+	},
+})
 
-var betaUserProfilesList = cli.Command{
+var betaMemoryStoresMemoriesList = cli.Command{
 	Name:    "list",
-	Usage:   "List User Profiles",
+	Usage:   "ListMemories",
 	Suggest: true,
 	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:     "memory-store-id",
+			Required: true,
+		},
+		&requestflag.Flag[int64]{
+			Name:      "depth",
+			Usage:     "Query parameter for depth",
+			QueryPath: "depth",
+		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
 			Usage:     "Query parameter for limit",
@@ -103,9 +153,24 @@ var betaUserProfilesList = cli.Command{
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
+			Name:      "order-by",
+			Usage:     "Query parameter for order_by",
+			QueryPath: "order_by",
+		},
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Query parameter for page",
 			QueryPath: "page",
+		},
+		&requestflag.Flag[string]{
+			Name:      "path-prefix",
+			Usage:     "Optional path prefix filter (raw string-prefix match; include a trailing slash for directory-scoped lists). This value appears in request URLs. Do not include secrets or personally identifiable information.",
+			QueryPath: "path_prefix",
+		},
+		&requestflag.Flag[string]{
+			Name:      "view",
+			Usage:     "MemoryView enum",
+			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -117,18 +182,27 @@ var betaUserProfilesList = cli.Command{
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleBetaUserProfilesList,
+	Action:          handleBetaMemoryStoresMemoriesList,
 	HideHelpCommand: true,
 }
 
-var betaUserProfilesCreateEnrollmentURL = cli.Command{
-	Name:    "create-enrollment-url",
-	Usage:   "Create Enrollment URL",
+var betaMemoryStoresMemoriesDelete = cli.Command{
+	Name:    "delete",
+	Usage:   "DeleteMemory",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "user-profile-id",
+			Name:     "memory-store-id",
 			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:     "memory-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:      "expected-content-sha256",
+			Usage:     "Query parameter for expected_content_sha256",
+			QueryPath: "expected_content_sha256",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -136,19 +210,22 @@ var betaUserProfilesCreateEnrollmentURL = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaUserProfilesCreateEnrollmentURL,
+	Action:          handleBetaMemoryStoresMemoriesDelete,
 	HideHelpCommand: true,
 }
 
-func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoriesCreate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-
+	if !cmd.IsSet("memory-store-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-store-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileNewParams{}
+	params := anthropic.BetaMemoryStoreMemoryNewParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -163,7 +240,12 @@ func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.UserProfiles.New(ctx, params, options...)
+	_, err = client.Beta.MemoryStores.Memories.New(
+		ctx,
+		cmd.Value("memory-store-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -176,23 +258,25 @@ func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:user-profiles create",
+		Title:          "beta:memory-stores:memories create",
 		Transform:      transform,
 	})
 }
 
-func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoriesRetrieve(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("user-profile-id") && len(unusedArgs) > 0 {
-		cmd.Set("user-profile-id", unusedArgs[0])
+	if !cmd.IsSet("memory-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileGetParams{}
+	params := anthropic.BetaMemoryStoreMemoryGetParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
+	}
 
 	options, err := flagOptions(
 		cmd,
@@ -207,9 +291,9 @@ func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.UserProfiles.Get(
+	_, err = client.Beta.MemoryStores.Memories.Get(
 		ctx,
-		cmd.Value("user-profile-id").(string),
+		cmd.Value("memory-id").(string),
 		params,
 		options...,
 	)
@@ -228,23 +312,25 @@ func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:user-profiles retrieve",
+		Title:          "beta:memory-stores:memories retrieve",
 		Transform:      transform,
 	})
 }
 
-func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoriesUpdate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("user-profile-id") && len(unusedArgs) > 0 {
-		cmd.Set("user-profile-id", unusedArgs[0])
+	if !cmd.IsSet("memory-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileUpdateParams{}
+	params := anthropic.BetaMemoryStoreMemoryUpdateParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
+	}
 
 	options, err := flagOptions(
 		cmd,
@@ -259,9 +345,9 @@ func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.UserProfiles.Update(
+	_, err = client.Beta.MemoryStores.Memories.Update(
 		ctx,
-		cmd.Value("user-profile-id").(string),
+		cmd.Value("memory-id").(string),
 		params,
 		options...,
 	)
@@ -277,20 +363,23 @@ func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:user-profiles update",
+		Title:          "beta:memory-stores:memories update",
 		Transform:      transform,
 	})
 }
 
-func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoriesList(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-
+	if !cmd.IsSet("memory-store-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-store-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileListParams{}
+	params := anthropic.BetaMemoryStoreMemoryListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -312,7 +401,12 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Beta.UserProfiles.List(ctx, params, options...)
+		_, err = client.Beta.MemoryStores.Memories.List(
+			ctx,
+			cmd.Value("memory-store-id").(string),
+			params,
+			options...,
+		)
 		if err != nil {
 			return err
 		}
@@ -321,11 +415,16 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "beta:user-profiles list",
+			Title:          "beta:memory-stores:memories list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Beta.UserProfiles.ListAutoPaging(ctx, params, options...)
+		iter := client.Beta.MemoryStores.Memories.ListAutoPaging(
+			ctx,
+			cmd.Value("memory-store-id").(string),
+			params,
+			options...,
+		)
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
@@ -334,24 +433,26 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "beta:user-profiles list",
+			Title:          "beta:memory-stores:memories list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoriesDelete(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("user-profile-id") && len(unusedArgs) > 0 {
-		cmd.Set("user-profile-id", unusedArgs[0])
+	if !cmd.IsSet("memory-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileNewEnrollmentURLParams{}
+	params := anthropic.BetaMemoryStoreMemoryDeleteParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
+	}
 
 	options, err := flagOptions(
 		cmd,
@@ -366,9 +467,9 @@ func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Com
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.UserProfiles.NewEnrollmentURL(
+	_, err = client.Beta.MemoryStores.Memories.Delete(
 		ctx,
-		cmd.Value("user-profile-id").(string),
+		cmd.Value("memory-id").(string),
 		params,
 		options...,
 	)
@@ -384,7 +485,7 @@ func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Com
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:user-profiles create-enrollment-url",
+		Title:          "beta:memory-stores:memories delete",
 		Transform:      transform,
 	})
 }

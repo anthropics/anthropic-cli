@@ -119,18 +119,13 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[int64]{
 			Name:     "top-k",
-			Usage:    "Only sample from the top K options for each subsequent token.\n\nUsed to remove \"long tail\" low probability responses. [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).\n\nRecommended for advanced use cases only. You usually only need to use `temperature`.",
+			Usage:    "Only sample from the top K options for each subsequent token.\n\nUsed to remove \"long tail\" low probability responses. [Learn more technical details here](https://towardsdatascience.com/how-to-sample-from-language-models-682bceb97277).\n\nRecommended for advanced use cases only.",
 			BodyPath: "top_k",
 		},
 		&requestflag.Flag[float64]{
 			Name:     "top-p",
-			Usage:    "Use nucleus sampling.\n\nIn nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by `top_p`. You should either alter `temperature` or `top_p`, but not both.\n\nRecommended for advanced use cases only. You usually only need to use `temperature`.",
+			Usage:    "Use nucleus sampling.\n\nIn nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by `top_p`.\n\nRecommended for advanced use cases only.",
 			BodyPath: "top_p",
-		},
-		&requestflag.Flag[any]{
-			Name:     "user-profile-id",
-			Usage:    "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization.",
-			BodyPath: "user_profile_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -214,11 +209,6 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
 			InnerField: "format",
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:       "output-config.task-budget",
-			Usage:      "User-configurable total token budget across contexts.",
-			InnerField: "task_budget",
 		},
 	},
 	"output-format": {
@@ -369,11 +359,6 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
 			InnerField: "format",
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:       "output-config.task-budget",
-			Usage:      "User-configurable total token budget across contexts.",
-			InnerField: "task_budget",
 		},
 	},
 	"output-format": {
