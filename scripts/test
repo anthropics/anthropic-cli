@@ -4,6 +4,31 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# Check for required commands
+for cmd in lsof curl kill find; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "Error: Required command '$cmd' not found"
+        exit 1
+    fi
+done
+
+# Kill processes listening on port 4010
+# Note: lsof may fail if no processes found - this is OK
+set +e
+pids=$(lsof -ti :4010 2>/dev/null)
+set -e
+if [[ -n "$pids" ]]; then
+    echo "==> Killing existing mock server on port 4010"
+    # Kill each PID individually to handle errors gracefully
+    for pid in $pids; do
+        if kill "$pid" 2>/dev/null; then
+            echo "Killed process $pid"
+        else
+            echo "Warning: Failed to kill process $pid (may have already exited)"
+        fi
+    done
+fi
+
 # Mark the necessary Go modules as private to avoid Go's proxy
 export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go"
 
@@ -60,5 +85,6 @@ go test ./... "$@"
 
 echo "==> Checking tests on Windows"
 GOARCH=amd64 GOOS=windows go test -c ./... "$@"
-# `go test -c` produces a bunch of .exe files; make sure to clean those up
-find . -name "*.test.exe" -exec rm {} \;
+# `go test -c` produces .exe files; clean those up safely
+# Use -delete instead of -exec rm to avoid errors if no files exist
+find . -name "*.test.exe" -type f -delete 2>/dev/null || true
