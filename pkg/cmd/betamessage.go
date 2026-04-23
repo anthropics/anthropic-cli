@@ -127,6 +127,11 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Use nucleus sampling.\n\nIn nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by `top_p`.\n\nRecommended for advanced use cases only.",
 			BodyPath: "top_p",
 		},
+		&requestflag.Flag[any]{
+			Name:     "user-profile-id",
+			Usage:    "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization.",
+			BodyPath: "user_profile_id",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -209,6 +214,11 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
 			InnerField: "format",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "output-config.task-budget",
+			Usage:      "User-configurable total token budget across contexts.",
+			InnerField: "task_budget",
 		},
 	},
 	"output-format": {
@@ -359,6 +369,11 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
 			InnerField: "format",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "output-config.task-budget",
+			Usage:      "User-configurable total token budget across contexts.",
+			InnerField: "task_budget",
 		},
 	},
 	"output-format": {
