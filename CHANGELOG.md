@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.3.0 (2026-04-23)
+
+Full Changelog: [v1.2.1...v1.3.0](https://github.com/anthropics/anthropic-cli/compare/v1.2.1...v1.3.0)
+
+### Features
+
+* **api:** CMA Memory public beta ([926d861](https://github.com/anthropics/anthropic-cli/commit/926d861abb348b8279019e2c95822592b2dd68f7))
+* **cli:** add `--raw-output`/`-r` option to print raw (non-JSON) strings ([534b5fa](https://github.com/anthropics/anthropic-cli/commit/534b5faf893852a5e998e7cd271046125e013c03))
+* **cli:** default to interactive explore format for retrieve/list commands when connected to TTY ([929e904](https://github.com/anthropics/anthropic-cli/commit/929e90484002d1559481c214370889c9ecc141b4))
+* **cli:** send filename and content type when reading input from files ([7ee2c07](https://github.com/anthropics/anthropic-cli/commit/7ee2c07de4b7f18a41b63610565d1e0be961e782))
+
+
+### Bug Fixes
+
+* **api:** restore missing features ([55d84d1](https://github.com/anthropics/anthropic-cli/commit/55d84d11a16c9cb4520922d94561d04867680a35))
+* correctly serialize --file parameter ([fb0f8bb](https://github.com/anthropics/anthropic-cli/commit/fb0f8bb44c219aba1fdc09be9189a4c65c8c5223))
+
+
+### Chores
+
+* **ci:** add github env support for goreleaser ([9064b6f](https://github.com/anthropics/anthropic-cli/commit/9064b6f8a8a75e3bc3dc7bc75b2c477f3e8e944c))
+* **client:** config fixes ([a89b08b](https://github.com/anthropics/anthropic-cli/commit/a89b08b0be1e6b33398621d05bff17ba303031e4))
+* **cli:** use `ShowJSONOpts` as argument to `formatJSON` instead of many positionals ([a9ac5e1](https://github.com/anthropics/anthropic-cli/commit/a9ac5e1e6a65abfbb1001aabdb7d804e723644d4))
+* **internal:** more robust bootstrap script ([a453fd0](https://github.com/anthropics/anthropic-cli/commit/a453fd0a7e437049a2a88d5632cbd50743587c46))
+* **tests:** bump steady to v0.22.1 ([7aca529](https://github.com/anthropics/anthropic-cli/commit/7aca529007551b5cca9bb20b916e3d238bfb0342))
+
 ## 1.2.1 (2026-04-16)
 
 Full Changelog: [v1.2.0...v1.2.1](https://github.com/anthropics/anthropic-cli/compare/v1.2.0...v1.2.1)
