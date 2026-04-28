@@ -86,8 +86,9 @@ var betaSessionsUpdate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "session-id",
-			Required: true,
+			Name:        "session-id",
+			Required:    true,
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -158,6 +159,11 @@ var betaSessionsList = cli.Command{
 			Name:      "limit",
 			Usage:     "Maximum number of results to return.",
 			QueryPath: "limit",
+		},
+		&requestflag.Flag[string]{
+			Name:      "memory-store-id",
+			Usage:     "Filter sessions whose resources contain a memory_store with this memory store ID.",
+			QueryPath: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",

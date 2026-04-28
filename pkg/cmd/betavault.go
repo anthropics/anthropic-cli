@@ -65,8 +65,9 @@ var betaVaultsUpdate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "vault-id",
-			Required: true,
+			Name:        "vault-id",
+			Required:    true,
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[any]{
 			Name:     "display-name",

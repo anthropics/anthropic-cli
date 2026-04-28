@@ -107,6 +107,7 @@ func TestBetaSessionsList(t *testing.T) {
 			"--created-at-lte", "'2019-12-27T18:11:19.117Z'",
 			"--include-archived=true",
 			"--limit", "0",
+			"--memory-store-id", "memory_store_id",
 			"--order", "asc",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
