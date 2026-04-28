@@ -82,8 +82,9 @@ var betaVaultsCredentialsUpdate = cli.Command{
 			Required: true,
 		},
 		&requestflag.Flag[string]{
-			Name:     "credential-id",
-			Required: true,
+			Name:        "credential-id",
+			Required:    true,
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "auth",
