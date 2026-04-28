@@ -16,7 +16,7 @@ import (
 
 var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "GetMemoryVersion",
+	Usage:   "Retrieve a memory version",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -29,7 +29,7 @@ var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "MemoryView enum",
+			Usage:     "Selects which projection of a `memory` or `memory_version` the server returns. `basic` returns the object with `content` set to `null`; `full` populates `content`. When omitted, the default is endpoint-specific: retrieve operations default to `full`; list, create, and update operations default to `basic`. Listing with `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
@@ -44,7 +44,7 @@ var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 
 var betaMemoryStoresMemoryVersionsList = cli.Command{
 	Name:    "list",
-	Usage:   "ListMemoryVersions",
+	Usage:   "List memory versions",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -78,7 +78,7 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "operation",
-			Usage:     "MemoryVersionOperation enum",
+			Usage:     "The kind of mutation a `memory_version` records. Every non-no-op mutation to a memory appends exactly one version row with one of these values.",
 			QueryPath: "operation",
 		},
 		&requestflag.Flag[string]{
@@ -93,7 +93,7 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "MemoryView enum",
+			Usage:     "Selects which projection of a `memory` or `memory_version` the server returns. `basic` returns the object with `content` set to `null`; `full` populates `content`. When omitted, the default is endpoint-specific: retrieve operations default to `full`; list, create, and update operations default to `basic`. Listing with `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
@@ -112,7 +112,7 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 
 var betaMemoryStoresMemoryVersionsRedact = cli.Command{
 	Name:    "redact",
-	Usage:   "RedactMemoryVersion",
+	Usage:   "Redact a memory version",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

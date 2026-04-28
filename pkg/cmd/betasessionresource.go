@@ -47,8 +47,9 @@ var betaSessionsResourcesUpdate = cli.Command{
 			Required: true,
 		},
 		&requestflag.Flag[string]{
-			Name:     "resource-id",
-			Required: true,
+			Name:        "resource-id",
+			Required:    true,
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[string]{
 			Name:     "authorization-token",
