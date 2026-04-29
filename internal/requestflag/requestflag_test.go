@@ -880,3 +880,348 @@ func TestInnerFlagDispatchOnUntypedFlag(t *testing.T) {
 		assert.JSONEq(t, `{"foo":[{"name":"first","url":"https://example.com"}]}`, string(body))
 	})
 }
+
+func TestApplyStdinDataToFlags(t *testing.T) {
+	t.Parallel()
+
+	t.Run("sets query path flag from piped data", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:      "account-id",
+			QueryPath: "account_id",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"account_id": "acct_123"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, flag.IsSet())
+		assert.Equal(t, "acct_123", flag.Get())
+	})
+
+	t.Run("sets header path flag from piped data", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:       "idempotency-key",
+			HeaderPath: "Idempotency-Key",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"Idempotency-Key": "key-xyz"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, flag.IsSet())
+		assert.Equal(t, "key-xyz", flag.Get())
+	})
+
+	t.Run("does not set body path flag from piped data", func(t *testing.T) {
+		t.Parallel()
+
+		// Body params are handled by the maps.Copy merge in flagOptions, not by ApplyStdinDataToFlags.
+		flag := &Flag[string]{
+			Name:     "message",
+			BodyPath: "message",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"message": "hello world"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, flag.IsSet())
+	})
+
+	t.Run("does not override flag already set via CLI", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:      "account-id",
+			QueryPath: "account_id",
+		}
+		assert.NoError(t, flag.PreParse())
+		assert.NoError(t, flag.Set("account-id", "explicit_value"))
+
+		data := map[string]any{"account_id": "piped_value"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		// The explicitly-set value should win.
+		assert.Equal(t, "explicit_value", flag.Get())
+	})
+
+	t.Run("sets integer query flag from piped data", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[int64]{
+			Name:      "page-size",
+			QueryPath: "page_size",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"page_size": int64(50)}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, flag.IsSet())
+		assert.Equal(t, int64(50), flag.Get())
+	})
+
+	t.Run("sets boolean query flag from piped data", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[bool]{
+			Name:      "include-deleted",
+			QueryPath: "include_deleted",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"include_deleted": true}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, flag.IsSet())
+		assert.Equal(t, true, flag.Get())
+	})
+
+	t.Run("resolves query path flag via data alias", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:        "account-id",
+			QueryPath:   "account_id",
+			DataAliases: []string{"accountId", "account"},
+		}
+		assert.NoError(t, flag.PreParse())
+
+		// Use one of the aliases as the key in piped data.
+		data := map[string]any{"accountId": "acct_alias"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, flag.IsSet())
+		assert.Equal(t, "acct_alias", flag.Get())
+	})
+
+	t.Run("does not set body path flag via data alias", func(t *testing.T) {
+		t.Parallel()
+
+		// Body params are handled by the maps.Copy merge in flagOptions, not by ApplyStdinDataToFlags.
+		flag := &Flag[string]{
+			Name:        "user-name",
+			BodyPath:    "user_name",
+			DataAliases: []string{"userName", "username"},
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"userName": "alice"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, flag.IsSet())
+	})
+
+	t.Run("ignores flags with no matching key in piped data", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:      "account-id",
+			QueryPath: "account_id",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"other_key": "value"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, flag.IsSet())
+	})
+
+	t.Run("ignores flags with no path set", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name: "some-flag",
+			// No QueryPath, HeaderPath, or BodyPath
+		}
+		assert.NoError(t, flag.PreParse())
+
+		data := map[string]any{"some-flag": "value"}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, flag.IsSet())
+	})
+
+	t.Run("handles multiple flags from piped data", func(t *testing.T) {
+		t.Parallel()
+
+		accountFlag := &Flag[string]{
+			Name:      "account-id",
+			QueryPath: "account_id",
+		}
+		limitFlag := &Flag[int64]{
+			Name:      "limit",
+			QueryPath: "limit",
+		}
+		assert.NoError(t, accountFlag.PreParse())
+		assert.NoError(t, limitFlag.PreParse())
+
+		data := map[string]any{
+			"account_id": "acct_abc",
+			"limit":      int64(25),
+		}
+		cmd := &cli.Command{Flags: []cli.Flag{accountFlag, limitFlag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, accountFlag.IsSet())
+		assert.Equal(t, "acct_abc", accountFlag.Get())
+		assert.True(t, limitFlag.IsSet())
+		assert.Equal(t, int64(25), limitFlag.Get())
+	})
+
+	t.Run("sets inner flag from nested piped data under outer body path", func(t *testing.T) {
+		t.Parallel()
+
+		outer := &Flag[map[string]any]{
+			Name:     "address",
+			BodyPath: "address",
+		}
+		assert.NoError(t, outer.PreParse())
+
+		cityInner := &InnerFlag[string]{
+			Name:       "address.city",
+			InnerField: "city",
+			OuterFlag:  outer,
+		}
+
+		data := map[string]any{
+			"address": map[string]any{"city": "San Francisco"},
+		}
+		cmd := &cli.Command{Flags: []cli.Flag{outer, cityInner}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		// InnerFlag.IsSet() is always false by design; verify the value was written
+		// into the outer flag's underlying map instead.
+		outerVal, ok := outer.Get().(map[string]any)
+		assert.True(t, ok, "expected outer flag value to be map[string]any, got %T", outer.Get())
+		assert.Equal(t, "San Francisco", outerVal["city"])
+	})
+
+	t.Run("sets inner flag via data alias in nested piped data", func(t *testing.T) {
+		t.Parallel()
+
+		outer := &Flag[map[string]any]{
+			Name:     "address",
+			BodyPath: "address",
+		}
+		assert.NoError(t, outer.PreParse())
+
+		cityInner := &InnerFlag[string]{
+			Name:        "address.city",
+			InnerField:  "city",
+			DataAliases: []string{"cityName"},
+			OuterFlag:   outer,
+		}
+
+		// Use the alias in piped data.
+		data := map[string]any{
+			"address": map[string]any{"cityName": "Portland"},
+		}
+		cmd := &cli.Command{Flags: []cli.Flag{outer, cityInner}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		// InnerFlag.IsSet() is always false by design; verify the value was written
+		// into the outer flag's underlying map instead.
+		outerVal, ok := outer.Get().(map[string]any)
+		assert.True(t, ok, "expected outer flag value to be map[string]any, got %T", outer.Get())
+		assert.Equal(t, "Portland", outerVal["city"])
+	})
+
+	t.Run("does not set inner flag when outer flag has no body path", func(t *testing.T) {
+		t.Parallel()
+
+		outer := &Flag[map[string]any]{
+			Name: "options",
+			// No BodyPath set
+		}
+		assert.NoError(t, outer.PreParse())
+
+		inner := &InnerFlag[string]{
+			Name:       "options.key",
+			InnerField: "key",
+			OuterFlag:  outer,
+		}
+
+		data := map[string]any{
+			"options": map[string]any{"key": "value"},
+		}
+		cmd := &cli.Command{Flags: []cli.Flag{outer, inner}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, inner.IsSet())
+	})
+
+	t.Run("does not set inner flag when piped data has no nested map for outer path", func(t *testing.T) {
+		t.Parallel()
+
+		outer := &Flag[map[string]any]{
+			Name:     "address",
+			BodyPath: "address",
+		}
+		assert.NoError(t, outer.PreParse())
+
+		inner := &InnerFlag[string]{
+			Name:       "address.city",
+			InnerField: "city",
+			OuterFlag:  outer,
+		}
+
+		// The outer body path key is missing from the piped data.
+		data := map[string]any{"other": "value"}
+		cmd := &cli.Command{Flags: []cli.Flag{outer, inner}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, inner.IsSet())
+	})
+
+	t.Run("canonical path key takes precedence over alias when both are present", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:        "account-id",
+			QueryPath:   "account_id",
+			DataAliases: []string{"accountId"},
+		}
+		assert.NoError(t, flag.PreParse())
+
+		// Both canonical and alias present — canonical should win because it's checked first.
+		data := map[string]any{
+			"account_id": "canonical_value",
+			"accountId":  "alias_value",
+		}
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.True(t, flag.IsSet())
+		assert.Equal(t, "canonical_value", flag.Get())
+	})
+
+	t.Run("empty data map does not set any flags", func(t *testing.T) {
+		t.Parallel()
+
+		flag := &Flag[string]{
+			Name:      "account-id",
+			QueryPath: "account_id",
+		}
+		assert.NoError(t, flag.PreParse())
+
+		cmd := &cli.Command{Flags: []cli.Flag{flag}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, map[string]any{}))
+
+		assert.False(t, flag.IsSet())
+	})
+}

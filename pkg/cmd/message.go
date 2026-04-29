@@ -253,8 +253,6 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.MessageNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -265,6 +263,8 @@ func handleMessagesCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.MessageNewParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -309,8 +309,6 @@ func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.MessageCountTokensParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -321,6 +319,8 @@ func handleMessagesCountTokens(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.MessageCountTokensParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

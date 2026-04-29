@@ -20,8 +20,9 @@ var betaSessionsEventsList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "session-id",
-			Required: true,
+			Name:      "session-id",
+			Required:  true,
+			PathParam: "session_id",
 		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
@@ -58,8 +59,9 @@ var betaSessionsEventsSend = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "session-id",
-			Required: true,
+			Name:      "session-id",
+			Required:  true,
+			PathParam: "session_id",
 		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "event",
@@ -83,8 +85,9 @@ var betaSessionsEventsStream = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "session-id",
-			Required: true,
+			Name:      "session-id",
+			Required:  true,
+			PathParam: "session_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -111,8 +114,6 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSessionEventListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -123,6 +124,8 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSessionEventListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -182,8 +185,6 @@ func handleBetaSessionsEventsSend(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSessionEventSendParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -194,6 +195,8 @@ func handleBetaSessionsEventsSend(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSessionEventSendParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -231,8 +234,6 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSessionEventStreamParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -243,6 +244,8 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSessionEventStreamParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
