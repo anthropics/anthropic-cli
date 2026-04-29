@@ -23,7 +23,7 @@ var betaMemoryStoresMemoriesCreate = cli.Command{
 			Name:     "memory-store-id",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "content",
 			Usage:    "UTF-8 text content for the new memory. Maximum 100 kB (102,400 bytes). Required; pass `\"\"` explicitly to create an empty memory.",
 			Required: true,
@@ -97,12 +97,12 @@ var betaMemoryStoresMemoriesUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:     "Selects which projection of a `memory` or `memory_version` the server returns. `basic` returns the object with `content` set to `null`; `full` populates `content`. When omitted, the default is endpoint-specific: retrieve operations default to `full`; list, create, and update operations default to `basic`. Listing with `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "content",
 			Usage:    "New UTF-8 text content for the memory. Maximum 100 kB (102,400 bytes). Omit to leave the content unchanged (e.g., for a rename-only update).",
 			BodyPath: "content",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "path",
 			Usage:    "New path for the memory (a rename). Must start with `/`, contain at least one non-empty segment, and be at most 1,024 bytes. Must not contain empty segments, `.` or `..` segments, control or format characters, and must be NFC-normalized. Paths are case-sensitive. The memory's `id` is preserved across renames. Omit to leave the path unchanged.",
 			BodyPath: "path",

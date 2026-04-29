@@ -69,7 +69,7 @@ var betaVaultsUpdate = cli.Command{
 			Required:    true,
 			DataAliases: []string{"id"},
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "display-name",
 			Usage:    "Updated human-readable name for the vault. 1-255 characters.",
 			BodyPath: "display_name",

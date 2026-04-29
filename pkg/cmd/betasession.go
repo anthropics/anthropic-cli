@@ -41,7 +41,7 @@ var betaSessionsCreate = cli.Command{
 			Usage:    "Resources (e.g. repositories, files) to mount into the session's container.",
 			BodyPath: "resources",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "title",
 			Usage:    "Human-readable session title.",
 			BodyPath: "title",
@@ -95,7 +95,7 @@ var betaSessionsUpdate = cli.Command{
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omit the field to preserve.",
 			BodyPath: "metadata",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "title",
 			Usage:    "Human-readable session title.",
 			BodyPath: "title",
