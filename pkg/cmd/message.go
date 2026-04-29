@@ -41,12 +41,12 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "cache-control",
 			BodyPath: "cache_control",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "container",
 			Usage:    "Container identifier for reuse across requests.",
 			BodyPath: "container",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "inference-geo",
 			Usage:    "Specifies the geographic region for inference processing. If not specified, the workspace's `default_inference_geo` is used.",
 			BodyPath: "inference_geo",
@@ -141,14 +141,14 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 	},
 	"metadata": {
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "metadata.user-id",
 			Usage:      "An external identifier for the user who is associated with the request.\n\nThis should be a uuid, hash value, or other opaque identifier. Anthropic may use this id to help detect abuse. Do not include any identifying information such as name, email address, or phone number.",
 			InnerField: "user_id",
 		},
 	},
 	"output-config": {
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
 			Usage:      "All possible effort levels.",
 			InnerField: "effort",
@@ -233,7 +233,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 	},
 	"output-config": {
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
 			Usage:      "All possible effort levels.",
 			InnerField: "effort",

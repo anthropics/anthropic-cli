@@ -1,6 +1,7 @@
 package requestflag
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -616,6 +617,178 @@ func TestYamlHandling(t *testing.T) {
 	})
 }
 
+// TestNullLiteralHandling pins how each Flag[T] type handles the literal value "null"
+// when passed via the CLI. Pointer-typed flags serialize nil as JSON null, which is how
+// nullable body fields (`anyOf: [T, null]` / `{nullable: true}`) let users clear a field
+// via `--foo null`. Non-pointer primitive flags treat "null" as a raw value — these are
+// non-nullable schemas where explicit null has no API semantics anyway.
+func TestNullLiteralHandling(t *testing.T) {
+	t.Parallel()
+
+	assertJSONBody := func(t *testing.T, value any, expected string) {
+		t.Helper()
+		body, err := json.Marshal(map[string]any{"foo": value})
+		assert.NoError(t, err)
+		assert.JSONEq(t, expected, string(body))
+	}
+
+	t.Run("Flag[any] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[any]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[string] null is the raw string \"null\"", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[string]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":"null"}`)
+	})
+
+	t.Run("Flag[int64] null errors", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[int64]{}
+		assert.Error(t, cv.Set("null"))
+	})
+
+	t.Run("Flag[*string] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*string]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*string] value sends the string", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*string]{}
+		assert.NoError(t, cv.Set("1.1"))
+		assertJSONBody(t, cv.Get(), `{"foo":"1.1"}`)
+	})
+
+	t.Run("Flag[*int64] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*int64]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*int64] value sends the integer", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*int64]{}
+		assert.NoError(t, cv.Set("42"))
+		assertJSONBody(t, cv.Get(), `{"foo":42}`)
+	})
+
+	t.Run("Flag[*int64] invalid value errors", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*int64]{}
+		assert.Error(t, cv.Set("not-an-int"))
+	})
+
+	t.Run("Flag[*bool] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*bool]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*bool] value sends the boolean", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*bool]{}
+		assert.NoError(t, cv.Set("true"))
+		assertJSONBody(t, cv.Get(), `{"foo":true}`)
+	})
+
+	t.Run("Flag[*float64] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*float64]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*float64] value sends the float", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*float64]{}
+		assert.NoError(t, cv.Set("1.5"))
+		assertJSONBody(t, cv.Get(), `{"foo":1.5}`)
+	})
+
+	t.Run("Flag[*float64] invalid value errors", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*float64]{}
+		assert.Error(t, cv.Set("not-a-float"))
+	})
+
+	t.Run("Flag[*DateValue] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*DateValue]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*DateValue] value sends the date", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*DateValue]{}
+		assert.NoError(t, cv.Set("2023-05-15"))
+		assertJSONBody(t, cv.Get(), `{"foo":"2023-05-15"}`)
+	})
+
+	t.Run("Flag[*DateValue] invalid value errors", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*DateValue]{}
+		assert.Error(t, cv.Set("not-a-date"))
+	})
+
+	t.Run("Flag[*DateTimeValue] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*DateTimeValue]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*DateTimeValue] value sends the datetime", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*DateTimeValue]{}
+		assert.NoError(t, cv.Set("2023-05-15T14:30:45Z"))
+		assertJSONBody(t, cv.Get(), `{"foo":"2023-05-15T14:30:45Z"}`)
+	})
+
+	t.Run("Flag[*DateTimeValue] invalid value errors", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*DateTimeValue]{}
+		assert.Error(t, cv.Set("not-a-datetime"))
+	})
+
+	t.Run("Flag[*TimeValue] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*TimeValue]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+
+	t.Run("Flag[*TimeValue] value sends the time", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*TimeValue]{}
+		assert.NoError(t, cv.Set("14:30:45"))
+		assertJSONBody(t, cv.Get(), `{"foo":"14:30:45"}`)
+	})
+
+	t.Run("Flag[*TimeValue] invalid value errors", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[*TimeValue]{}
+		assert.Error(t, cv.Set("not-a-time"))
+	})
+
+	// Nullable maps don't need pointer wrapping — a nil map already marshals as JSON null.
+	t.Run("Flag[map[string]any] null sends JSON null", func(t *testing.T) {
+		t.Parallel()
+		cv := &cliValue[map[string]any]{}
+		assert.NoError(t, cv.Set("null"))
+		assertJSONBody(t, cv.Get(), `{"foo":null}`)
+	})
+}
+
 func TestFlagTypeNames(t *testing.T) {
 	t.Parallel()
 
@@ -645,4 +818,65 @@ func TestFlagTypeNames(t *testing.T) {
 			assert.Equal(t, tt.expected, typeName, "Expected type name %q, got %q", tt.expected, typeName)
 		})
 	}
+}
+
+// TestInnerFlagDispatchOnUntypedFlag pins inner-flag behavior for `Flag[any]`,
+// which is the codegen output for nullable complex schemas (`anyOf: [T, null]`
+// or `{nullable: true}`). The untyped-nil zero value carries no reflect.Kind,
+// so SetInnerField has nowhere to dispatch the assignment — without explicit
+// help the inner-field value silently drops.
+func TestInnerFlagDispatchOnUntypedFlag(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nullable array of objects appends element from inner flag", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[any]{Name: "mcp-server"}
+		assert.NoError(t, outer.PreParse())
+
+		nameFlag := &InnerFlag[string]{
+			Name: "mcp-server.name", InnerField: "name",
+			OuterFlag: outer, OuterIsArrayOfObjects: true,
+		}
+		assert.NoError(t, nameFlag.Set("mcp-server.name", "first"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":[{"name":"first"}]}`, string(body))
+	})
+
+	t.Run("nullable object sets field from inner flag", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[any]{Name: "metadata"}
+		assert.NoError(t, outer.PreParse())
+
+		keyFlag := &InnerFlag[string]{
+			Name: "metadata.key", InnerField: "key", OuterFlag: outer,
+		}
+		assert.NoError(t, keyFlag.Set("metadata.key", "value"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":{"key":"value"}}`, string(body))
+	})
+
+	t.Run("multiple inner flags merge into the trailing element", func(t *testing.T) {
+		t.Parallel()
+		outer := &Flag[any]{Name: "mcp-server"}
+		assert.NoError(t, outer.PreParse())
+
+		nameFlag := &InnerFlag[string]{
+			Name: "mcp-server.name", InnerField: "name",
+			OuterFlag: outer, OuterIsArrayOfObjects: true,
+		}
+		urlFlag := &InnerFlag[string]{
+			Name: "mcp-server.url", InnerField: "url",
+			OuterFlag: outer, OuterIsArrayOfObjects: true,
+		}
+		assert.NoError(t, nameFlag.Set("mcp-server.name", "first"))
+		assert.NoError(t, urlFlag.Set("mcp-server.url", "https://example.com"))
+
+		body, err := json.Marshal(map[string]any{"foo": outer.Get()})
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":[{"name":"first","url":"https://example.com"}]}`, string(body))
+	})
 }

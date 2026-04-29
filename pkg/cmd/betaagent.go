@@ -31,7 +31,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Required: true,
 			BodyPath: "name",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Description of what the agent does. Up to 2048 characters.",
 			BodyPath: "description",
@@ -51,7 +51,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Skills available to the agent. Maximum 20.",
 			BodyPath: "skills",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "system",
 			Usage:    "System prompt for the agent. Up to 100,000 characters.",
 			BodyPath: "system",
@@ -129,7 +129,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Required: true,
 			BodyPath: "version",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Description. Up to 2048 characters. Omit to preserve; send empty string or null to clear.",
 			BodyPath: "description",
@@ -159,7 +159,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Skills. Full replacement. Omit to preserve; send empty array or null to clear. Maximum 20.",
 			BodyPath: "skills",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "system",
 			Usage:    "System prompt. Up to 100,000 characters. Omit to preserve; send empty string or null to clear.",
 			BodyPath: "system",
@@ -180,19 +180,22 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 }, map[string][]requestflag.HasOuterFlag{
 	"mcp-server": {
 		&requestflag.InnerFlag[string]{
-			Name:       "mcp-server.name",
-			Usage:      "Unique name for this server, referenced by mcp_toolset configurations. 1-255 characters.",
-			InnerField: "name",
+			Name:                  "mcp-server.name",
+			Usage:                 "Unique name for this server, referenced by mcp_toolset configurations. 1-255 characters.",
+			InnerField:            "name",
+			OuterIsArrayOfObjects: true,
 		},
 		&requestflag.InnerFlag[string]{
-			Name:       "mcp-server.type",
-			Usage:      `Allowed values: "url".`,
-			InnerField: "type",
+			Name:                  "mcp-server.type",
+			Usage:                 `Allowed values: "url".`,
+			InnerField:            "type",
+			OuterIsArrayOfObjects: true,
 		},
 		&requestflag.InnerFlag[string]{
-			Name:       "mcp-server.url",
-			Usage:      "Endpoint URL for the MCP server.",
-			InnerField: "url",
+			Name:                  "mcp-server.url",
+			Usage:                 "Endpoint URL for the MCP server.",
+			InnerField:            "url",
+			OuterIsArrayOfObjects: true,
 		},
 	},
 })

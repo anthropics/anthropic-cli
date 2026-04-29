@@ -19,7 +19,7 @@ var betaUserProfilesCreate = cli.Command{
 	Usage:   "Create User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "external-id",
 			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
 			BodyPath: "external_id",
@@ -67,7 +67,7 @@ var betaUserProfilesUpdate = cli.Command{
 			Name:     "user-profile-id",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "external-id",
 			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters.",
 			BodyPath: "external_id",

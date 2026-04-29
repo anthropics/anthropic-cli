@@ -15,10 +15,15 @@ import (
 // Flag [T] is a generic flag base which can be used to implement the most
 // common interfaces used by urfave/cli. Additionally, it allows specifying
 // where in an HTTP request the flag values should be placed (e.g. query, body, etc.).
+//
+// Pointer-to-primitive type parameters (e.g. *string) are used for flags whose underlying
+// schema is nullable. They give flags a tri-state: unset (excluded from the request),
+// set to the literal "null" (nil pointer → JSON null), or set to a value (*v → JSON value).
 type Flag[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string |
 		[]float64 | []int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue |
-		string | float64 | int64 | bool,
+		string | float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ] struct {
 	Name        string               // name of the flag
 	Category    string               // category of the flag, if any
@@ -341,6 +346,11 @@ func (f *Flag[T]) TypeName() string {
 	if ty == nil {
 		return ""
 	}
+	// Deref pointer-typed flags so --help surfaces the pointee kind (e.g. "string"), not
+	// Go's pointer syntax.
+	if ty.Kind() == reflect.Pointer {
+		ty = ty.Elem()
+	}
 
 	// Get base type name with special handling for built-in types
 	getTypeName := func(t reflect.Type) string {
@@ -396,6 +406,8 @@ func (f *Flag[T]) IsMultiValueFlag() bool {
 }
 
 func (f *Flag[T]) IsBoolFlag() bool {
+	// Flag[*bool] is deliberately not treated as a bool flag — the pointer form needs an
+	// explicit value (`--foo true`, `--foo null`) to disambiguate the tri-state.
 	_, isBool := any(f.Default).(bool)
 	return isBool
 }
@@ -419,7 +431,8 @@ func (f Flag[T]) IsLocal() bool {
 type cliValue[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
 		[]int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue | string |
-		float64 | int64 | bool,
+		float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ] struct {
 	value T
 }
@@ -429,12 +442,27 @@ type cliValue[
 func parseCLIArg[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
 		[]int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue | string |
-		float64 | int64 | bool,
+		float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ](value string) (T, error) {
 	var parsedValue any
 	var err error
 
 	var empty T
+
+	if value == "null" {
+		switch any(empty).(type) {
+		// Pointer-to-primitive: explicit nil gives the tri-state its "null" state
+		// (unset / null / value). Without this, numeric flags would fail to parse
+		// "null" and string flags would accept the literal word as a raw value.
+		case *string, *int64, *float64, *bool, *DateValue, *DateTimeValue, *TimeValue:
+			return empty, nil
+		// Maps marshal nil as JSON null natively; short-circuit avoids a YAML round-trip.
+		case map[string]any:
+			return empty, nil
+		}
+	}
+
 	switch any(empty).(type) {
 	case string:
 		parsedValue = value
@@ -463,6 +491,48 @@ func parseCLIArg[
 		err = (&t).Parse(value)
 		if err == nil {
 			parsedValue = t
+		}
+
+	// Pointer-to-primitive flags reach here only when `value != "null"`; we parse the
+	// pointee type and return its address so JSON marshaling emits the underlying value.
+	case *string:
+		v := value
+		parsedValue = &v
+	case *int64:
+		var v int64
+		v, err = strconv.ParseInt(value, 0, 64)
+		if err == nil {
+			parsedValue = &v
+		}
+	case *float64:
+		var v float64
+		v, err = strconv.ParseFloat(value, 64)
+		if err == nil {
+			parsedValue = &v
+		}
+	case *bool:
+		var v bool
+		v, err = strconv.ParseBool(value)
+		if err == nil {
+			parsedValue = &v
+		}
+	case *DateTimeValue:
+		var dt DateTimeValue
+		err = (&dt).Parse(value)
+		if err == nil {
+			parsedValue = &dt
+		}
+	case *DateValue:
+		var d DateValue
+		err = (&d).Parse(value)
+		if err == nil {
+			parsedValue = &d
+		}
+	case *TimeValue:
+		var t TimeValue
+		err = (&t).Parse(value)
+		if err == nil {
+			parsedValue = &t
 		}
 
 	default:
@@ -499,6 +569,13 @@ func parseCLIArg[
 	}
 	return empty, err
 
+}
+
+// Ptr returns a pointer to its argument. It is used to initialize `Default` on pointer-typed
+// Flag values, since Go does not allow taking the address of a composite literal's element
+// or of an untyped constant.
+func Ptr[T any](v T) *T {
+	return &v
 }
 
 // Assuming this string failed to parse as valid YAML, this function will
@@ -593,6 +670,15 @@ func (c *cliValue[T]) String() string {
 		[]string, []int, []int64, []float64, []bool, []DateTimeValue, []DateValue, []TimeValue:
 		// For basic types, use standard string representation
 		return fmt.Sprintf("%v", v)
+
+	case *string, *int64, *float64, *bool, *DateTimeValue, *DateValue, *TimeValue:
+		// Pointer-to-primitive: nil renders as "null" (the CLI literal that produces it);
+		// non-nil derefs to the pointee's standard representation.
+		rv := reflect.ValueOf(v)
+		if rv.IsNil() {
+			return "null"
+		}
+		return fmt.Sprintf("%v", rv.Elem().Interface())
 
 	default:
 		// For complex types, convert to YAML
@@ -705,6 +791,15 @@ type SettableInnerField interface {
 	SetInnerField(string, any)
 }
 
+// InnerFieldSeeder lets an InnerFlag prepare its outer flag's underlying value
+// before dispatching SetInnerField. This is only meaningful for Flag[any] —
+// the codegen output for nullable complex schemas — whose untyped-nil zero
+// value would otherwise have no reflect.Kind for the inner-field switch to
+// dispatch on.
+type InnerFieldSeeder interface {
+	SeedInnerCollection(isArrayOfObjects bool)
+}
+
 func (f *Flag[T]) SetInnerField(field string, val any) {
 	if f.value == nil {
 		f.value = &cliValue[T]{}
@@ -715,6 +810,33 @@ func (f *Flag[T]) SetInnerField(field string, val any) {
 		f.hasBeenSet = true
 	} else {
 		panic(fmt.Sprintf("Cannot set inner field: %v", f.value))
+	}
+}
+
+// SeedInnerCollection initializes a Flag[any]'s underlying value as an empty
+// map[string]any or []map[string]any so subsequent SetInnerField calls have a
+// dispatchable reflect.Kind. For typed Flag[T] this is a no-op: the type
+// assertion fails and the existing reflect.Kind on the typed-nil zero value
+// already routes correctly.
+func (f *Flag[T]) SeedInnerCollection(isArrayOfObjects bool) {
+	if f.value == nil {
+		f.value = &cliValue[T]{}
+	}
+	cv, ok := f.value.(*cliValue[T])
+	if !ok {
+		return
+	}
+	if reflect.ValueOf(cv.value).Kind() != reflect.Invalid {
+		return
+	}
+	if isArrayOfObjects {
+		if seed, ok := any([]map[string]any{}).(T); ok {
+			cv.value = seed
+		}
+		return
+	}
+	if seed, ok := any(map[string]any{}).(T); ok {
+		cv.value = seed
 	}
 }
 

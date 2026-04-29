@@ -144,7 +144,7 @@ var betaSessionsResourcesAdd = cli.Command{
 			Required: true,
 			BodyPath: "type",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "mount-path",
 			Usage:    "Mount path in the container. Defaults to `/mnt/session/uploads/<file_id>`.",
 			BodyPath: "mount_path",

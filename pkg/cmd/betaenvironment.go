@@ -30,7 +30,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Request params for `cloud` environment configuration.\n\nFields default to null; on update, omitted fields preserve the\nexisting value.",
 			BodyPath: "config",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Optional description of the environment",
 			BodyPath: "description",
@@ -55,7 +55,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Environment type",
 			InnerField: "type",
 		},
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[map[string]any]{
 			Name:       "config.networking",
 			Usage:      "Network configuration policy. Omit on update to preserve the existing value.",
 			InnerField: "networking",
@@ -102,7 +102,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Request params for `cloud` environment configuration.\n\nFields default to null; on update, omitted fields preserve the\nexisting value.",
 			BodyPath: "config",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Updated description of the environment",
 			BodyPath: "description",
@@ -112,7 +112,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "User-provided metadata key-value pairs. Set a value to null or empty string to delete the key.",
 			BodyPath: "metadata",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "name",
 			Usage:    "Updated name for the environment",
 			BodyPath: "name",
@@ -132,7 +132,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Environment type",
 			InnerField: "type",
 		},
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[map[string]any]{
 			Name:       "config.networking",
 			Usage:      "Network configuration policy. Omit on update to preserve the existing value.",
 			InnerField: "networking",
@@ -162,7 +162,7 @@ var betaEnvironmentsList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:      "page",
 			Usage:     "Opaque cursor from previous response for pagination. Pass the `next_page` value from the previous response.",
 			QueryPath: "page",

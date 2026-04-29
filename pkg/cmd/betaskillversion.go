@@ -75,12 +75,12 @@ var betaSkillsVersionsList = cli.Command{
 			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*int64]{
 			Name:      "limit",
 			Usage:     "Number of items to return per page.\n\nDefaults to `20`. Ranges from `1` to `1000`.",
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:      "page",
 			Usage:     "Optionally set to the `next_page` token from the previous response.",
 			QueryPath: "page",

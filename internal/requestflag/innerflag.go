@@ -14,7 +14,8 @@ import (
 type InnerFlag[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string |
 		[]float64 | []int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue |
-		string | float64 | int64 | bool,
+		string | float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ] struct {
 	Name        string        // name of the flag
 	DefaultText string        // default text of the flag for usage purposes
@@ -25,6 +26,12 @@ type InnerFlag[
 	OuterFlag   cli.Flag // The flag on which this inner flag will set values
 	InnerField  string   // The inner field which this flag will set
 	DataAliases []string // alternate names recognized in YAML values passed as the outer flag
+
+	// OuterIsArrayOfObjects tells an untyped outer flag (Flag[any], used for nullable
+	// complex schemas) to seed its underlying value as []map[string]any rather than
+	// map[string]any before SetInnerField runs. The hint is ignored for typed outer
+	// flags whose zero value already carries a dispatchable reflect.Kind.
+	OuterIsArrayOfObjects bool
 }
 
 // GetDataAliases returns the aliases recognized when parsing inner field keys from piped or flag YAML.
@@ -74,6 +81,10 @@ func (f *InnerFlag[T]) Set(name string, rawVal string) error {
 			if err := f.Validator(parsedValue); err != nil {
 				return err
 			}
+		}
+
+		if seeder, ok := f.OuterFlag.(InnerFieldSeeder); ok {
+			seeder.SeedInnerCollection(f.OuterIsArrayOfObjects)
 		}
 
 		if settableInnerField, ok := f.OuterFlag.(SettableInnerField); ok {
@@ -135,6 +146,9 @@ func (f *InnerFlag[T]) TypeName() string {
 	ty := reflect.TypeOf(zeroValue)
 	if ty == nil {
 		return ""
+	}
+	if ty.Kind() == reflect.Pointer {
+		ty = ty.Elem()
 	}
 
 	// Get base type name with special handling for built-in types

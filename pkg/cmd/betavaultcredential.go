@@ -29,7 +29,7 @@ var betaVaultsCredentialsCreate = cli.Command{
 			Required: true,
 			BodyPath: "auth",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "display-name",
 			Usage:    "Human-readable name for the credential. Up to 255 characters.",
 			BodyPath: "display_name",
@@ -91,7 +91,7 @@ var betaVaultsCredentialsUpdate = cli.Command{
 			Usage:    "Updated authentication details for a credential.",
 			BodyPath: "auth",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "display-name",
 			Usage:    "Updated human-readable name for the credential. 1-255 characters.",
 			BodyPath: "display_name",

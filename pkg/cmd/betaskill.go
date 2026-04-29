@@ -19,7 +19,7 @@ var betaSkillsCreate = cli.Command{
 	Usage:   "Create Skill",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "display-title",
 			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
 			BodyPath: "display_title",
@@ -71,12 +71,12 @@ var betaSkillsList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:      "page",
 			Usage:     "Pagination token for fetching a specific page of results.\n\nPass the value from a previous response's `next_page` field to get the next page of results.",
 			QueryPath: "page",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:      "source",
 			Usage:     "Filter skills by source.\n\nIf provided, only skills from the specified source will be returned:\n* `\"custom\"`: only return user-created skills\n* `\"anthropic\"`: only return Anthropic-created skills",
 			QueryPath: "source",

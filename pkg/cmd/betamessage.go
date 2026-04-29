@@ -50,7 +50,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "context-management",
 			BodyPath: "context_management",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "inference-geo",
 			Usage:    "Specifies the geographic region for inference processing. If not specified, the workspace's `default_inference_geo` is used.",
 			BodyPath: "inference_geo",
@@ -77,7 +77,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Determines whether to use priority capacity (if available) or standard capacity for this request.\n\nAnthropic offers different levels of service for your API requests. See [service-tiers](https://docs.claude.com/en/api/service-tiers) for details.",
 			BodyPath: "service_tier",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "speed",
 			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
 			BodyPath: "speed",
@@ -127,7 +127,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Use nucleus sampling.\n\nIn nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by `top_p`.\n\nRecommended for advanced use cases only.",
 			BodyPath: "top_p",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "user-profile-id",
 			Usage:    "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization.",
 			BodyPath: "user_profile_id",
@@ -189,7 +189,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "mcp-server.url",
 			InnerField: "url",
 		},
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "mcp-server.authorization-token",
 			InnerField: "authorization_token",
 		},
@@ -199,14 +199,14 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 	},
 	"metadata": {
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "metadata.user-id",
 			Usage:      "An external identifier for the user who is associated with the request.\n\nThis should be a uuid, hash value, or other opaque identifier. Anthropic may use this id to help detect abuse. Do not include any identifying information such as name, email address, or phone number.",
 			InnerField: "user_id",
 		},
 	},
 	"output-config": {
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
 			Usage:      "All possible effort levels.",
 			InnerField: "effort",
@@ -273,7 +273,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:     "output-format",
 			BodyPath: "output_format",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "speed",
 			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
 			BodyPath: "speed",
@@ -351,7 +351,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:       "mcp-server.url",
 			InnerField: "url",
 		},
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "mcp-server.authorization-token",
 			InnerField: "authorization_token",
 		},
@@ -361,7 +361,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 	},
 	"output-config": {
-		&requestflag.InnerFlag[any]{
+		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
 			Usage:      "All possible effort levels.",
 			InnerField: "effort",
