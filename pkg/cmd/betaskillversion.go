@@ -20,9 +20,10 @@ var betaSkillsVersionsCreate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
-			Required: true,
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "file",
@@ -46,14 +47,16 @@ var betaSkillsVersionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
-			Required: true,
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
 		},
 		&requestflag.Flag[string]{
-			Name:     "version",
-			Usage:    "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
-			Required: true,
+			Name:      "version",
+			Usage:     "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
+			Required:  true,
+			PathParam: "version",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -71,9 +74,10 @@ var betaSkillsVersionsList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
-			Required: true,
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
 		},
 		&requestflag.Flag[*int64]{
 			Name:      "limit",
@@ -105,14 +109,16 @@ var betaSkillsVersionsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
-			Required: true,
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
 		},
 		&requestflag.Flag[string]{
-			Name:     "version",
-			Usage:    "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
-			Required: true,
+			Name:      "version",
+			Usage:     "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
+			Required:  true,
+			PathParam: "version",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -135,8 +141,6 @@ func handleBetaSkillsVersionsCreate(ctx context.Context, cmd *cli.Command) error
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillVersionNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -147,6 +151,8 @@ func handleBetaSkillsVersionsCreate(ctx context.Context, cmd *cli.Command) error
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSkillVersionNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -184,10 +190,6 @@ func handleBetaSkillsVersionsRetrieve(ctx context.Context, cmd *cli.Command) err
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillVersionGetParams{
-		SkillID: cmd.Value("skill-id").(string),
-	}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -197,6 +199,10 @@ func handleBetaSkillsVersionsRetrieve(ctx context.Context, cmd *cli.Command) err
 	)
 	if err != nil {
 		return err
+	}
+
+	params := anthropic.BetaSkillVersionGetParams{
+		SkillID: cmd.Value("skill-id").(string),
 	}
 
 	var res []byte
@@ -238,8 +244,6 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillVersionListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -250,6 +254,8 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSkillVersionListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -309,10 +315,6 @@ func handleBetaSkillsVersionsDelete(ctx context.Context, cmd *cli.Command) error
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillVersionDeleteParams{
-		SkillID: cmd.Value("skill-id").(string),
-	}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -322,6 +324,10 @@ func handleBetaSkillsVersionsDelete(ctx context.Context, cmd *cli.Command) error
 	)
 	if err != nil {
 		return err
+	}
+
+	params := anthropic.BetaSkillVersionDeleteParams{
+		SkillID: cmd.Value("skill-id").(string),
 	}
 
 	var res []byte

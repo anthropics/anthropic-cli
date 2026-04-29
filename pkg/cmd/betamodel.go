@@ -20,9 +20,10 @@ var betaModelsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "model-id",
-			Usage:    "Model identifier or alias.",
-			Required: true,
+			Name:      "model-id",
+			Usage:     "Model identifier or alias.",
+			Required:  true,
+			PathParam: "model_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -80,8 +81,6 @@ func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaModelGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -92,6 +91,8 @@ func handleBetaModelsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaModelGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -129,8 +130,6 @@ func handleBetaModelsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaModelListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -141,6 +140,8 @@ func handleBetaModelsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaModelListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")

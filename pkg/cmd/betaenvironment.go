@@ -74,8 +74,9 @@ var betaEnvironmentsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "environment-id",
-			Required: true,
+			Name:      "environment-id",
+			Required:  true,
+			PathParam: "environment_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -95,6 +96,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.Flag[string]{
 			Name:        "environment-id",
 			Required:    true,
+			PathParam:   "environment_id",
 			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[map[string]any]{
@@ -187,8 +189,9 @@ var betaEnvironmentsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "environment-id",
-			Required: true,
+			Name:      "environment-id",
+			Required:  true,
+			PathParam: "environment_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -206,8 +209,9 @@ var betaEnvironmentsArchive = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "environment-id",
-			Required: true,
+			Name:      "environment-id",
+			Required:  true,
+			PathParam: "environment_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -227,8 +231,6 @@ func handleBetaEnvironmentsCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaEnvironmentNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -239,6 +241,8 @@ func handleBetaEnvironmentsCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaEnvironmentNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -271,8 +275,6 @@ func handleBetaEnvironmentsRetrieve(ctx context.Context, cmd *cli.Command) error
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaEnvironmentGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -283,6 +285,8 @@ func handleBetaEnvironmentsRetrieve(ctx context.Context, cmd *cli.Command) error
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaEnvironmentGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -323,8 +327,6 @@ func handleBetaEnvironmentsUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaEnvironmentUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -335,6 +337,8 @@ func handleBetaEnvironmentsUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaEnvironmentUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -369,8 +373,6 @@ func handleBetaEnvironmentsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaEnvironmentListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -381,6 +383,8 @@ func handleBetaEnvironmentsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaEnvironmentListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -430,8 +434,6 @@ func handleBetaEnvironmentsDelete(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaEnvironmentDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -442,6 +444,8 @@ func handleBetaEnvironmentsDelete(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaEnvironmentDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -479,8 +483,6 @@ func handleBetaEnvironmentsArchive(ctx context.Context, cmd *cli.Command) error 
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaEnvironmentArchiveParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -491,6 +493,8 @@ func handleBetaEnvironmentsArchive(ctx context.Context, cmd *cli.Command) error 
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaEnvironmentArchiveParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
