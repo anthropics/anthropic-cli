@@ -49,9 +49,10 @@ var messagesBatchesRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "message-batch-id",
-			Usage:    "ID of the Message Batch.",
-			Required: true,
+			Name:      "message-batch-id",
+			Usage:     "ID of the Message Batch.",
+			Required:  true,
+			PathParam: "message_batch_id",
 		},
 	},
 	Action:          handleMessagesBatchesRetrieve,
@@ -94,9 +95,10 @@ var messagesBatchesDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "message-batch-id",
-			Usage:    "ID of the Message Batch.",
-			Required: true,
+			Name:      "message-batch-id",
+			Usage:     "ID of the Message Batch.",
+			Required:  true,
+			PathParam: "message_batch_id",
 		},
 	},
 	Action:          handleMessagesBatchesDelete,
@@ -109,9 +111,10 @@ var messagesBatchesCancel = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "message-batch-id",
-			Usage:    "ID of the Message Batch.",
-			Required: true,
+			Name:      "message-batch-id",
+			Usage:     "ID of the Message Batch.",
+			Required:  true,
+			PathParam: "message_batch_id",
 		},
 	},
 	Action:          handleMessagesBatchesCancel,
@@ -124,9 +127,10 @@ var messagesBatchesResults = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "message-batch-id",
-			Usage:    "ID of the Message Batch.",
-			Required: true,
+			Name:      "message-batch-id",
+			Usage:     "ID of the Message Batch.",
+			Required:  true,
+			PathParam: "message_batch_id",
 		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
@@ -145,8 +149,6 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.MessageBatchNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -157,6 +159,8 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.MessageBatchNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -231,8 +235,6 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.MessageBatchListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -243,6 +245,8 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.MessageBatchListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")

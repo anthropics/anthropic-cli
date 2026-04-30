@@ -19,7 +19,7 @@ var betaUserProfilesCreate = cli.Command{
 	Usage:   "Create User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "external-id",
 			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
 			BodyPath: "external_id",
@@ -45,8 +45,9 @@ var betaUserProfilesRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "user-profile-id",
-			Required: true,
+			Name:      "user-profile-id",
+			Required:  true,
+			PathParam: "user_profile_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -64,10 +65,11 @@ var betaUserProfilesUpdate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "user-profile-id",
-			Required: true,
+			Name:      "user-profile-id",
+			Required:  true,
+			PathParam: "user_profile_id",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "external-id",
 			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters.",
 			BodyPath: "external_id",
@@ -127,8 +129,9 @@ var betaUserProfilesCreateEnrollmentURL = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "user-profile-id",
-			Required: true,
+			Name:      "user-profile-id",
+			Required:  true,
+			PathParam: "user_profile_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -148,8 +151,6 @@ func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -160,6 +161,8 @@ func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaUserProfileNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -192,8 +195,6 @@ func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -204,6 +205,8 @@ func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaUserProfileGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -244,8 +247,6 @@ func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -256,6 +257,8 @@ func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaUserProfileUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -290,8 +293,6 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -302,6 +303,8 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaUserProfileListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -351,8 +354,6 @@ func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Com
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaUserProfileNewEnrollmentURLParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -363,6 +364,8 @@ func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Com
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaUserProfileNewEnrollmentURLParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

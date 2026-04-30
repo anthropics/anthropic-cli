@@ -1,5 +1,4 @@
-#!/bin/zsh
-compdef ____APPNAME___zsh_autocomplete __APPNAME__
+#compdef __APPNAME__
 
 ____APPNAME___zsh_autocomplete() {
 
@@ -44,3 +43,14 @@ ____APPNAME___zsh_autocomplete() {
       ;;
   esac
 }
+
+# When installed in fpath (e.g., via Homebrew's zsh_completion stanza), this file
+# is autoloaded as the function ___APPNAME__ and its body becomes that function's
+# body. Detect that case via funcstack and dispatch to the completion function.
+# When sourced (e.g., `source <(__APPNAME__ @completion zsh)`), register the
+# function with compdef instead.
+if [[ "${funcstack[1]}" = "___APPNAME__" ]]; then
+  ____APPNAME___zsh_autocomplete "$@"
+else
+  compdef ____APPNAME___zsh_autocomplete __APPNAME__
+fi

@@ -20,12 +20,14 @@ var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "memory-store-id",
-			Required: true,
+			Name:      "memory-store-id",
+			Required:  true,
+			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
-			Name:     "memory-version-id",
-			Required: true,
+			Name:      "memory-version-id",
+			Required:  true,
+			PathParam: "memory_version_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
@@ -48,8 +50,9 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "memory-store-id",
-			Required: true,
+			Name:      "memory-store-id",
+			Required:  true,
+			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "api-key-id",
@@ -116,12 +119,14 @@ var betaMemoryStoresMemoryVersionsRedact = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "memory-store-id",
-			Required: true,
+			Name:      "memory-store-id",
+			Required:  true,
+			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
-			Name:     "memory-version-id",
-			Required: true,
+			Name:      "memory-version-id",
+			Required:  true,
+			PathParam: "memory_version_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -144,10 +149,6 @@ func handleBetaMemoryStoresMemoryVersionsRetrieve(ctx context.Context, cmd *cli.
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreMemoryVersionGetParams{
-		MemoryStoreID: cmd.Value("memory-store-id").(string),
-	}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -157,6 +158,10 @@ func handleBetaMemoryStoresMemoryVersionsRetrieve(ctx context.Context, cmd *cli.
 	)
 	if err != nil {
 		return err
+	}
+
+	params := anthropic.BetaMemoryStoreMemoryVersionGetParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
 	}
 
 	var res []byte
@@ -198,8 +203,6 @@ func handleBetaMemoryStoresMemoryVersionsList(ctx context.Context, cmd *cli.Comm
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreMemoryVersionListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -210,6 +213,8 @@ func handleBetaMemoryStoresMemoryVersionsList(ctx context.Context, cmd *cli.Comm
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreMemoryVersionListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -269,10 +274,6 @@ func handleBetaMemoryStoresMemoryVersionsRedact(ctx context.Context, cmd *cli.Co
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreMemoryVersionRedactParams{
-		MemoryStoreID: cmd.Value("memory-store-id").(string),
-	}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -282,6 +283,10 @@ func handleBetaMemoryStoresMemoryVersionsRedact(ctx context.Context, cmd *cli.Co
 	)
 	if err != nil {
 		return err
+	}
+
+	params := anthropic.BetaMemoryStoreMemoryVersionRedactParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
 	}
 
 	var res []byte

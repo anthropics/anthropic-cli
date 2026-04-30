@@ -1,6 +1,7 @@
 package requestflag
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -12,13 +13,38 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// formatForFlagSet converts a Go value parsed from YAML/JSON stdin data into a string
+// that flag.Set (and thus parseCLIArg) can parse correctly for each flag type.
+// Strings are returned as-is (parseCLIArg[string] assigns the raw value directly, so
+// JSON-quoting must be avoided). Scalars use %v. Complex types (maps, slices) are
+// JSON-encoded, which the yaml.Unmarshal default branch in parseCLIArg can parse.
+func formatForFlagSet(val any) (string, error) {
+	switch v := val.(type) {
+	case string:
+		return v, nil
+	case bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
+		return fmt.Sprintf("%v", val), nil
+	default:
+		b, err := json.Marshal(val)
+		if err != nil {
+			return "", fmt.Errorf("cannot format value %T for flag.Set: %w", val, err)
+		}
+		return string(b), nil
+	}
+}
+
 // Flag [T] is a generic flag base which can be used to implement the most
 // common interfaces used by urfave/cli. Additionally, it allows specifying
 // where in an HTTP request the flag values should be placed (e.g. query, body, etc.).
+//
+// Pointer-to-primitive type parameters (e.g. *string) are used for flags whose underlying
+// schema is nullable. They give flags a tri-state: unset (excluded from the request),
+// set to the literal "null" (nil pointer → JSON null), or set to a value (*v → JSON value).
 type Flag[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string |
 		[]float64 | []int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue |
-		string | float64 | int64 | bool,
+		string | float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ] struct {
 	Name        string               // name of the flag
 	Category    string               // category of the flag, if any
@@ -36,6 +62,7 @@ type Flag[
 	HeaderPath string // location in the request header to put this flag's value
 	BodyPath   string // location in the request body to put this flag's value
 	BodyRoot   bool   // if true, then use this value as the entire request body
+	PathParam  string // name of the URL path parameter this flag's value maps to
 
 	// Const, when true, marks this flag as a constant. The flag's Default value is used as the fixed value
 	// and always included in the request (IsSet returns true). The user can still see and override the flag,
@@ -67,6 +94,7 @@ type InRequest interface {
 	GetQueryPath() string
 	GetHeaderPath() string
 	GetBodyPath() string
+	GetPathParam() string
 	IsBodyRoot() bool
 	IsFileInput() bool
 	GetDataAliases() []string
@@ -82,6 +110,10 @@ func (f Flag[T]) GetHeaderPath() string {
 
 func (f Flag[T]) GetBodyPath() string {
 	return f.BodyPath
+}
+
+func (f Flag[T]) GetPathParam() string {
+	return f.PathParam
 }
 
 func (f Flag[T]) IsBodyRoot() bool {
@@ -103,7 +135,91 @@ type RequestContents struct {
 	Body    any
 }
 
-// Extract query parameters, headers, and body values from command flags.
+// ApplyStdinDataToFlags sets flag values from a parsed stdin data map for flags that have not already been
+// set via the command line. This allows piped YAML/JSON data to satisfy path, query, and header parameters.
+// Body parameters are excluded: they are already handled by the maps.Copy merge in flagOptions.
+// For each unset flag, if the parsed data map contains a key matching the flag's QueryPath, HeaderPath, or
+// PathParam (or any of its DataAliases), the flag is set to that value via flag.Set.
+//
+// Inner flags (those with an outer flag) are also handled: if the outer flag's body path key exists in the
+// data map and contains a nested map with a key matching the inner flag's field (or aliases), the inner
+// flag is set from that nested value.
+func ApplyStdinDataToFlags(cmd *cli.Command, data map[string]any) error {
+	for _, flag := range cmd.Flags {
+		if flag.IsSet() {
+			continue
+		}
+
+		// Handle inner flags: look for their value nested under the outer flag's body path.
+		if inner, ok := flag.(HasOuterFlag); ok {
+			outer, outerOk := inner.GetOuterFlag().(InRequest)
+			if !outerOk || outer.GetBodyPath() == "" {
+				continue
+			}
+			nested, ok := data[outer.GetBodyPath()].(map[string]any)
+			if !ok {
+				continue
+			}
+			innerField := inner.GetInnerField()
+			val, found := nested[innerField]
+			if !found {
+				for _, alias := range inner.GetDataAliases() {
+					if alias != "" && alias != innerField {
+						if v, ok := nested[alias]; ok {
+							val, found = v, true
+							break
+						}
+					}
+				}
+			}
+			if !found {
+				continue
+			}
+			setVal, err := formatForFlagSet(val)
+			if err != nil {
+				return fmt.Errorf("cannot format piped value for flag %q: %w", flag.Names()[0], err)
+			}
+			if err := flag.Set(flag.Names()[0], setVal); err != nil {
+				return fmt.Errorf("cannot set flag %q from piped data: %w", flag.Names()[0], err)
+			}
+			continue
+		}
+
+		inReq, ok := flag.(InRequest)
+		if !ok {
+			continue
+		}
+
+		// Try each request location in turn, checking the canonical path key and all aliases.
+		// Body params are excluded: they are already handled by the maps.Copy merge in flagOptions.
+		for _, path := range []string{inReq.GetQueryPath(), inReq.GetHeaderPath(), inReq.GetPathParam()} {
+			if path == "" {
+				continue
+			}
+			var val any
+			var found bool
+			for _, key := range append([]string{path}, inReq.GetDataAliases()...) {
+				if v, ok := data[key]; ok {
+					val, found = v, true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+			setVal, err := formatForFlagSet(val)
+			if err != nil {
+				return fmt.Errorf("cannot format piped value for flag %q: %w", flag.Names()[0], err)
+			}
+			if err := flag.Set(flag.Names()[0], setVal); err != nil {
+				return fmt.Errorf("cannot set flag %q from piped data: %w", flag.Names()[0], err)
+			}
+			break
+		}
+	}
+	return nil
+}
+
 func ExtractRequestContents(cmd *cli.Command) RequestContents {
 	bodyMap := make(map[string]any)
 	res := RequestContents{
@@ -286,7 +402,7 @@ func (f *Flag[T]) IsRequired() bool {
 	}
 	// Intentionally don't use `f.Required`, because request flags may be passed
 	// over stdin as well as by flag.
-	if f.BodyPath != "" || f.BodyRoot {
+	if f.BodyPath != "" || f.BodyRoot || f.PathParam != "" || f.QueryPath != "" || f.HeaderPath != "" {
 		return false
 	}
 	return f.Required
@@ -340,6 +456,11 @@ func (f *Flag[T]) TypeName() string {
 	ty := reflect.TypeOf(f.Default)
 	if ty == nil {
 		return ""
+	}
+	// Deref pointer-typed flags so --help surfaces the pointee kind (e.g. "string"), not
+	// Go's pointer syntax.
+	if ty.Kind() == reflect.Pointer {
+		ty = ty.Elem()
 	}
 
 	// Get base type name with special handling for built-in types
@@ -396,6 +517,8 @@ func (f *Flag[T]) IsMultiValueFlag() bool {
 }
 
 func (f *Flag[T]) IsBoolFlag() bool {
+	// Flag[*bool] is deliberately not treated as a bool flag — the pointer form needs an
+	// explicit value (`--foo true`, `--foo null`) to disambiguate the tri-state.
 	_, isBool := any(f.Default).(bool)
 	return isBool
 }
@@ -419,7 +542,8 @@ func (f Flag[T]) IsLocal() bool {
 type cliValue[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
 		[]int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue | string |
-		float64 | int64 | bool,
+		float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ] struct {
 	value T
 }
@@ -429,12 +553,27 @@ type cliValue[
 func parseCLIArg[
 	T []any | []map[string]any | []DateTimeValue | []DateValue | []TimeValue | []string | []float64 |
 		[]int64 | []bool | any | map[string]any | DateTimeValue | DateValue | TimeValue | string |
-		float64 | int64 | bool,
+		float64 | int64 | bool |
+		*string | *float64 | *int64 | *bool | *DateTimeValue | *DateValue | *TimeValue,
 ](value string) (T, error) {
 	var parsedValue any
 	var err error
 
 	var empty T
+
+	if value == "null" {
+		switch any(empty).(type) {
+		// Pointer-to-primitive: explicit nil gives the tri-state its "null" state
+		// (unset / null / value). Without this, numeric flags would fail to parse
+		// "null" and string flags would accept the literal word as a raw value.
+		case *string, *int64, *float64, *bool, *DateValue, *DateTimeValue, *TimeValue:
+			return empty, nil
+		// Maps marshal nil as JSON null natively; short-circuit avoids a YAML round-trip.
+		case map[string]any:
+			return empty, nil
+		}
+	}
+
 	switch any(empty).(type) {
 	case string:
 		parsedValue = value
@@ -463,6 +602,48 @@ func parseCLIArg[
 		err = (&t).Parse(value)
 		if err == nil {
 			parsedValue = t
+		}
+
+	// Pointer-to-primitive flags reach here only when `value != "null"`; we parse the
+	// pointee type and return its address so JSON marshaling emits the underlying value.
+	case *string:
+		v := value
+		parsedValue = &v
+	case *int64:
+		var v int64
+		v, err = strconv.ParseInt(value, 0, 64)
+		if err == nil {
+			parsedValue = &v
+		}
+	case *float64:
+		var v float64
+		v, err = strconv.ParseFloat(value, 64)
+		if err == nil {
+			parsedValue = &v
+		}
+	case *bool:
+		var v bool
+		v, err = strconv.ParseBool(value)
+		if err == nil {
+			parsedValue = &v
+		}
+	case *DateTimeValue:
+		var dt DateTimeValue
+		err = (&dt).Parse(value)
+		if err == nil {
+			parsedValue = &dt
+		}
+	case *DateValue:
+		var d DateValue
+		err = (&d).Parse(value)
+		if err == nil {
+			parsedValue = &d
+		}
+	case *TimeValue:
+		var t TimeValue
+		err = (&t).Parse(value)
+		if err == nil {
+			parsedValue = &t
 		}
 
 	default:
@@ -499,6 +680,13 @@ func parseCLIArg[
 	}
 	return empty, err
 
+}
+
+// Ptr returns a pointer to its argument. It is used to initialize `Default` on pointer-typed
+// Flag values, since Go does not allow taking the address of a composite literal's element
+// or of an untyped constant.
+func Ptr[T any](v T) *T {
+	return &v
 }
 
 // Assuming this string failed to parse as valid YAML, this function will
@@ -593,6 +781,15 @@ func (c *cliValue[T]) String() string {
 		[]string, []int, []int64, []float64, []bool, []DateTimeValue, []DateValue, []TimeValue:
 		// For basic types, use standard string representation
 		return fmt.Sprintf("%v", v)
+
+	case *string, *int64, *float64, *bool, *DateTimeValue, *DateValue, *TimeValue:
+		// Pointer-to-primitive: nil renders as "null" (the CLI literal that produces it);
+		// non-nil derefs to the pointee's standard representation.
+		rv := reflect.ValueOf(v)
+		if rv.IsNil() {
+			return "null"
+		}
+		return fmt.Sprintf("%v", rv.Elem().Interface())
 
 	default:
 		// For complex types, convert to YAML
@@ -705,6 +902,15 @@ type SettableInnerField interface {
 	SetInnerField(string, any)
 }
 
+// InnerFieldSeeder lets an InnerFlag prepare its outer flag's underlying value
+// before dispatching SetInnerField. This is only meaningful for Flag[any] —
+// the codegen output for nullable complex schemas — whose untyped-nil zero
+// value would otherwise have no reflect.Kind for the inner-field switch to
+// dispatch on.
+type InnerFieldSeeder interface {
+	SeedInnerCollection(isArrayOfObjects bool)
+}
+
 func (f *Flag[T]) SetInnerField(field string, val any) {
 	if f.value == nil {
 		f.value = &cliValue[T]{}
@@ -715,6 +921,33 @@ func (f *Flag[T]) SetInnerField(field string, val any) {
 		f.hasBeenSet = true
 	} else {
 		panic(fmt.Sprintf("Cannot set inner field: %v", f.value))
+	}
+}
+
+// SeedInnerCollection initializes a Flag[any]'s underlying value as an empty
+// map[string]any or []map[string]any so subsequent SetInnerField calls have a
+// dispatchable reflect.Kind. For typed Flag[T] this is a no-op: the type
+// assertion fails and the existing reflect.Kind on the typed-nil zero value
+// already routes correctly.
+func (f *Flag[T]) SeedInnerCollection(isArrayOfObjects bool) {
+	if f.value == nil {
+		f.value = &cliValue[T]{}
+	}
+	cv, ok := f.value.(*cliValue[T])
+	if !ok {
+		return
+	}
+	if reflect.ValueOf(cv.value).Kind() != reflect.Invalid {
+		return
+	}
+	if isArrayOfObjects {
+		if seed, ok := any([]map[string]any{}).(T); ok {
+			cv.value = seed
+		}
+		return
+	}
+	if seed, ok := any(map[string]any{}).(T); ok {
+		cv.value = seed
 	}
 }
 

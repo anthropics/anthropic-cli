@@ -51,8 +51,9 @@ var betaMemoryStoresRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "memory-store-id",
-			Required: true,
+			Name:      "memory-store-id",
+			Required:  true,
+			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -72,9 +73,10 @@ var betaMemoryStoresUpdate = cli.Command{
 		&requestflag.Flag[string]{
 			Name:        "memory-store-id",
 			Required:    true,
+			PathParam:   "memory_store_id",
 			DataAliases: []string{"id"},
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "New description for the store, up to 1024 characters. Pass an empty string to clear it.",
 			BodyPath: "description",
@@ -84,7 +86,7 @@ var betaMemoryStoresUpdate = cli.Command{
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omit the field to preserve. The stored bag is limited to 16 keys (up to 64 chars each) with values up to 512 chars.",
 			BodyPath: "metadata",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "name",
 			Usage:    "New human-readable name for the store. 1–255 characters; no control characters. Renaming changes the slug used for the store's `mount_path` in sessions created after the update.",
 			BodyPath: "name",
@@ -149,8 +151,9 @@ var betaMemoryStoresDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "memory-store-id",
-			Required: true,
+			Name:      "memory-store-id",
+			Required:  true,
+			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -168,8 +171,9 @@ var betaMemoryStoresArchive = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "memory-store-id",
-			Required: true,
+			Name:      "memory-store-id",
+			Required:  true,
+			PathParam: "memory_store_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -189,8 +193,6 @@ func handleBetaMemoryStoresCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -201,6 +203,8 @@ func handleBetaMemoryStoresCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -233,8 +237,6 @@ func handleBetaMemoryStoresRetrieve(ctx context.Context, cmd *cli.Command) error
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -245,6 +247,8 @@ func handleBetaMemoryStoresRetrieve(ctx context.Context, cmd *cli.Command) error
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -285,8 +289,6 @@ func handleBetaMemoryStoresUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -297,6 +299,8 @@ func handleBetaMemoryStoresUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -331,8 +335,6 @@ func handleBetaMemoryStoresList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -343,6 +345,8 @@ func handleBetaMemoryStoresList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -392,8 +396,6 @@ func handleBetaMemoryStoresDelete(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -404,6 +406,8 @@ func handleBetaMemoryStoresDelete(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -441,8 +445,6 @@ func handleBetaMemoryStoresArchive(ctx context.Context, cmd *cli.Command) error 
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaMemoryStoreArchiveParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -453,6 +455,8 @@ func handleBetaMemoryStoresArchive(ctx context.Context, cmd *cli.Command) error 
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaMemoryStoreArchiveParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

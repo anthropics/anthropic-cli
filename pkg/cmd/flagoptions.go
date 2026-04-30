@@ -339,7 +339,7 @@ func flagOptions(
 	}
 
 	stdinConsumedByPipe := false
-	if (bodyType == MultipartFormEncoded || bodyType == ApplicationJSON) && !ignoreStdin && isInputPiped() {
+	if bodyType != ApplicationOctetStream && !ignoreStdin && isInputPiped() {
 		pipeData, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err
@@ -353,16 +353,45 @@ func flagOptions(
 			}
 			if bodyMap, ok := bodyData.(map[string]any); ok {
 				applyDataAliases(cmd, bodyMap)
-				if flagMap, ok := requestContents.Body.(map[string]any); ok {
-					maps.Copy(bodyMap, flagMap)
-					requestContents.Body = bodyMap
-				} else {
-					bodyData = requestContents.Body
+				// Apply any matching keys from the piped data to path, query, and header flags
+				// that have not already been set via the command line.
+				if err := requestflag.ApplyStdinDataToFlags(cmd, bodyMap); err != nil {
+					return nil, err
 				}
-			} else if flagMap, ok := requestContents.Body.(map[string]any); ok && len(flagMap) > 0 {
-				return nil, fmt.Errorf("Cannot merge flags with a body that is not a map: %v", bodyData)
-			} else {
-				requestContents.Body = bodyData
+				// Re-extract request contents now that flags may have been updated.
+				requestContents = requestflag.ExtractRequestContents(cmd)
+				// Remove keys that were consumed as query, header, or path params so they
+				// don't also leak into the request body via the maps.Copy merge below.
+				// We delete both the canonical key and any aliases since the user may have
+				// piped data using an alias name rather than the canonical API name.
+				for _, flag := range cmd.Flags {
+					inReq, ok := flag.(requestflag.InRequest)
+					if !ok || !flag.IsSet() {
+						continue
+					}
+					if inReq.GetQueryPath() != "" || inReq.GetHeaderPath() != "" || inReq.GetPathParam() != "" {
+						delete(bodyMap, inReq.GetQueryPath())
+						delete(bodyMap, inReq.GetHeaderPath())
+						delete(bodyMap, inReq.GetPathParam())
+						for _, alias := range inReq.GetDataAliases() {
+							delete(bodyMap, alias)
+						}
+					}
+				}
+				if bodyType != EmptyBody {
+					if flagMap, ok := requestContents.Body.(map[string]any); ok {
+						maps.Copy(bodyMap, flagMap)
+						requestContents.Body = bodyMap
+					} else {
+						bodyData = requestContents.Body
+					}
+				}
+			} else if bodyType != EmptyBody {
+				if flagMap, ok := requestContents.Body.(map[string]any); ok && len(flagMap) > 0 {
+					return nil, fmt.Errorf("Cannot merge flags with a body that is not a map: %v", bodyData)
+				} else {
+					requestContents.Body = bodyData
+				}
 			}
 		}
 	}
@@ -370,7 +399,6 @@ func flagOptions(
 	if missingFlags := requestflag.GetMissingRequiredFlags(cmd, requestContents.Body); len(missingFlags) > 0 {
 		if len(missingFlags) == 1 {
 			return nil, fmt.Errorf("Required flag %q not set\nRun '%s --help' for usage information", missingFlags[0].Names()[0], cmd.FullName())
-
 		} else {
 			names := []string{}
 			for _, flag := range missingFlags {

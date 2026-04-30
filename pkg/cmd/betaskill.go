@@ -19,7 +19,7 @@ var betaSkillsCreate = cli.Command{
 	Usage:   "Create Skill",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "display-title",
 			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
 			BodyPath: "display_title",
@@ -46,9 +46,10 @@ var betaSkillsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
-			Required: true,
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -71,12 +72,12 @@ var betaSkillsList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:      "page",
 			Usage:     "Pagination token for fetching a specific page of results.\n\nPass the value from a previous response's `next_page` field to get the next page of results.",
 			QueryPath: "page",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:      "source",
 			Usage:     "Filter skills by source.\n\nIf provided, only skills from the specified source will be returned:\n* `\"custom\"`: only return user-created skills\n* `\"anthropic\"`: only return Anthropic-created skills",
 			QueryPath: "source",
@@ -101,9 +102,10 @@ var betaSkillsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
-			Required: true,
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -123,8 +125,6 @@ func handleBetaSkillsCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -135,6 +135,8 @@ func handleBetaSkillsCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSkillNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -167,8 +169,6 @@ func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -179,6 +179,8 @@ func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSkillGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -216,8 +218,6 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -228,6 +228,8 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSkillListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -277,8 +279,6 @@ func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillDeleteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -289,6 +289,8 @@ func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := anthropic.BetaSkillDeleteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
