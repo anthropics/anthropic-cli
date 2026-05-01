@@ -202,6 +202,7 @@ func handleBetaMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) erro
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:messages:batches create",
 		Transform:      transform,
 	})
@@ -244,12 +245,16 @@ func handleBetaMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) er
 	}
 
 	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:messages:batches retrieve",
 		Transform:      transform,
 	})
@@ -276,8 +281,11 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -290,6 +298,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:messages:batches list",
 			Transform:      transform,
 		})
@@ -305,6 +314,7 @@ func handleBetaMessagesBatchesList(ctx context.Context, cmd *cli.Command) error 
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:messages:batches list",
 			Transform:      transform,
 		})
@@ -354,6 +364,7 @@ func handleBetaMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) erro
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:messages:batches delete",
 		Transform:      transform,
 	})
@@ -402,6 +413,7 @@ func handleBetaMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) erro
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:messages:batches cancel",
 		Transform:      transform,
 	})
@@ -447,6 +459,7 @@ func handleBetaMessagesBatchesResults(ctx context.Context, cmd *cli.Command) err
 	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:messages:batches results",
 		Transform:      transform,
 	})

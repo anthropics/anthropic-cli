@@ -8,18 +8,15 @@ import (
 	"github.com/anthropics/anthropic-cli/internal/mocktest"
 )
 
-func TestBetaSessionsCreate(t *testing.T) {
+func TestBetaMemoryStoresCreate(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"beta:sessions", "create",
-			"--agent", "agent_011CZkYpogX7uDKUyvBTophP",
-			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"beta:memory-stores", "create",
+			"--name", "x",
+			"--description", "description",
 			"--metadata", "{foo: string}",
-			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
-			"--title", "Order #1234 inquiry",
-			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -27,48 +24,41 @@ func TestBetaSessionsCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"agent: agent_011CZkYpogX7uDKUyvBTophP\n" +
-			"environment_id: env_011CZkZ9X2dpNyB7HsEFoRfW\n" +
+			"name: x\n" +
+			"description: description\n" +
 			"metadata:\n" +
-			"  foo: string\n" +
-			"resources:\n" +
-			"  - file_id: file_011CNha8iCJcU1wXNR6q4V8w\n" +
-			"    type: file\n" +
-			"    mount_path: /uploads/receipt.pdf\n" +
-			"title: 'Order #1234 inquiry'\n" +
-			"vault_ids:\n" +
-			"  - string\n")
+			"  foo: string\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
-			"beta:sessions", "create",
+			"beta:memory-stores", "create",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
 }
 
-func TestBetaSessionsRetrieve(t *testing.T) {
+func TestBetaMemoryStoresRetrieve(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"beta:sessions", "retrieve",
-			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"beta:memory-stores", "retrieve",
+			"--memory-store-id", "memory_store_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
 }
 
-func TestBetaSessionsUpdate(t *testing.T) {
+func TestBetaMemoryStoresUpdate(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"beta:sessions", "update",
-			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"beta:memory-stores", "update",
+			"--memory-store-id", "memory_store_id",
+			"--description", "description",
 			"--metadata", "{foo: string}",
-			"--title", "Order #1234 inquiry",
-			"--vault-id", "string",
+			"--name", "x",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -76,64 +66,57 @@ func TestBetaSessionsUpdate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
+			"description: description\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
-			"title: 'Order #1234 inquiry'\n" +
-			"vault_ids:\n" +
-			"  - string\n")
+			"name: x\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
-			"beta:sessions", "update",
-			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"beta:memory-stores", "update",
+			"--memory-store-id", "memory_store_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
 }
 
-func TestBetaSessionsList(t *testing.T) {
+func TestBetaMemoryStoresList(t *testing.T) {
 	t.Skip("buildURL drops path-level query params (SDK-4349)")
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"beta:sessions", "list",
+			"beta:memory-stores", "list",
 			"--max-items", "10",
-			"--agent-id", "agent_id",
-			"--agent-version", "0",
-			"--created-at-gt", "'2019-12-27T18:11:19.117Z'",
 			"--created-at-gte", "'2019-12-27T18:11:19.117Z'",
-			"--created-at-lt", "'2019-12-27T18:11:19.117Z'",
 			"--created-at-lte", "'2019-12-27T18:11:19.117Z'",
 			"--include-archived=true",
 			"--limit", "0",
-			"--memory-store-id", "memory_store_id",
-			"--order", "asc",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
 }
 
-func TestBetaSessionsDelete(t *testing.T) {
+func TestBetaMemoryStoresDelete(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"beta:sessions", "delete",
-			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"beta:memory-stores", "delete",
+			"--memory-store-id", "memory_store_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
 }
 
-func TestBetaSessionsArchive(t *testing.T) {
+func TestBetaMemoryStoresArchive(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"beta:sessions", "archive",
-			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"beta:memory-stores", "archive",
+			"--memory-store-id", "memory_store_id",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})

@@ -14,10 +14,37 @@ permissions:
   contents: read
 
 jobs:
-  goreleaser:
+  verify:
     runs-on: ubuntu-latest
-    # Scopes RELEASE_APP_* to this environment. Tag creation is restricted
-    # to the Stainless App via a repository tag ruleset.
+    permissions:
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Verify release commit is on main's first-parent history
+      # The environment's branch policy matches ref names, not commit
+      # ancestry, so a v* tag on a non-main commit would otherwise pass.
+      # Runs in a separate job before the environment-gated goreleaser
+      # job so a bad tag never triggers a deployment-approval prompt or
+      # mints app tokens. --first-parent ensures only mainline commits
+      # qualify (a commit inside a merged side branch would pass a plain
+      # ancestor check despite never being reviewed in isolation).
+      run: |
+        git fetch origin main
+        if ! git rev-list --first-parent origin/main | grep -qxF "$GITHUB_SHA"; then
+          echo "::error::Ref $GITHUB_REF points at $GITHUB_SHA, which is not on the first-parent history of origin/main. Refusing to release."
+          exit 1
+        fi
+
+  goreleaser:
+    needs: verify
+    runs-on: ubuntu-latest
+    # Scopes RELEASE_APP_* and MACOS_* to this environment. Tag creation
+    # is restricted to the Stainless App via a repository tag ruleset.
     environment: production-release
     steps:
     - name: Generate release app token (this repo)
@@ -47,6 +74,17 @@ jobs:
       with:
         go-version-file: "go.mod"
 
+    - name: Encode notary key
+      # The MACOS_NOTARY_KEY env secret holds the raw .p8 contents, but
+      # goreleaser's notarize step expects the key base64-encoded.
+      shell: bash
+      run: |
+        encoded=$(printf '%s' "$RAW_KEY" | base64 -w0)
+        echo "::add-mask::$encoded"
+        echo "MACOS_NOTARY_KEY=$encoded" >> "$GITHUB_ENV"
+      env:
+        RAW_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
+
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
       with:
@@ -55,3 +93,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.tap-token.outputs.token }}
+        MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+        MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }}
+        MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+        MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+        MACOS_NOTARY_KEY: ${{ env.MACOS_NOTARY_KEY }}

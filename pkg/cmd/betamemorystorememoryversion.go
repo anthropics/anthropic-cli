@@ -14,41 +14,23 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaSkillsCreate = cli.Command{
-	Name:    "create",
-	Usage:   "Create Skill",
-	Suggest: true,
-	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
-			Name:     "display-title",
-			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
-			BodyPath: "display_title",
-		},
-		&requestflag.Flag[[]string]{
-			Name:      "file",
-			Usage:     "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
-			BodyPath:  "files",
-			FileInput: true,
-		},
-		&requestflag.Flag[[]string]{
-			Name:       "beta",
-			Usage:      "Optional header to specify the beta version(s) you want to use.",
-			HeaderPath: "anthropic-beta",
-		},
-	},
-	Action:          handleBetaSkillsCreate,
-	HideHelpCommand: true,
-}
-
-var betaSkillsRetrieve = cli.Command{
+var betaMemoryStoresMemoryVersionsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Get Skill",
+	Usage:   "Retrieve a memory version",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Name:     "memory-store-id",
 			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:     "memory-version-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:      "view",
+			Usage:     "Selects which projection of a `memory` or `memory_version` the server returns. `basic` returns the object with `content` set to `null`; `full` populates `content`. When omitted, the default is endpoint-specific: retrieve operations default to `full`; list, create, and update operations default to `basic`. Listing with `view=full` caps `limit` at 20.",
+			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -56,30 +38,63 @@ var betaSkillsRetrieve = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaSkillsRetrieve,
+	Action:          handleBetaMemoryStoresMemoryVersionsRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaSkillsList = cli.Command{
+var betaMemoryStoresMemoryVersionsList = cli.Command{
 	Name:    "list",
-	Usage:   "List Skills",
+	Usage:   "List memory versions",
 	Suggest: true,
 	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:     "memory-store-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:      "api-key-id",
+			Usage:     "Query parameter for api_key_id",
+			QueryPath: "api_key_id",
+		},
+		&requestflag.Flag[any]{
+			Name:      "created-at-gte",
+			Usage:     "Return versions created at or after this time (inclusive).",
+			QueryPath: "created_at[gte]",
+		},
+		&requestflag.Flag[any]{
+			Name:      "created-at-lte",
+			Usage:     "Return versions created at or before this time (inclusive).",
+			QueryPath: "created_at[lte]",
+		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Number of results to return per page.\n\nMaximum value is 100. Defaults to 20.",
-			Default:   20,
+			Usage:     "Query parameter for limit",
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[string]{
+			Name:      "memory-id",
+			Usage:     "Query parameter for memory_id",
+			QueryPath: "memory_id",
+		},
+		&requestflag.Flag[string]{
+			Name:      "operation",
+			Usage:     "The kind of mutation a `memory_version` records. Every non-no-op mutation to a memory appends exactly one version row with one of these values.",
+			QueryPath: "operation",
+		},
+		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Pagination token for fetching a specific page of results.\n\nPass the value from a previous response's `next_page` field to get the next page of results.",
+			Usage:     "Query parameter for page",
 			QueryPath: "page",
 		},
-		&requestflag.Flag[any]{
-			Name:      "source",
-			Usage:     "Filter skills by source.\n\nIf provided, only skills from the specified source will be returned:\n* `\"custom\"`: only return user-created skills\n* `\"anthropic\"`: only return Anthropic-created skills",
-			QueryPath: "source",
+		&requestflag.Flag[string]{
+			Name:      "session-id",
+			Usage:     "Query parameter for session_id",
+			QueryPath: "session_id",
+		},
+		&requestflag.Flag[string]{
+			Name:      "view",
+			Usage:     "Selects which projection of a `memory` or `memory_version` the server returns. `basic` returns the object with `content` set to `null`; `full` populates `content`. When omitted, the default is endpoint-specific: retrieve operations default to `full`; list, create, and update operations default to `basic`. Listing with `view=full` caps `limit` at 20.",
+			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -91,18 +106,21 @@ var betaSkillsList = cli.Command{
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleBetaSkillsList,
+	Action:          handleBetaMemoryStoresMemoryVersionsList,
 	HideHelpCommand: true,
 }
 
-var betaSkillsDelete = cli.Command{
-	Name:    "delete",
-	Usage:   "Delete Skill",
+var betaMemoryStoresMemoryVersionsRedact = cli.Command{
+	Name:    "redact",
+	Usage:   "Redact a memory version",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "skill-id",
-			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Name:     "memory-store-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:     "memory-version-id",
 			Required: true,
 		},
 		&requestflag.Flag[[]string]{
@@ -111,63 +129,24 @@ var betaSkillsDelete = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaSkillsDelete,
+	Action:          handleBetaMemoryStoresMemoryVersionsRedact,
 	HideHelpCommand: true,
 }
 
-func handleBetaSkillsCreate(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoryVersionsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-
-	if len(unusedArgs) > 0 {
-		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
-	}
-
-	params := anthropic.BetaSkillNewParams{}
-
-	options, err := flagOptions(
-		cmd,
-		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
-		MultipartFormEncoded,
-		false,
-	)
-	if err != nil {
-		return err
-	}
-
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Skills.New(ctx, params, options...)
-	if err != nil {
-		return err
-	}
-
-	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
-	explicitFormat := cmd.Root().IsSet("format")
-	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
-		ExplicitFormat: explicitFormat,
-		Format:         format,
-		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:skills create",
-		Transform:      transform,
-	})
-}
-
-func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
-	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
-	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("skill-id") && len(unusedArgs) > 0 {
-		cmd.Set("skill-id", unusedArgs[0])
+	if !cmd.IsSet("memory-version-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-version-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillGetParams{}
+	params := anthropic.BetaMemoryStoreMemoryVersionGetParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
+	}
 
 	options, err := flagOptions(
 		cmd,
@@ -182,9 +161,9 @@ func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Skills.Get(
+	_, err = client.Beta.MemoryStores.MemoryVersions.Get(
 		ctx,
-		cmd.Value("skill-id").(string),
+		cmd.Value("memory-version-id").(string),
 		params,
 		options...,
 	)
@@ -203,20 +182,23 @@ func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:skills retrieve",
+		Title:          "beta:memory-stores:memory-versions retrieve",
 		Transform:      transform,
 	})
 }
 
-func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoryVersionsList(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-
+	if !cmd.IsSet("memory-store-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-store-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillListParams{}
+	params := anthropic.BetaMemoryStoreMemoryVersionListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -238,7 +220,12 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Beta.Skills.List(ctx, params, options...)
+		_, err = client.Beta.MemoryStores.MemoryVersions.List(
+			ctx,
+			cmd.Value("memory-store-id").(string),
+			params,
+			options...,
+		)
 		if err != nil {
 			return err
 		}
@@ -247,11 +234,16 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "beta:skills list",
+			Title:          "beta:memory-stores:memory-versions list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Beta.Skills.ListAutoPaging(ctx, params, options...)
+		iter := client.Beta.MemoryStores.MemoryVersions.ListAutoPaging(
+			ctx,
+			cmd.Value("memory-store-id").(string),
+			params,
+			options...,
+		)
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
@@ -260,24 +252,26 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "beta:skills list",
+			Title:          "beta:memory-stores:memory-versions list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
+func handleBetaMemoryStoresMemoryVersionsRedact(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("skill-id") && len(unusedArgs) > 0 {
-		cmd.Set("skill-id", unusedArgs[0])
+	if !cmd.IsSet("memory-version-id") && len(unusedArgs) > 0 {
+		cmd.Set("memory-version-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := anthropic.BetaSkillDeleteParams{}
+	params := anthropic.BetaMemoryStoreMemoryVersionRedactParams{
+		MemoryStoreID: cmd.Value("memory-store-id").(string),
+	}
 
 	options, err := flagOptions(
 		cmd,
@@ -292,9 +286,9 @@ func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Skills.Delete(
+	_, err = client.Beta.MemoryStores.MemoryVersions.Redact(
 		ctx,
-		cmd.Value("skill-id").(string),
+		cmd.Value("memory-version-id").(string),
 		params,
 		options...,
 	)
@@ -310,7 +304,7 @@ func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:skills delete",
+		Title:          "beta:memory-stores:memory-versions redact",
 		Transform:      transform,
 	})
 }

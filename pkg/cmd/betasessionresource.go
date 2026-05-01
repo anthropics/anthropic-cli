@@ -47,8 +47,9 @@ var betaSessionsResourcesUpdate = cli.Command{
 			Required: true,
 		},
 		&requestflag.Flag[string]{
-			Name:     "resource-id",
-			Required: true,
+			Name:        "resource-id",
+			Required:    true,
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[string]{
 			Name:     "authorization-token",
@@ -197,12 +198,16 @@ func handleBetaSessionsResourcesRetrieve(ctx context.Context, cmd *cli.Command) 
 	}
 
 	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources retrieve",
 		Transform:      transform,
 	})
@@ -253,6 +258,7 @@ func handleBetaSessionsResourcesUpdate(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources update",
 		Transform:      transform,
 	})
@@ -282,8 +288,11 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -301,6 +310,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:resources list",
 			Transform:      transform,
 		})
@@ -318,6 +328,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:resources list",
 			Transform:      transform,
 		})
@@ -369,6 +380,7 @@ func handleBetaSessionsResourcesDelete(ctx context.Context, cmd *cli.Command) er
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources delete",
 		Transform:      transform,
 	})
@@ -417,6 +429,7 @@ func handleBetaSessionsResourcesAdd(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:resources add",
 		Transform:      transform,
 	})

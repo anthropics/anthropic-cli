@@ -73,6 +73,11 @@ func init() {
 				Name:  "transform-error",
 				Usage: "The GJSON transformation for errors.",
 			},
+			&cli.BoolFlag{
+				Name:    "raw-output",
+				Aliases: []string{"r"},
+				Usage:   "If the result is a string, print it without JSON quotes. This can be useful for making output transforms talk to non-JSON-based systems.",
+			},
 			&requestflag.Flag[string]{
 				Name:    "api-key",
 				Sources: cli.EnvVars("ANTHROPIC_API_KEY"),
@@ -245,6 +250,41 @@ func init() {
 					&betaVaultsCredentialsList,
 					&betaVaultsCredentialsDelete,
 					&betaVaultsCredentialsArchive,
+				},
+			},
+			{
+				Name:     "beta:memory-stores",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaMemoryStoresCreate,
+					&betaMemoryStoresRetrieve,
+					&betaMemoryStoresUpdate,
+					&betaMemoryStoresList,
+					&betaMemoryStoresDelete,
+					&betaMemoryStoresArchive,
+				},
+			},
+			{
+				Name:     "beta:memory-stores:memories",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaMemoryStoresMemoriesCreate,
+					&betaMemoryStoresMemoriesRetrieve,
+					&betaMemoryStoresMemoriesUpdate,
+					&betaMemoryStoresMemoriesList,
+					&betaMemoryStoresMemoriesDelete,
+				},
+			},
+			{
+				Name:     "beta:memory-stores:memory-versions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaMemoryStoresMemoryVersionsRetrieve,
+					&betaMemoryStoresMemoryVersionsList,
+					&betaMemoryStoresMemoryVersionsRedact,
 				},
 			},
 			{

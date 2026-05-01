@@ -124,8 +124,11 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -143,6 +146,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:events list",
 			Transform:      transform,
 		})
@@ -160,6 +164,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:sessions:events list",
 			Transform:      transform,
 		})
@@ -209,6 +214,7 @@ func handleBetaSessionsEventsSend(ctx context.Context, cmd *cli.Command) error {
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:events send",
 		Transform:      transform,
 	})
@@ -238,8 +244,11 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	stream := client.Beta.Sessions.Events.StreamEvents(
 		ctx,
@@ -254,6 +263,7 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:sessions:events stream",
 		Transform:      transform,
 	})

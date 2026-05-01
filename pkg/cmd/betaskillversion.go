@@ -24,7 +24,7 @@ var betaSkillsVersionsCreate = cli.Command{
 			Usage:    "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
 			Required: true,
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[[]string]{
 			Name:      "file",
 			Usage:     "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
 			BodyPath:  "files",
@@ -167,6 +167,7 @@ func handleBetaSkillsVersionsCreate(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:skills:versions create",
 		Transform:      transform,
 	})
@@ -211,12 +212,16 @@ func handleBetaSkillsVersionsRetrieve(ctx context.Context, cmd *cli.Command) err
 	}
 
 	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:skills:versions retrieve",
 		Transform:      transform,
 	})
@@ -246,8 +251,11 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	format := cmd.Root().String("format")
+	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
+	if explicitFormat {
+		format = cmd.Root().String("format")
+	}
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
@@ -265,6 +273,7 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSON(obj, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:skills:versions list",
 			Transform:      transform,
 		})
@@ -282,6 +291,7 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
 			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
 			Title:          "beta:skills:versions list",
 			Transform:      transform,
 		})
@@ -333,6 +343,7 @@ func handleBetaSkillsVersionsDelete(ctx context.Context, cmd *cli.Command) error
 	return ShowJSON(obj, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:skills:versions delete",
 		Transform:      transform,
 	})

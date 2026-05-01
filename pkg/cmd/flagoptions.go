@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"io"
 	"maps"
+	"mime"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"unicode/utf8"
@@ -36,7 +38,14 @@ const (
 type FileEmbedStyle int
 
 const (
+	// EmbedText reads referenced files fully into memory and substitutes the file's contents back into the
+	// value as a string. Binary files are base64-encoded. Used for JSON request bodies and for headers and
+	// query parameters, where the file contents need to be serialized inline.
 	EmbedText FileEmbedStyle = iota
+
+	// EmbedIOReader replaces file references with an io.Reader that streams the file's contents. Used for
+	// `multipart/form-data` and `application/octet-stream` request bodies, where files are uploaded as binary
+	// parts rather than embedded into a text value.
 	EmbedIOReader
 )
 
@@ -141,6 +150,20 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdi
 			s := v.String()
 			if s == "" {
 				return v, nil
+			}
+			if embedStyle == EmbedIOReader {
+				if isStdinPath(s) {
+					r, err := stdin.read()
+					if err != nil {
+						return v, err
+					}
+					return reflect.ValueOf(io.NopCloser(r)), nil
+				}
+				upload, err := openFileUpload(s)
+				if err != nil {
+					return v, err
+				}
+				return reflect.ValueOf(upload), nil
 			}
 			if isStdinPath(s) {
 				content, err := stdin.readAll()
@@ -250,7 +273,7 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdi
 					return reflect.ValueOf(io.NopCloser(r)), nil
 				}
 
-				file, err := os.Open(filename)
+				upload, err := openFileUpload(filename)
 				if err != nil {
 					if !expectsFile {
 						// For strings that start with "@" and don't look like a filename, return the string
@@ -258,7 +281,7 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdi
 					}
 					return v, err
 				}
-				return reflect.ValueOf(file), nil
+				return reflect.ValueOf(upload), nil
 			}
 		}
 		return v, nil
@@ -491,6 +514,44 @@ func flagOptions(
 // and embedded in the request. Unlike a regular string, embedFilesValue always treats a FilePathValue
 // as a file path without needing the "@" prefix.
 type FilePathValue string
+
+// fileUpload wraps an io.Reader with filename and content-type metadata for
+// use as a multipart form part. The apiform encoder detects the Filename and
+// ContentType methods and uses them to populate the Content-Disposition
+// filename and the Content-Type header on the part.
+type fileUpload struct {
+	io.Reader   // apiform checks for reader and reads its contents during encode
+	filename    string
+	contentType string
+}
+
+func (f fileUpload) Filename() string    { return f.filename }
+func (f fileUpload) ContentType() string { return f.contentType }
+func (f fileUpload) Close() error {
+	if c, ok := f.Reader.(io.Closer); ok {
+		return c.Close()
+	}
+	return nil
+}
+
+// openFileUpload opens the file at path and returns a fileUpload whose filename
+// is the path's basename and whose content type is derived from the file
+// extension (falling back to application/octet-stream when unknown).
+func openFileUpload(path string) (fileUpload, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return fileUpload{}, err
+	}
+	contentType := mime.TypeByExtension(filepath.Ext(path))
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+	return fileUpload{
+		Reader:      file,
+		filename:    filepath.Base(path),
+		contentType: contentType,
+	}, nil
+}
 
 // applyDataAliases rewrites keys in a body map based on flag `DataAliases` metadata. For top-level flags,
 // `{alias: value}` becomes `{canonical: value}`. For inner flags (those registered under an outer flag
