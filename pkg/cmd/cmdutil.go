@@ -58,6 +58,11 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		opts = append(opts, option.WithBaseURL(baseURL))
 	}
 
+	// Configure max retries (SDK defaults to 2, 0 disables retry)
+	if maxRetries := cmd.Int("max-retries"); maxRetries >= 0 {
+		opts = append(opts, option.WithMaxRetries(int(maxRetries)))
+	}
+
 	return opts
 }
 
