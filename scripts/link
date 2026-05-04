@@ -9,6 +9,9 @@ export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-g
 
 REPLACEMENT="${1:-"../anthropic-go"}"
 echo "==> Replacing Go SDK with $REPLACEMENT"
+# Clear any stale shallow clone restored from the actions/setup-go cache; otherwise
+# `go list -m` can hit "fatal: shallow file has changed since we read it" and skip.
+rm -rf "$(go env GOMODCACHE)/cache/vcs" 2>/dev/null || true
 if [[ -d "$REPLACEMENT" ]] || go list -m "$REPLACEMENT" >/dev/null; then
     go mod edit -replace github.com/anthropics/anthropic-sdk-go="$REPLACEMENT"
     go mod tidy -e

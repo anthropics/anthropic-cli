@@ -33,6 +33,8 @@ jobs:
 
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
 
@@ -59,6 +61,8 @@ jobs:
 
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
 
@@ -154,6 +158,8 @@ jobs:
 
       - name: Link staging branch
         if: github.repository == 'stainless-sdks/anthropic-cli'
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
 
