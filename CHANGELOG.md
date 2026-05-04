@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.5.0 (2026-05-04)
+
+Full Changelog: [v1.4.0...v1.5.0](https://github.com/anthropics/anthropic-cli/compare/v1.4.0...v1.5.0)
+
+### Features
+
+* **client:** add Workload Identity Federation, interactive OAuth, and auth profiles ([41be2c4](https://github.com/anthropics/anthropic-cli/commit/41be2c4e3921177c773b214973969df547e90c41))
+* support passing path and query params over stdin ([6f7d931](https://github.com/anthropics/anthropic-cli/commit/6f7d9319d698f71b87452b60c747fa4f2ab14399))
+
+
+### Bug Fixes
+
+* **cli:** correctly load zsh autocompletion ([9c22b63](https://github.com/anthropics/anthropic-cli/commit/9c22b6376753a581feaa494cff95baf059894d13))
+* flags for nullable body scalar fields are strictly typed ([0a9ce73](https://github.com/anthropics/anthropic-cli/commit/0a9ce739679889d996ae331b4e8852bdebb2b74d))
+
+
+### Chores
+
+* **internal:** ignore ambiguous schema diagnostics ([9b999de](https://github.com/anthropics/anthropic-cli/commit/9b999de22123a6a9861d49ec6852c02af612e708))
+
 ## 1.4.0 (2026-04-28)
 
 Full Changelog: [v1.3.2...v1.4.0](https://github.com/anthropics/anthropic-cli/compare/v1.3.2...v1.4.0)
