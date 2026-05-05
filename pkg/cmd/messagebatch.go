@@ -152,7 +152,7 @@ func handleMessagesBatchesCreate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -196,7 +196,7 @@ func handleMessagesBatchesRetrieve(ctx context.Context, cmd *cli.Command) error 
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -238,7 +238,7 @@ func handleMessagesBatchesList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -302,7 +302,7 @@ func handleMessagesBatchesDelete(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -344,7 +344,7 @@ func handleMessagesBatchesCancel(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -386,7 +386,7 @@ func handleMessagesBatchesResults(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

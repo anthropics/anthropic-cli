@@ -24,6 +24,7 @@ runs:
       with:
         go-version-file: ./go.mod
 
-    - name: Bootstrap
-      shell: bash
-      run: ./scripts/bootstrap
+    # todo(dmeadows): trying to disable this to see if running this before linking is what's causing caching issues. 
+    # - name: Bootstrap
+    #   shell: bash
+    #   run: ./scripts/bootstrap

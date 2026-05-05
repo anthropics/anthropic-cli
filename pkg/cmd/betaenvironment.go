@@ -234,7 +234,7 @@ func handleBetaEnvironmentsCreate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -278,7 +278,7 @@ func handleBetaEnvironmentsRetrieve(ctx context.Context, cmd *cli.Command) error
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -330,7 +330,7 @@ func handleBetaEnvironmentsUpdate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -376,7 +376,7 @@ func handleBetaEnvironmentsList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -437,7 +437,7 @@ func handleBetaEnvironmentsDelete(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -486,7 +486,7 @@ func handleBetaEnvironmentsArchive(ctx context.Context, cmd *cli.Command) error 
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

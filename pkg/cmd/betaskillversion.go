@@ -144,7 +144,7 @@ func handleBetaSkillsVersionsCreate(ctx context.Context, cmd *cli.Command) error
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		MultipartFormEncoded,
 		false,
 	)
@@ -193,7 +193,7 @@ func handleBetaSkillsVersionsRetrieve(ctx context.Context, cmd *cli.Command) err
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -247,7 +247,7 @@ func handleBetaSkillsVersionsList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -318,7 +318,7 @@ func handleBetaSkillsVersionsDelete(ctx context.Context, cmd *cli.Command) error
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

@@ -63,15 +63,17 @@ For details about specific commands, use the `--help` flag.
 
 ### Environment variables
 
-| Environment variable   | Required | Default value |
-| ---------------------- | -------- | ------------- |
-| `ANTHROPIC_API_KEY`    | no       | `null`        |
-| `ANTHROPIC_AUTH_TOKEN` | no       | `null`        |
+| Environment variable            | Required | Default value |
+| ------------------------------- | -------- | ------------- |
+| `ANTHROPIC_API_KEY`             | no       | `null`        |
+| `ANTHROPIC_AUTH_TOKEN`          | no       | `null`        |
+| `ANTHROPIC_WEBHOOK_SIGNING_KEY` | no       | `null`        |
 
 ### Global flags
 
 - `--api-key` (can also be set with `ANTHROPIC_API_KEY` env var)
 - `--auth-token` (can also be set with `ANTHROPIC_AUTH_TOKEN` env var)
+- `--webhook-key` (can also be set with `ANTHROPIC_WEBHOOK_SIGNING_KEY` env var)
 - `--help` - Show command line usage
 - `--debug` - Enable debug logging (includes HTTP request/response details)
 - `--version`, `-v` - Show the CLI version

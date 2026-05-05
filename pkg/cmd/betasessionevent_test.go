@@ -17,9 +17,14 @@ func TestBetaSessionsEventsList(t *testing.T) {
 			"beta:sessions:events", "list",
 			"--max-items", "10",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"--created-at-gt", "'2019-12-27T18:11:19.117Z'",
+			"--created-at-gte", "'2019-12-27T18:11:19.117Z'",
+			"--created-at-lt", "'2019-12-27T18:11:19.117Z'",
+			"--created-at-lte", "'2019-12-27T18:11:19.117Z'",
 			"--limit", "0",
 			"--order", "asc",
 			"--page", "page",
+			"--type", "string",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})

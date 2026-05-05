@@ -181,7 +181,7 @@ func handleBetaSessionsResourcesRetrieve(ctx context.Context, cmd *cli.Command) 
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -235,7 +235,7 @@ func handleBetaSessionsResourcesUpdate(ctx context.Context, cmd *cli.Command) er
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -286,7 +286,7 @@ func handleBetaSessionsResourcesList(ctx context.Context, cmd *cli.Command) erro
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -357,7 +357,7 @@ func handleBetaSessionsResourcesDelete(ctx context.Context, cmd *cli.Command) er
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -408,7 +408,7 @@ func handleBetaSessionsResourcesAdd(ctx context.Context, cmd *cli.Command) error
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)

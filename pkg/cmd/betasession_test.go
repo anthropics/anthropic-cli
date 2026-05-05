@@ -110,6 +110,7 @@ func TestBetaSessionsList(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--order", "asc",
 			"--page", "page",
+			"--status", "rescheduling",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})

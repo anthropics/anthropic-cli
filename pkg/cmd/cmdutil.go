@@ -98,6 +98,9 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 			opts = append(opts, option.WithHeaderAdd("anthropic-beta", betaUserOAuth))
 		}
 	}
+	if cmd.IsSet("webhook-key") {
+		opts = append(opts, option.WithWebhookKey(cmd.String("webhook-key")))
+	}
 
 	switch {
 	case apiKeySet:

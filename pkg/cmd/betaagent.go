@@ -46,6 +46,11 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Arbitrary key-value metadata. Maximum 16 pairs, keys up to 64 chars, values up to 512 chars.",
 			BodyPath: "metadata",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "multiagent",
+			Usage:    "A coordinator topology: the session's primary thread orchestrates work by spawning session threads, each running an agent drawn from the `agents` roster.",
+			BodyPath: "multiagent",
+		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "skill",
 			Usage:    "Skills available to the agent. Maximum 20.",
@@ -85,6 +90,18 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "mcp-server.url",
 			Usage:      "Endpoint URL for the MCP server.",
 			InnerField: "url",
+		},
+	},
+	"multiagent": {
+		&requestflag.InnerFlag[[]any]{
+			Name:       "multiagent.agents",
+			Usage:      "Agents the coordinator may spawn as session threads. 1–20 entries. Each entry is an agent ID string, a versioned `{\"type\":\"agent\",\"id\",\"version\"}` reference, or `{\"type\":\"self\"}` to allow recursive self-invocation. Entries must reference distinct agents (after resolving `self` and string forms); at most one `self`. Referenced agents must exist, must not be archived, and must not themselves have `multiagent` set (depth limit 1).",
+			InnerField: "agents",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "multiagent.type",
+			Usage:      `Allowed values: "coordinator".`,
+			InnerField: "type",
 		},
 	},
 })
@@ -151,6 +168,11 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Model identifier. Accepts the [model string](https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison), e.g. `claude-opus-4-6`, or a `model_config` object for additional configuration control. Omit to preserve. Cannot be cleared.",
 			BodyPath: "model",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "multiagent",
+			Usage:    "A coordinator topology: the session's primary thread orchestrates work by spawning session threads, each running an agent drawn from the `agents` roster.",
+			BodyPath: "multiagent",
+		},
 		&requestflag.Flag[string]{
 			Name:     "name",
 			Usage:    "Human-readable name. 1-256 characters. Omit to preserve. Cannot be cleared.",
@@ -198,6 +220,18 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:                 "Endpoint URL for the MCP server.",
 			InnerField:            "url",
 			OuterIsArrayOfObjects: true,
+		},
+	},
+	"multiagent": {
+		&requestflag.InnerFlag[[]any]{
+			Name:       "multiagent.agents",
+			Usage:      "Agents the coordinator may spawn as session threads. 1–20 entries. Each entry is an agent ID string, a versioned `{\"type\":\"agent\",\"id\",\"version\"}` reference, or `{\"type\":\"self\"}` to allow recursive self-invocation. Entries must reference distinct agents (after resolving `self` and string forms); at most one `self`. Referenced agents must exist, must not be archived, and must not themselves have `multiagent` set (depth limit 1).",
+			InnerField: "agents",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "multiagent.type",
+			Usage:      `Allowed values: "coordinator".`,
+			InnerField: "type",
 		},
 	},
 })
@@ -277,7 +311,7 @@ func handleBetaAgentsCreate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -321,7 +355,7 @@ func handleBetaAgentsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -373,7 +407,7 @@ func handleBetaAgentsUpdate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -419,7 +453,7 @@ func handleBetaAgentsList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -480,7 +514,7 @@ func handleBetaAgentsArchive(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

@@ -14,42 +14,20 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaSkillsCreate = cli.Command{
-	Name:    "create",
-	Usage:   "Create Skill",
-	Suggest: true,
-	Flags: []cli.Flag{
-		&requestflag.Flag[*string]{
-			Name:     "display-title",
-			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
-			BodyPath: "display_title",
-		},
-		&requestflag.Flag[[]string]{
-			Name:      "file",
-			Usage:     "Files to upload for the skill.\n\nAll files must be in the same top-level directory and must include a SKILL.md file at the root of that directory.",
-			BodyPath:  "files",
-			FileInput: true,
-		},
-		&requestflag.Flag[[]string]{
-			Name:       "beta",
-			Usage:      "Optional header to specify the beta version(s) you want to use.",
-			HeaderPath: "anthropic-beta",
-		},
-	},
-	Action:          handleBetaSkillsCreate,
-	HideHelpCommand: true,
-}
-
-var betaSkillsRetrieve = cli.Command{
+var betaSessionsThreadsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Get Skill",
+	Usage:   "Get Session Thread",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "skill-id",
-			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Name:      "session-id",
 			Required:  true,
-			PathParam: "skill_id",
+			PathParam: "session_id",
+		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "thread_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -57,30 +35,29 @@ var betaSkillsRetrieve = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaSkillsRetrieve,
+	Action:          handleBetaSessionsThreadsRetrieve,
 	HideHelpCommand: true,
 }
 
-var betaSkillsList = cli.Command{
+var betaSessionsThreadsList = cli.Command{
 	Name:    "list",
-	Usage:   "List Skills",
+	Usage:   "List Session Threads",
 	Suggest: true,
 	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "session-id",
+			Required:  true,
+			PathParam: "session_id",
+		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Number of results to return per page.\n\nMaximum value is 100. Defaults to 20.",
-			Default:   20,
+			Usage:     "Maximum results per page. Defaults to 1000.",
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Pagination token for fetching a specific page of results.\n\nPass the value from a previous response's `next_page` field to get the next page of results.",
+			Usage:     "Opaque pagination cursor from a previous response's next_page. Forward-only.",
 			QueryPath: "page",
-		},
-		&requestflag.Flag[*string]{
-			Name:      "source",
-			Usage:     "Filter skills by source.\n\nIf provided, only skills from the specified source will be returned:\n* `\"custom\"`: only return user-created skills\n* `\"anthropic\"`: only return Anthropic-created skills",
-			QueryPath: "source",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -92,20 +69,24 @@ var betaSkillsList = cli.Command{
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleBetaSkillsList,
+	Action:          handleBetaSessionsThreadsList,
 	HideHelpCommand: true,
 }
 
-var betaSkillsDelete = cli.Command{
-	Name:    "delete",
-	Usage:   "Delete Skill",
+var betaSessionsThreadsArchive = cli.Command{
+	Name:    "archive",
+	Usage:   "Archive Session Thread",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "skill-id",
-			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Name:      "session-id",
 			Required:  true,
-			PathParam: "skill_id",
+			PathParam: "session_id",
+		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "thread_id",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -113,56 +94,15 @@ var betaSkillsDelete = cli.Command{
 			HeaderPath: "anthropic-beta",
 		},
 	},
-	Action:          handleBetaSkillsDelete,
+	Action:          handleBetaSessionsThreadsArchive,
 	HideHelpCommand: true,
 }
 
-func handleBetaSkillsCreate(ctx context.Context, cmd *cli.Command) error {
+func handleBetaSessionsThreadsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-
-	if len(unusedArgs) > 0 {
-		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
-	}
-
-	options, err := flagOptions(
-		cmd,
-		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatBrackets,
-		MultipartFormEncoded,
-		false,
-	)
-	if err != nil {
-		return err
-	}
-
-	params := anthropic.BetaSkillNewParams{}
-
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Skills.New(ctx, params, options...)
-	if err != nil {
-		return err
-	}
-
-	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
-	explicitFormat := cmd.Root().IsSet("format")
-	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
-		ExplicitFormat: explicitFormat,
-		Format:         format,
-		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:skills create",
-		Transform:      transform,
-	})
-}
-
-func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
-	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
-	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("skill-id") && len(unusedArgs) > 0 {
-		cmd.Set("skill-id", unusedArgs[0])
+	if !cmd.IsSet("thread-id") && len(unusedArgs) > 0 {
+		cmd.Set("thread-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
@@ -180,13 +120,15 @@ func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	params := anthropic.BetaSkillGetParams{}
+	params := anthropic.BetaSessionThreadGetParams{
+		SessionID: cmd.Value("session-id").(string),
+	}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Skills.Get(
+	_, err = client.Beta.Sessions.Threads.Get(
 		ctx,
-		cmd.Value("skill-id").(string),
+		cmd.Value("thread-id").(string),
 		params,
 		options...,
 	)
@@ -205,15 +147,18 @@ func handleBetaSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:skills retrieve",
+		Title:          "beta:sessions:threads retrieve",
 		Transform:      transform,
 	})
 }
 
-func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
+func handleBetaSessionsThreadsList(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-
+	if !cmd.IsSet("session-id") && len(unusedArgs) > 0 {
+		cmd.Set("session-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
@@ -229,7 +174,7 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	params := anthropic.BetaSkillListParams{}
+	params := anthropic.BetaSessionThreadListParams{}
 
 	format := "explore"
 	explicitFormat := cmd.Root().IsSet("format")
@@ -240,7 +185,12 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Beta.Skills.List(ctx, params, options...)
+		_, err = client.Beta.Sessions.Threads.List(
+			ctx,
+			cmd.Value("session-id").(string),
+			params,
+			options...,
+		)
 		if err != nil {
 			return err
 		}
@@ -249,11 +199,16 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "beta:skills list",
+			Title:          "beta:sessions:threads list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Beta.Skills.ListAutoPaging(ctx, params, options...)
+		iter := client.Beta.Sessions.Threads.ListAutoPaging(
+			ctx,
+			cmd.Value("session-id").(string),
+			params,
+			options...,
+		)
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
@@ -262,17 +217,17 @@ func handleBetaSkillsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "beta:skills list",
+			Title:          "beta:sessions:threads list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
+func handleBetaSessionsThreadsArchive(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("skill-id") && len(unusedArgs) > 0 {
-		cmd.Set("skill-id", unusedArgs[0])
+	if !cmd.IsSet("thread-id") && len(unusedArgs) > 0 {
+		cmd.Set("thread-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
@@ -290,13 +245,15 @@ func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	params := anthropic.BetaSkillDeleteParams{}
+	params := anthropic.BetaSessionThreadArchiveParams{
+		SessionID: cmd.Value("session-id").(string),
+	}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Skills.Delete(
+	_, err = client.Beta.Sessions.Threads.Archive(
 		ctx,
-		cmd.Value("skill-id").(string),
+		cmd.Value("thread-id").(string),
 		params,
 		options...,
 	)
@@ -312,7 +269,7 @@ func handleBetaSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "beta:skills delete",
+		Title:          "beta:sessions:threads archive",
 		Transform:      transform,
 	})
 }

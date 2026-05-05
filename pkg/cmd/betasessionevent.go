@@ -24,6 +24,26 @@ var betaSessionsEventsList = cli.Command{
 			Required:  true,
 			PathParam: "session_id",
 		},
+		&requestflag.Flag[any]{
+			Name:      "created-at-gt",
+			Usage:     "Return events created after this time (exclusive).",
+			QueryPath: "created_at[gt]",
+		},
+		&requestflag.Flag[any]{
+			Name:      "created-at-gte",
+			Usage:     "Return events created at or after this time (inclusive).",
+			QueryPath: "created_at[gte]",
+		},
+		&requestflag.Flag[any]{
+			Name:      "created-at-lt",
+			Usage:     "Return events created before this time (exclusive).",
+			QueryPath: "created_at[lt]",
+		},
+		&requestflag.Flag[any]{
+			Name:      "created-at-lte",
+			Usage:     "Return events created at or before this time (inclusive).",
+			QueryPath: "created_at[lte]",
+		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
 			Usage:     "Query parameter for limit",
@@ -38,6 +58,11 @@ var betaSessionsEventsList = cli.Command{
 			Name:      "page",
 			Usage:     "Opaque pagination cursor from a previous response's next_page.",
 			QueryPath: "page",
+		},
+		&requestflag.Flag[[]string]{
+			Name:      "type",
+			Usage:     "Filter by event type. Values match the `type` field on returned events (for example, `user.message` or `agent.tool_use`). Omit to return all event types.",
+			QueryPath: "types",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -117,7 +142,7 @@ func handleBetaSessionsEventsList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -188,7 +213,7 @@ func handleBetaSessionsEventsSend(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -237,7 +262,7 @@ func handleBetaSessionsEventsStream(ctx context.Context, cmd *cli.Command) error
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

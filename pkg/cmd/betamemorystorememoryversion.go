@@ -152,7 +152,7 @@ func handleBetaMemoryStoresMemoryVersionsRetrieve(ctx context.Context, cmd *cli.
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -206,7 +206,7 @@ func handleBetaMemoryStoresMemoryVersionsList(ctx context.Context, cmd *cli.Comm
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -277,7 +277,7 @@ func handleBetaMemoryStoresMemoryVersionsRedact(ctx context.Context, cmd *cli.Co
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

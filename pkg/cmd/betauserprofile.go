@@ -29,6 +29,16 @@ var betaUserProfilesCreate = cli.Command{
 			Usage:    "Free-form key-value data to attach to this user profile. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters. Values must be non-empty strings.",
 			BodyPath: "metadata",
 		},
+		&requestflag.Flag[*string]{
+			Name:     "name",
+			Usage:    "Display name of the entity this profile represents. Required when relationship is `resold` (the resold-to company's name); optional otherwise. Maximum 255 characters.",
+			BodyPath: "name",
+		},
+		&requestflag.Flag[string]{
+			Name:     "relationship",
+			Usage:    "How the entity behind a user profile relates to the platform that owns the API key. `external`: an individual end-user of the platform. `resold`: a company the platform resells Claude access to. `internal`: the platform's own usage.",
+			BodyPath: "relationship",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -78,6 +88,16 @@ var betaUserProfilesUpdate = cli.Command{
 			Name:     "metadata",
 			Usage:    "Key-value pairs to merge into the stored metadata. Keys provided overwrite existing values. To remove a key, set its value to an empty string. Keys not provided are left unchanged. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters.",
 			BodyPath: "metadata",
+		},
+		&requestflag.Flag[*string]{
+			Name:     "name",
+			Usage:    "If present, replaces the stored name. Omit to leave unchanged. Maximum 255 characters.",
+			BodyPath: "name",
+		},
+		&requestflag.Flag[*string]{
+			Name:     "relationship",
+			Usage:    "How the entity behind a user profile relates to the platform that owns the API key. `external`: an individual end-user of the platform. `resold`: a company the platform resells Claude access to. `internal`: the platform's own usage.",
+			BodyPath: "relationship",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -154,7 +174,7 @@ func handleBetaUserProfilesCreate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -198,7 +218,7 @@ func handleBetaUserProfilesRetrieve(ctx context.Context, cmd *cli.Command) error
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -250,7 +270,7 @@ func handleBetaUserProfilesUpdate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -296,7 +316,7 @@ func handleBetaUserProfilesList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -357,7 +377,7 @@ func handleBetaUserProfilesCreateEnrollmentURL(ctx context.Context, cmd *cli.Com
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

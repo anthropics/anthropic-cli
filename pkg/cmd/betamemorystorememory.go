@@ -243,7 +243,7 @@ func handleBetaMemoryStoresMemoriesCreate(ctx context.Context, cmd *cli.Command)
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -292,7 +292,7 @@ func handleBetaMemoryStoresMemoriesRetrieve(ctx context.Context, cmd *cli.Comman
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -346,7 +346,7 @@ func handleBetaMemoryStoresMemoriesUpdate(ctx context.Context, cmd *cli.Command)
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -397,7 +397,7 @@ func handleBetaMemoryStoresMemoriesList(ctx context.Context, cmd *cli.Command) e
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -468,7 +468,7 @@ func handleBetaMemoryStoresMemoriesDelete(ctx context.Context, cmd *cli.Command)
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

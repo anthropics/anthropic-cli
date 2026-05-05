@@ -139,3 +139,17 @@ func TestBetaVaultsCredentialsArchive(t *testing.T) {
 		)
 	})
 }
+
+func TestBetaVaultsCredentialsMCPOAuthValidate(t *testing.T) {
+	t.Skip("prism can't find endpoint with beta only tag")
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"beta:vaults:credentials", "mcp-oauth-validate",
+			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
+			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
+}

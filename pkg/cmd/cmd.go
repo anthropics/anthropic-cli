@@ -86,6 +86,10 @@ func init() {
 				Name:    "auth-token",
 				Sources: cli.EnvVars("ANTHROPIC_AUTH_TOKEN"),
 			},
+			&requestflag.Flag[string]{
+				Name:    "webhook-key",
+				Sources: cli.EnvVars("ANTHROPIC_WEBHOOK_SIGNING_KEY"),
+			},
 		},
 		Commands: []*cli.Command{
 			{
@@ -227,6 +231,25 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:sessions:threads",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaSessionsThreadsRetrieve,
+					&betaSessionsThreadsList,
+					&betaSessionsThreadsArchive,
+				},
+			},
+			{
+				Name:     "beta:sessions:threads:events",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaSessionsThreadsEventsList,
+					&betaSessionsThreadsEventsStream,
+				},
+			},
+			{
 				Name:     "beta:vaults",
 				Category: "API RESOURCE",
 				Suggest:  true,
@@ -250,6 +273,7 @@ func init() {
 					&betaVaultsCredentialsList,
 					&betaVaultsCredentialsDelete,
 					&betaVaultsCredentialsArchive,
+					&betaVaultsCredentialsMCPOAuthValidate,
 				},
 			},
 			{

@@ -20,6 +20,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server", "{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}",
 			"--metadata", "{foo: bar}",
+			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
@@ -43,6 +44,8 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--mcp-server.type", "url",
 			"--mcp-server.url", "https://example-server.modelcontextprotocol.io/sse",
 			"--metadata", "{foo: bar}",
+			"--multiagent.agents", "[agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}]",
+			"--multiagent.type", "coordinator",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
@@ -64,6 +67,11 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"    url: https://example-server.modelcontextprotocol.io/sse\n" +
 			"metadata:\n" +
 			"  foo: bar\n" +
+			"multiagent:\n" +
+			"  agents:\n" +
+			"    - agent_011CZkYqphY8vELVzwCUpqiQ\n" +
+			"    - type: self\n" +
+			"  type: coordinator\n" +
 			"skills:\n" +
 			"  - skill_id: xlsx\n" +
 			"    type: anthropic\n" +
@@ -117,6 +125,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--mcp-server", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
 			"--metadata", "{foo: string}",
 			"--model", "{id: claude-opus-4-6, speed: standard}",
+			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
@@ -142,6 +151,8 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--mcp-server.url", "https://example-server.modelcontextprotocol.io/sse",
 			"--metadata", "{foo: string}",
 			"--model", "{id: claude-opus-4-6, speed: standard}",
+			"--multiagent.agents", "[agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}]",
+			"--multiagent.type", "coordinator",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
@@ -164,6 +175,11 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"model:\n" +
 			"  id: claude-opus-4-6\n" +
 			"  speed: standard\n" +
+			"multiagent:\n" +
+			"  agents:\n" +
+			"    - agent_011CZkYqphY8vELVzwCUpqiQ\n" +
+			"    - type: self\n" +
+			"  type: coordinator\n" +
 			"name: name\n" +
 			"skills:\n" +
 			"  - skill_id: xlsx\n" +

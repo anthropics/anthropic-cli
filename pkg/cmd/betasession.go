@@ -178,6 +178,11 @@ var betaSessionsList = cli.Command{
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{
+			Name:      "status",
+			Usage:     "Filter by session status. Repeat the parameter to match any of multiple statuses.",
+			QueryPath: "statuses",
+		},
+		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
@@ -242,7 +247,7 @@ func handleBetaSessionsCreate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -286,7 +291,7 @@ func handleBetaSessionsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -338,7 +343,7 @@ func handleBetaSessionsUpdate(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -384,7 +389,7 @@ func handleBetaSessionsList(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -445,7 +450,7 @@ func handleBetaSessionsDelete(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -494,7 +499,7 @@ func handleBetaSessionsArchive(ctx context.Context, cmd *cli.Command) error {
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)

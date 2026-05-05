@@ -16,6 +16,8 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 			"beta:user-profiles", "create",
 			"--external-id", "user_12345",
 			"--metadata", "{}",
+			"--name", "x",
+			"--relationship", "external",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -24,7 +26,9 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"external_id: user_12345\n" +
-			"metadata: {}\n")
+			"metadata: {}\n" +
+			"name: x\n" +
+			"relationship: external\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -55,6 +59,8 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
 			"--external-id", "user_12345",
 			"--metadata", "{foo: string}",
+			"--name", "x",
+			"--relationship", "external",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -64,7 +70,9 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 		pipeData := []byte("" +
 			"external_id: user_12345\n" +
 			"metadata:\n" +
-			"  foo: string\n")
+			"  foo: string\n" +
+			"name: x\n" +
+			"relationship: external\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",

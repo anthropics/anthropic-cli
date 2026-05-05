@@ -205,6 +205,31 @@ var betaVaultsCredentialsArchive = cli.Command{
 	HideHelpCommand: true,
 }
 
+var betaVaultsCredentialsMCPOAuthValidate = cli.Command{
+	Name:    "mcp-oauth-validate",
+	Usage:   "Validate Credential",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "vault-id",
+			Required:  true,
+			PathParam: "vault_id",
+		},
+		&requestflag.Flag[string]{
+			Name:      "credential-id",
+			Required:  true,
+			PathParam: "credential_id",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional header to specify the beta version(s) you want to use.",
+			HeaderPath: "anthropic-beta",
+		},
+	},
+	Action:          handleBetaVaultsCredentialsMCPOAuthValidate,
+	HideHelpCommand: true,
+}
+
 func handleBetaVaultsCredentialsCreate(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
@@ -219,7 +244,7 @@ func handleBetaVaultsCredentialsCreate(ctx context.Context, cmd *cli.Command) er
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -268,7 +293,7 @@ func handleBetaVaultsCredentialsRetrieve(ctx context.Context, cmd *cli.Command) 
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -322,7 +347,7 @@ func handleBetaVaultsCredentialsUpdate(ctx context.Context, cmd *cli.Command) er
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		ApplicationJSON,
 		false,
 	)
@@ -373,7 +398,7 @@ func handleBetaVaultsCredentialsList(ctx context.Context, cmd *cli.Command) erro
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -444,7 +469,7 @@ func handleBetaVaultsCredentialsDelete(ctx context.Context, cmd *cli.Command) er
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -495,7 +520,7 @@ func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) e
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
+		apiquery.ArrayQueryFormatBrackets,
 		EmptyBody,
 		false,
 	)
@@ -528,6 +553,57 @@ func handleBetaVaultsCredentialsArchive(ctx context.Context, cmd *cli.Command) e
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:vaults:credentials archive",
+		Transform:      transform,
+	})
+}
+
+func handleBetaVaultsCredentialsMCPOAuthValidate(ctx context.Context, cmd *cli.Command) error {
+	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("credential-id") && len(unusedArgs) > 0 {
+		cmd.Set("credential-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatBrackets,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := anthropic.BetaVaultCredentialMCPOAuthValidateParams{
+		VaultID: cmd.Value("vault-id").(string),
+	}
+
+	var res []byte
+	options = append(options, option.WithResponseBodyInto(&res))
+	_, err = client.Beta.Vaults.Credentials.MCPOAuthValidate(
+		ctx,
+		cmd.Value("credential-id").(string),
+		params,
+		options...,
+	)
+	if err != nil {
+		return err
+	}
+
+	obj := gjson.ParseBytes(res)
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "beta:vaults:credentials mcp-oauth-validate",
 		Transform:      transform,
 	})
 }
