@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0 (2026-05-05)
+
+Full Changelog: [v1.5.0...v1.6.0](https://github.com/anthropics/anthropic-cli/compare/v1.5.0...v1.6.0)
+
+### Chores
+
+* **internal:** codegen related update ([a53595b](https://github.com/anthropics/anthropic-cli/commit/a53595b13775bfd4a2b8676355a8a065cd1dc1b6))
+
 ## 1.5.0 (2026-05-04)
 
 Full Changelog: [v1.4.0...v1.5.0](https://github.com/anthropics/anthropic-cli/compare/v1.4.0...v1.5.0)
