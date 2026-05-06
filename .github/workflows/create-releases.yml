@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - uses: stainless-api/trigger-release-please@656ec30d61e731fcd70e83ac2084a4040770a504
+      - uses: stainless-api/trigger-release-please@656ec30d61e731fcd70e83ac2084a4040770a504 # main (sha-pinned)
         id: release
         with:
           repo: ${{ github.event.repository.full_name }}
