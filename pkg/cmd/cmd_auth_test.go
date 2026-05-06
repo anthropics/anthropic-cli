@@ -658,6 +658,7 @@ func loginCmdDef() *cli.Command {
 				&cli.StringFlag{Name: "scope"},
 				&cli.StringFlag{Name: "workspace-id"},
 				&cli.BoolFlag{Name: "debug"},
+				&cli.BoolFlag{Name: "no-set-active"},
 			},
 		}},
 	}
@@ -1013,6 +1014,61 @@ func TestAuthLoginActivatesExplicitProfile(t *testing.T) {
 	// Login --profile b again (already active) → no change, but no error.
 	driveLogin(t, srv.URL, "--profile", "b")
 	assert.Equal(t, "b", strings.TrimSpace(string(mustRead(t, config.ActiveConfigPath(dir)))))
+}
+
+// TestAuthLoginNoSetActive guards the --no-set-active opt-out: credentials
+// must still be written, but active_config must not be created or
+// retargeted regardless of whether --profile is given via flag or
+// ANTHROPIC_PROFILE env source.
+func TestAuthLoginNoSetActive(t *testing.T) {
+	t.Run("retarget skipped, prior active preserved", func(t *testing.T) {
+		dir := t.TempDir()
+		t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+		clearEnv(t, "ANTHROPIC_PROFILE")
+		require.NoError(t, config.SetActiveProfile(dir, "a"))
+
+		srv := newTokenServer(t, tokenResponse{AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600})
+		_, stderr, err := driveLoginErr(t, srv.URL, "--profile", "b", "--no-set-active")
+		require.NoError(t, err)
+
+		assert.Equal(t, "a", strings.TrimSpace(string(mustRead(t, config.ActiveConfigPath(dir)))),
+			"--no-set-active must not retarget active_config")
+		assert.FileExists(t, config.ProfileCredentialsPath(dir, "b"),
+			"credentials/<profile>.json must still be written")
+		assert.Contains(t, stderr,
+			`→ active profile unchanged (still "a"; --no-set-active in effect)`,
+			"stderr must announce the opt-out skip with the prior active value")
+	})
+
+	t.Run("first login leaves active_config absent (silent)", func(t *testing.T) {
+		dir := t.TempDir()
+		t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+		clearEnv(t, "ANTHROPIC_PROFILE")
+
+		srv := newTokenServer(t, tokenResponse{AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600})
+		_, stderr, err := driveLoginErr(t, srv.URL, "--profile", "c", "--no-set-active")
+		require.NoError(t, err)
+
+		assert.NoFileExists(t, config.ActiveConfigPath(dir),
+			"--no-set-active must not create active_config when absent")
+		assert.NotContains(t, stderr, "active profile unchanged",
+			"no opt-out skip message when there was no prior active")
+	})
+
+	t.Run("env-source profile honors --no-set-active", func(t *testing.T) {
+		dir := t.TempDir()
+		t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+		require.NoError(t, config.SetActiveProfile(dir, "x"))
+		t.Setenv("ANTHROPIC_PROFILE", "y")
+
+		srv := newTokenServer(t, tokenResponse{AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600})
+		_, _, err := driveLoginErr(t, srv.URL, "--no-set-active")
+		require.NoError(t, err)
+
+		assert.Equal(t, "x", strings.TrimSpace(string(mustRead(t, config.ActiveConfigPath(dir)))),
+			"--no-set-active honored when profile resolves via ANTHROPIC_PROFILE")
+		assert.FileExists(t, config.ProfileCredentialsPath(dir, "y"))
+	})
 }
 
 // TestAuthLoginHonorsActiveConfig is a regression test for `auth login`
