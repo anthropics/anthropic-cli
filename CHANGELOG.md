@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.1 (2026-05-09)
+
+Full Changelog: [v1.7.0...v1.7.1](https://github.com/anthropics/anthropic-cli/compare/v1.7.0...v1.7.1)
+
+### Chores
+
+* redact api-key headers in debug logs ([b479ed1](https://github.com/anthropics/anthropic-cli/commit/b479ed15a5b6780d0f58618941f4900ae270c5f7))
+
 ## 1.7.0 (2026-05-06)
 
 Full Changelog: [v1.6.0...v1.7.0](https://github.com/anthropics/anthropic-cli/compare/v1.6.0...v1.7.0)
