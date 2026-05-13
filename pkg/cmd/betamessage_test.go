@@ -22,6 +22,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
+			"--diagnostics", "{previous_message_id: previous_message_id}",
 			"--inference-geo", "inference_geo",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
 			"--metadata", "{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}",
@@ -61,6 +62,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--cache-control.ttl", "5m",
 			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
 			"--context-management.edits", "[{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]",
+			"--diagnostics.previous-message-id", "previous_message_id",
 			"--inference-geo", "inference_geo",
 			"--mcp-server.name", "name",
 			"--mcp-server.type", "url",
@@ -133,6 +135,8 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"      trigger:\n" +
 			"        type: input_tokens\n" +
 			"        value: 1\n" +
+			"diagnostics:\n" +
+			"  previous_message_id: previous_message_id\n" +
 			"inference_geo: inference_geo\n" +
 			"mcp_servers:\n" +
 			"  - name: name\n" +
