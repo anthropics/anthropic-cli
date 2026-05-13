@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.8.0 (2026-05-13)
+
+Full Changelog: [v1.7.1...v1.8.0](https://github.com/anthropics/anthropic-cli/compare/v1.7.1...v1.8.0)
+
+### Features
+
+* **api:** Add support for cache diagnostics beta ([14f198e](https://github.com/anthropics/anthropic-cli/commit/14f198eb9cf5dd742a1e1bef20d8d4f45f47c5bb))
+
+
+### Chores
+
+* **internal:** codegen related update ([cd25682](https://github.com/anthropics/anthropic-cli/commit/cd256829ab1a17815d87b995301e6410331555f3))
+
 ## 1.7.1 (2026-05-09)
 
 Full Changelog: [v1.7.0...v1.7.1](https://github.com/anthropics/anthropic-cli/compare/v1.7.0...v1.7.1)
