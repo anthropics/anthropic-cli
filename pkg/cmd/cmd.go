@@ -196,6 +196,21 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:environments:work",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaEnvironmentsWorkRetrieve,
+					&betaEnvironmentsWorkUpdate,
+					&betaEnvironmentsWorkList,
+					&betaEnvironmentsWorkAck,
+					&betaEnvironmentsWorkHeartbeat,
+					&betaEnvironmentsWorkPoll,
+					&betaEnvironmentsWorkStats,
+					&betaEnvironmentsWorkStop,
+				},
+			},
+			{
 				Name:     "beta:sessions",
 				Category: "API RESOURCE",
 				Suggest:  true,
@@ -343,6 +358,7 @@ func init() {
 					&betaSkillsVersionsRetrieve,
 					&betaSkillsVersionsList,
 					&betaSkillsVersionsDelete,
+					&betaSkillsVersionsDownload,
 				},
 			},
 			{
@@ -357,6 +373,7 @@ func init() {
 					&betaUserProfilesCreateEnrollmentURL,
 				},
 			},
+			&workerCommand,
 			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",

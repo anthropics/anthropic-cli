@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
+var betaEnvironmentsCreate = cli.Command{
 	Name:    "create",
 	Usage:   "Create a new environment with the specified configuration.",
 	Suggest: true,
@@ -27,7 +27,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "config",
-			Usage:    "Request params for `cloud` environment configuration.\n\nFields default to null; on update, omitted fields preserve the\nexisting value.",
+			Usage:    "Environment configuration",
 			BodyPath: "config",
 		},
 		&requestflag.Flag[*string]{
@@ -40,6 +40,11 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "User-provided metadata key-value pairs",
 			BodyPath: "metadata",
 		},
+		&requestflag.Flag[*string]{
+			Name:     "scope",
+			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only. Only applicable for self-hosted environments. If not specified, defaults based on organization type.",
+			BodyPath: "scope",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -48,25 +53,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 	},
 	Action:          handleBetaEnvironmentsCreate,
 	HideHelpCommand: true,
-}, map[string][]requestflag.HasOuterFlag{
-	"config": {
-		&requestflag.InnerFlag[string]{
-			Name:       "config.type",
-			Usage:      "Environment type",
-			InnerField: "type",
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:       "config.networking",
-			Usage:      "Network configuration policy. Omit on update to preserve the existing value.",
-			InnerField: "networking",
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:       "config.packages",
-			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.",
-			InnerField: "packages",
-		},
-	},
-})
+}
 
 var betaEnvironmentsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -88,7 +75,7 @@ var betaEnvironmentsRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
-var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
+var betaEnvironmentsUpdate = cli.Command{
 	Name:    "update",
 	Usage:   "Update an existing environment's configuration.",
 	Suggest: true,
@@ -101,7 +88,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "config",
-			Usage:    "Request params for `cloud` environment configuration.\n\nFields default to null; on update, omitted fields preserve the\nexisting value.",
+			Usage:    "Updated environment configuration",
 			BodyPath: "config",
 		},
 		&requestflag.Flag[*string]{
@@ -119,6 +106,11 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Updated name for the environment",
 			BodyPath: "name",
 		},
+		&requestflag.Flag[*string]{
+			Name:     "scope",
+			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only.",
+			BodyPath: "scope",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -127,25 +119,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	},
 	Action:          handleBetaEnvironmentsUpdate,
 	HideHelpCommand: true,
-}, map[string][]requestflag.HasOuterFlag{
-	"config": {
-		&requestflag.InnerFlag[string]{
-			Name:       "config.type",
-			Usage:      "Environment type",
-			InnerField: "type",
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:       "config.networking",
-			Usage:      "Network configuration policy. Omit on update to preserve the existing value.",
-			InnerField: "networking",
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:       "config.packages",
-			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.",
-			InnerField: "packages",
-		},
-	},
-})
+}
 
 var betaEnvironmentsList = cli.Command{
 	Name:    "list",

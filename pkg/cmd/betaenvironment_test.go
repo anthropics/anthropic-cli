@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/anthropics/anthropic-cli/internal/mocktest"
-	"github.com/anthropics/anthropic-cli/internal/requestflag"
 )
 
 func TestBetaEnvironmentsCreate(t *testing.T) {
@@ -19,25 +18,7 @@ func TestBetaEnvironmentsCreate(t *testing.T) {
 			"--config", "{type: cloud, networking: {type: limited, allow_mcp_servers: true, allow_package_managers: true, allowed_hosts: [api.example.com]}, packages: {apt: [string], cargo: [string], gem: [string], go: [string], npm: [string], pip: [pandas, numpy], type: packages}}",
 			"--description", "Python environment with data-analysis packages.",
 			"--metadata", "{foo: string}",
-			"--beta", "message-batches-2024-09-24",
-		)
-	})
-
-	t.Run("inner flags", func(t *testing.T) {
-		// Check that inner flags have been set up correctly
-		requestflag.CheckInnerFlags(betaEnvironmentsCreate)
-
-		// Alternative argument passing style using inner flags
-		mocktest.TestRunMockTestWithFlags(
-			t,
-			"--api-key", "string",
-			"beta:environments", "create",
-			"--name", "python-data-analysis",
-			"--config.type", "cloud",
-			"--config.networking", "{type: limited, allow_mcp_servers: true, allow_package_managers: true, allowed_hosts: [api.example.com]}",
-			"--config.packages", "{apt: [string], cargo: [string], gem: [string], go: [string], npm: [string], pip: [pandas, numpy], type: packages}",
-			"--description", "Python environment with data-analysis packages.",
-			"--metadata", "{foo: string}",
+			"--scope", "organization",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -71,7 +52,8 @@ func TestBetaEnvironmentsCreate(t *testing.T) {
 			"    type: packages\n" +
 			"description: Python environment with data-analysis packages.\n" +
 			"metadata:\n" +
-			"  foo: string\n")
+			"  foo: string\n" +
+			"scope: organization\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -104,26 +86,7 @@ func TestBetaEnvironmentsUpdate(t *testing.T) {
 			"--description", "Python environment with data-analysis packages.",
 			"--metadata", "{foo: string}",
 			"--name", "x",
-			"--beta", "message-batches-2024-09-24",
-		)
-	})
-
-	t.Run("inner flags", func(t *testing.T) {
-		// Check that inner flags have been set up correctly
-		requestflag.CheckInnerFlags(betaEnvironmentsUpdate)
-
-		// Alternative argument passing style using inner flags
-		mocktest.TestRunMockTestWithFlags(
-			t,
-			"--api-key", "string",
-			"beta:environments", "update",
-			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
-			"--config.type", "cloud",
-			"--config.networking", "{type: limited, allow_mcp_servers: true, allow_package_managers: true, allowed_hosts: [api.example.com]}",
-			"--config.packages", "{apt: [string], cargo: [string], gem: [string], go: [string], npm: [string], pip: [pandas, numpy], type: packages}",
-			"--description", "Python environment with data-analysis packages.",
-			"--metadata", "{foo: string}",
-			"--name", "x",
+			"--scope", "organization",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -157,7 +120,8 @@ func TestBetaEnvironmentsUpdate(t *testing.T) {
 			"description: Python environment with data-analysis packages.\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
-			"name: x\n")
+			"name: x\n" +
+			"scope: organization\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",

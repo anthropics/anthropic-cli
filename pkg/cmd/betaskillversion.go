@@ -5,6 +5,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/anthropics/anthropic-cli/internal/apiquery"
 	"github.com/anthropics/anthropic-cli/internal/requestflag"
@@ -127,6 +128,38 @@ var betaSkillsVersionsDelete = cli.Command{
 		},
 	},
 	Action:          handleBetaSkillsVersionsDelete,
+	HideHelpCommand: true,
+}
+
+var betaSkillsVersionsDownload = cli.Command{
+	Name:    "download",
+	Usage:   "Download a skill version's content as a zip archive.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "skill-id",
+			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
+			Required:  true,
+			PathParam: "skill_id",
+		},
+		&requestflag.Flag[string]{
+			Name:      "version",
+			Usage:     "Version identifier for the skill.\n\nEach version is identified by a Unix epoch timestamp (e.g., \"1759178010641129\").",
+			Required:  true,
+			PathParam: "version",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional header to specify the beta version(s) you want to use.",
+			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "The file where the response contents will be stored. Use the value '-' to force output to stdout.",
+		},
+	},
+	Action:          handleBetaSkillsVersionsDownload,
 	HideHelpCommand: true,
 }
 
@@ -353,4 +386,46 @@ func handleBetaSkillsVersionsDelete(ctx context.Context, cmd *cli.Command) error
 		Title:          "beta:skills:versions delete",
 		Transform:      transform,
 	})
+}
+
+func handleBetaSkillsVersionsDownload(ctx context.Context, cmd *cli.Command) error {
+	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("version") && len(unusedArgs) > 0 {
+		cmd.Set("version", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatBrackets,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := anthropic.BetaSkillVersionDownloadParams{
+		SkillID: cmd.Value("skill-id").(string),
+	}
+
+	response, err := client.Beta.Skills.Versions.Download(
+		ctx,
+		cmd.Value("version").(string),
+		params,
+		options...,
+	)
+	if err != nil {
+		return err
+	}
+	message, err := writeBinaryResponse(response, os.Stdout, cmd.String("output"))
+	if message != "" {
+		fmt.Println(message)
+	}
+	return err
 }

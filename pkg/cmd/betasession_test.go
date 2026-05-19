@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/anthropics/anthropic-cli/internal/mocktest"
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 )
 
 func TestBetaSessionsCreate(t *testing.T) {
@@ -66,6 +67,26 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--api-key", "string",
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"--agent", "{mcp_servers: [{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}], tools: [{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]}",
+			"--metadata", "{foo: string}",
+			"--title", "Order #1234 inquiry",
+			"--vault-id", "string",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
+
+	t.Run("inner flags", func(t *testing.T) {
+		// Check that inner flags have been set up correctly
+		requestflag.CheckInnerFlags(betaSessionsUpdate)
+
+		// Alternative argument passing style using inner flags
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"beta:sessions", "update",
+			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"--agent.mcp-servers", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
+			"--agent.tools", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
@@ -76,6 +97,22 @@ func TestBetaSessionsUpdate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
+			"agent:\n" +
+			"  mcp_servers:\n" +
+			"    - name: example-mcp\n" +
+			"      type: url\n" +
+			"      url: https://example-server.modelcontextprotocol.io/sse\n" +
+			"  tools:\n" +
+			"    - type: agent_toolset_20260401\n" +
+			"      configs:\n" +
+			"        - name: bash\n" +
+			"          enabled: true\n" +
+			"          permission_policy:\n" +
+			"            type: always_allow\n" +
+			"      default_config:\n" +
+			"        enabled: true\n" +
+			"        permission_policy:\n" +
+			"          type: always_allow\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
 			"title: 'Order #1234 inquiry'\n" +

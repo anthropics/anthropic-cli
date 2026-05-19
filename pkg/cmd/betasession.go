@@ -81,7 +81,7 @@ var betaSessionsRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
-var betaSessionsUpdate = cli.Command{
+var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update Session",
 	Suggest: true,
@@ -91,6 +91,11 @@ var betaSessionsUpdate = cli.Command{
 			Required:    true,
 			PathParam:   "session_id",
 			DataAliases: []string{"id"},
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "agent",
+			Usage:    "Mid-session agent configuration update. Only `tools` and `mcp_servers` are updatable. Full replacement: the provided array becomes the new value. To preserve existing entries, GET the session, modify the array, and POST it back.",
+			BodyPath: "agent",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -115,7 +120,20 @@ var betaSessionsUpdate = cli.Command{
 	},
 	Action:          handleBetaSessionsUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"agent": {
+		&requestflag.InnerFlag[[]map[string]any]{
+			Name:       "agent.mcp-servers",
+			Usage:      "Replacement MCP server list. Full replacement: the provided array becomes the new value. Send an empty array to clear; omit to preserve.",
+			InnerField: "mcp_servers",
+		},
+		&requestflag.InnerFlag[[]map[string]any]{
+			Name:       "agent.tools",
+			Usage:      "Replacement tool list. Full replacement: the provided array becomes the new value. Send an empty array to clear; omit to preserve.",
+			InnerField: "tools",
+		},
+	},
+})
 
 var betaSessionsList = cli.Command{
 	Name:    "list",

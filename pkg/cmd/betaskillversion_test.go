@@ -80,3 +80,17 @@ func TestBetaSkillsVersionsDelete(t *testing.T) {
 		)
 	})
 }
+
+func TestBetaSkillsVersionsDownload(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"beta:skills:versions", "download",
+			"--skill-id", "skill_id",
+			"--version", "version",
+			"--beta", "message-batches-2024-09-24",
+			"--output", "/dev/null",
+		)
+	})
+}
