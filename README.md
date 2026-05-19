@@ -120,7 +120,7 @@ base64-encoding). Note that absolute paths will begin with `@file://` or
 `@data://`, followed by a third `/` (for example, `@file:///tmp/file.txt`).
 
 ```bash
-ant <command> --arg @data://file.txt
+ant <command> --arg @data://file.dat
 ```
 
 ## Linking different Go SDK versions
