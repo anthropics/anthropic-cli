@@ -3,7 +3,7 @@ module github.com/anthropics/anthropic-cli
 go 1.25
 
 require (
-	github.com/anthropics/anthropic-sdk-go v1.43.0
+	github.com/anthropics/anthropic-sdk-go v1.44.0
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.6
 	github.com/charmbracelet/lipgloss v1.1.0
@@ -51,5 +51,3 @@ require (
 	golang.org/x/text v0.27.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/anthropics/anthropic-sdk-go => github.com/stainless-sdks/anthropic-go v0.2.0-alpha.13.0.20260515153315-de54fc2ff135
