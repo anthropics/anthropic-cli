@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.1 (2026-05-19)
+
+Full Changelog: [v1.9.0...v1.9.1](https://github.com/anthropics/anthropic-cli/compare/v1.9.0...v1.9.1)
+
+### Bug Fixes
+
+* **runner:** skip tool calls the worker does not own ([#404](https://github.com/anthropics/anthropic-cli/issues/404)) ([2fbfd7e](https://github.com/anthropics/anthropic-cli/commit/2fbfd7e0c847ea5aa45fb7b5d0b74d3846e4cfbd))
+
 ## 1.9.0 (2026-05-19)
 
 Full Changelog: [v1.8.0...v1.9.0](https://github.com/anthropics/anthropic-cli/compare/v1.8.0...v1.9.0)
