@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.0 (2026-05-19)
+
+Full Changelog: [v1.8.0...v1.9.0](https://github.com/anthropics/anthropic-cli/compare/v1.8.0...v1.9.0)
+
+### Features
+
+* **client:** Add support for self-hosted sandboxes in CMA with sandbox helpers ([cbfbd92](https://github.com/anthropics/anthropic-cli/commit/cbfbd923c900f7d5ff842fe08adab568908ff84c))
+
 ## 1.8.0 (2026-05-13)
 
 Full Changelog: [v1.7.1...v1.8.0](https://github.com/anthropics/anthropic-cli/compare/v1.7.1...v1.8.0)
