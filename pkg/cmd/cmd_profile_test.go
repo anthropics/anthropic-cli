@@ -162,10 +162,12 @@ func TestProfileSetValidation(t *testing.T) {
 	})
 
 	t.Run("each supported key persists", func(t *testing.T) {
+		// organization_id before workspace_id: setting the org clears an
+		// org-scoped workspace, so the workspace must be set after to persist.
 		for _, tc := range []struct{ key, val string }{
+			{"organization_id", "00000000-0000-0000-0000-000000000000"},
 			{"workspace_id", "wrkspc_01S"},
 			{"base_url", "https://s"},
-			{"organization_id", "00000000-0000-0000-0000-000000000000"},
 			{"scope", "user:inference"},
 			{"client_id", "client-x"},
 			{"console_url", "https://console.example/"},
@@ -183,5 +185,44 @@ func TestProfileSetValidation(t *testing.T) {
 		assert.Equal(t, "user:inference", auth["scope"])
 		assert.Equal(t, "client-x", auth["client_id"])
 		assert.Equal(t, "https://console.example", auth["console_url"], "trailing slash trimmed on save")
+	})
+}
+
+// TestProfileSetOrgClearsWorkspace covers the org/workspace coupling: a
+// workspace is scoped to its organization, so changing organization_id must
+// clear a now-stale workspace_id, but setting the same org must leave it alone.
+func TestProfileSetOrgClearsWorkspace(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+	clearEnv(t, "ANTHROPIC_PROFILE")
+
+	seed := func(t *testing.T, name, org, ws string) {
+		t.Helper()
+		require.NoError(t, config.SaveProfile(dir, name, &config.Config{
+			AuthenticationInfo: &config.AuthenticationInfo{
+				Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{},
+			},
+			OrganizationID: org,
+			WorkspaceID:    ws,
+		}))
+		require.NoError(t, config.SetActiveProfile(dir, name))
+	}
+
+	t.Run("changing org clears the org-scoped workspace", func(t *testing.T) {
+		seed(t, "p1", "org-old", "wrkspc-old")
+		require.NoError(t, run(t, profileCmd(), "profile", "set", "organization_id", "org-new"))
+		var m map[string]any
+		require.NoError(t, json.Unmarshal(mustRead(t, config.ProfilePath(dir, "p1")), &m))
+		assert.Equal(t, "org-new", m["organization_id"])
+		_, hasWs := m["workspace_id"]
+		assert.False(t, hasWs, "workspace_id must be cleared when the org changes (it's org-scoped)")
+	})
+
+	t.Run("setting the same org keeps the workspace", func(t *testing.T) {
+		seed(t, "p2", "org-x", "wrkspc-x")
+		require.NoError(t, run(t, profileCmd(), "profile", "set", "organization_id", "org-x"))
+		var m map[string]any
+		require.NoError(t, json.Unmarshal(mustRead(t, config.ProfilePath(dir, "p2")), &m))
+		assert.Equal(t, "wrkspc-x", m["workspace_id"], "an unchanged org must not clear the workspace")
 	})
 }

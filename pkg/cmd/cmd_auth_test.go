@@ -1127,16 +1127,6 @@ func TestAuthLoginOrgHintAndMismatch(t *testing.T) {
 	})
 }
 
-// logoutCmd builds the `auth logout` command tree used by the logout tests.
-func logoutCmd() *cli.Command {
-	return &cli.Command{
-		Name: "auth", Commands: []*cli.Command{{
-			Name: "logout", Action: authLogout,
-			Flags: []cli.Flag{&cli.StringFlag{Name: "profile"}, &cli.BoolFlag{Name: "all"}},
-		}},
-	}
-}
-
 // TestAuthLoginOrganizationIDFlagOverridesProfile verifies an explicit
 // --organization-id overrides the profile's stored org, so the authorize URL's
 // ?orgUUID hint (and thus Console's pre-selected org) reflects the flag rather
@@ -1170,76 +1160,56 @@ func TestAuthLoginOrganizationIDFlagOverridesProfile(t *testing.T) {
 		"--organization-id must override the profile's stored org in the authorize hint")
 }
 
-// TestAuthLogoutClearsOrgBinding verifies logout strips organization_id +
-// workspace_id (so the next login isn't silently pinned to the stale org) while
-// leaving the authentication block and base_url in place.
-func TestAuthLogoutClearsOrgBinding(t *testing.T) {
-	dir := t.TempDir()
-	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
-	clearEnv(t, "ANTHROPIC_PROFILE")
-	clearEnv(t, "ANTHROPIC_ORGANIZATION_ID")
-	clearEnv(t, "ANTHROPIC_BASE_URL")
-
-	require.NoError(t, config.SaveProfile(dir, "p", &config.Config{
-		AuthenticationInfo: &config.AuthenticationInfo{
-			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{ClientID: "cid"},
-		},
-		BaseURL:        "https://api.example.test",
-		OrganizationID: "org-A",
-		WorkspaceID:    "wrkspc-A",
-	}))
-	require.NoError(t, config.SetActiveProfile(dir, "p"))
-	exp := time.Now().Add(time.Hour)
-	require.NoError(t, config.WriteCredentials(config.ProfileCredentialsPath(dir, "p"),
-		config.Credentials{AccessToken: "x", ExpiresAt: &exp}))
-
-	require.NoError(t, run(t, logoutCmd(), "auth", "logout"))
-
-	assert.NoFileExists(t, config.ProfileCredentialsPath(dir, "p"), "credentials removed")
-	require.FileExists(t, config.ProfilePath(dir, "p"), "config kept")
-
-	var m map[string]any
-	require.NoError(t, json.Unmarshal(mustRead(t, config.ProfilePath(dir, "p")), &m))
-	_, hasOrg := m["organization_id"]
-	_, hasWs := m["workspace_id"]
-	assert.False(t, hasOrg, "logout must clear organization_id")
-	assert.False(t, hasWs, "logout must clear workspace_id")
-	assert.Equal(t, "https://api.example.test", m["base_url"], "logout preserves base_url")
-	auth, ok := m["authentication"].(map[string]any)
-	require.True(t, ok, "authentication block preserved")
-	assert.Equal(t, "cid", auth["client_id"])
-}
-
-// TestAuthLogoutThenLoginShowsPicker is the end-to-end of the reported bug:
-// after `ant auth logout`, the next `ant auth login` sends no ?orgUUID hint, so
-// Console shows the org picker instead of silently re-using the org the user
-// just logged out of.
-func TestAuthLogoutThenLoginShowsPicker(t *testing.T) {
+// TestAuthLoginNotesStoredOrgSource verifies that when the org hint comes from
+// the stored profile (no explicit --organization-id), login tells the user
+// which org it's using and points at the override flag — the discoverable
+// escape for a profile pinned to the wrong org, since Console's in-browser
+// switcher can't undo a forced org. An explicit flag suppresses the note.
+func TestAuthLoginNotesStoredOrgSource(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
 	clearEnv(t, "ANTHROPIC_PROFILE")
 	clearEnv(t, "ANTHROPIC_ORGANIZATION_ID")
 
-	require.NoError(t, config.SaveProfile(dir, "p", &config.Config{
+	require.NoError(t, config.SaveProfile(dir, "pinned", &config.Config{
 		AuthenticationInfo: &config.AuthenticationInfo{
 			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{},
 		},
 		OrganizationID: "org-A",
 	}))
-	exp := time.Now().Add(time.Hour)
-	require.NoError(t, config.WriteCredentials(config.ProfileCredentialsPath(dir, "p"),
-		config.Credentials{AccessToken: "x", ExpiresAt: &exp}))
 
-	require.NoError(t, run(t, logoutCmd(), "auth", "logout", "--profile", "p"))
-
-	srv := newTokenServer(t, tokenResponse{
-		AccessToken: "tok2", RefreshToken: "rt2", ExpiresIn: 600,
-		Organization: tokenOrganization{UUID: "org-B", Name: "Org B"},
-		Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+	t.Run("stored org prints the override hint", func(t *testing.T) {
+		srv := newTokenServer(t, tokenResponse{
+			AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+			Organization: tokenOrganization{UUID: "org-A", Name: "Org A"},
+			Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+		})
+		_, stderr, err := driveLoginErr(t, srv.URL, "--profile", "pinned")
+		require.NoError(t, err)
+		assert.Contains(t, stderr, "from profile")
+		assert.Contains(t, stderr, "org-A")
+		assert.Contains(t, stderr, "ant auth login --profile",
+			"hint should point at the name-based picker path (a fresh profile)")
+		assert.Contains(t, stderr, "ant profile set organization_id",
+			"hint should point at retargeting the existing profile")
 	})
-	u := driveLogin(t, srv.URL, "--profile", "p")
-	assert.Empty(t, u.Query().Get("orgUUID"),
-		"after logout cleared the cached org, login must not pin it")
+
+	t.Run("explicit flag suppresses the hint", func(t *testing.T) {
+		require.NoError(t, os.Remove(config.ProfileCredentialsPath(dir, "pinned")))
+		srv := newTokenServer(t, tokenResponse{
+			AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+			Organization: tokenOrganization{UUID: "org-NEW", Name: "Org New"},
+			Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+		})
+		rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
+		args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
+			"--base-url", srv.URL, "--workspace-id", "wrkspc_test", "--profile", "pinned",
+			"--organization-id", "org-NEW"}
+		_, stderr, err := driveLoginWithArgsRoot(t, rootFlags, args)
+		require.NoError(t, err)
+		assert.NotContains(t, stderr, "from profile",
+			"no profile-source hint when the org came from an explicit flag")
+	})
 }
 
 // TestAuthLoginOrgHintFromEnv covers the env source of the override: with no
@@ -1295,74 +1265,6 @@ func TestResolveLoginOrg(t *testing.T) {
 			assert.Equal(t, tc.want, resolveLoginOrg(tc.flag, tc.prev))
 		})
 	}
-}
-
-// TestClearProfileOrgWorkspace covers the helper's branches directly: the happy
-// path clears org+workspace and preserves the rest; the defensive branches
-// (missing / unparseable / no-auth-block / already-empty configs) are no-ops
-// that leave the file untouched and never error.
-func TestClearProfileOrgWorkspace(t *testing.T) {
-	t.Run("clears org+workspace, preserves base_url and auth", func(t *testing.T) {
-		dir := t.TempDir()
-		require.NoError(t, config.SaveProfile(dir, "p", &config.Config{
-			AuthenticationInfo: &config.AuthenticationInfo{
-				Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{ClientID: "cid"},
-			},
-			BaseURL:        "https://api.example.test",
-			OrganizationID: "org-A",
-			WorkspaceID:    "wrkspc-A",
-		}))
-		require.NoError(t, clearProfileOrgWorkspace(dir, "p"))
-
-		var m map[string]any
-		require.NoError(t, json.Unmarshal(mustRead(t, config.ProfilePath(dir, "p")), &m))
-		assert.NotContains(t, m, "organization_id")
-		assert.NotContains(t, m, "workspace_id")
-		assert.Equal(t, "https://api.example.test", m["base_url"])
-		auth, ok := m["authentication"].(map[string]any)
-		require.True(t, ok)
-		assert.Equal(t, "cid", auth["client_id"])
-	})
-
-	t.Run("missing config file is a no-op", func(t *testing.T) {
-		dir := t.TempDir()
-		require.NoError(t, clearProfileOrgWorkspace(dir, "absent"))
-		assert.NoFileExists(t, config.ProfilePath(dir, "absent"))
-	})
-
-	t.Run("already-empty config is not rewritten", func(t *testing.T) {
-		dir := t.TempDir()
-		require.NoError(t, config.SaveProfile(dir, "p", &config.Config{
-			AuthenticationInfo: &config.AuthenticationInfo{
-				Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{},
-			},
-			BaseURL: "https://api.example.test",
-		}))
-		before := mustRead(t, config.ProfilePath(dir, "p"))
-		require.NoError(t, clearProfileOrgWorkspace(dir, "p"))
-		assert.Equal(t, before, mustRead(t, config.ProfilePath(dir, "p")),
-			"a config with no org/workspace must be left byte-identical")
-	})
-
-	t.Run("unparseable config is a no-op (left untouched)", func(t *testing.T) {
-		dir := t.TempDir()
-		path := config.ProfilePath(dir, "p")
-		require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
-		require.NoError(t, os.WriteFile(path, []byte("{not json"), 0o644))
-		require.NoError(t, clearProfileOrgWorkspace(dir, "p"))
-		assert.Equal(t, "{not json", string(mustRead(t, path)))
-	})
-
-	t.Run("config without authentication block is left untouched", func(t *testing.T) {
-		dir := t.TempDir()
-		path := config.ProfilePath(dir, "p")
-		require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
-		raw := `{"organization_id":"org-A","workspace_id":"wrkspc-A"}`
-		require.NoError(t, os.WriteFile(path, []byte(raw), 0o644))
-		require.NoError(t, clearProfileOrgWorkspace(dir, "p"))
-		assert.JSONEq(t, raw, string(mustRead(t, path)),
-			"a config the SDK can't load (no auth) is also unreadable by login, so it's left as-is")
-	})
 }
 
 func runPrintCredentials(t *testing.T, args ...string) (string, error) {

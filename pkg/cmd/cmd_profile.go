@@ -169,12 +169,20 @@ func profileSet(ctx context.Context, c *cli.Command) error {
 	if cfg.AuthenticationInfo != nil && cfg.AuthenticationInfo.CredentialsPath == config.ProfileCredentialsPath(dir, profile) {
 		cfg.AuthenticationInfo.CredentialsPath = ""
 	}
+	clearedWorkspace := false
 	switch key {
 	case "workspace_id":
 		cfg.WorkspaceID = value
 	case "base_url":
 		cfg.BaseURL = value
 	case "organization_id":
+		// A workspace is scoped to its organization, so one bound to the old org
+		// is invalid under a new one. Clear it when the org actually changes; the
+		// user sets a workspace for the new org afterward.
+		if value != cfg.OrganizationID && cfg.WorkspaceID != "" {
+			cfg.WorkspaceID = ""
+			clearedWorkspace = true
+		}
 		cfg.OrganizationID = value
 	case "scope", "client_id", "console_url":
 		if cfg.AuthenticationInfo == nil || cfg.AuthenticationInfo.Type != config.AuthenticationTypeUserOAuth || cfg.AuthenticationInfo.UserOAuth == nil {
@@ -195,5 +203,10 @@ func profileSet(ctx context.Context, c *cli.Command) error {
 		return err
 	}
 	fmt.Fprintf(os.Stderr, "✓ Set %s=%s on profile %q.\n", key, value, profile)
+	if clearedWorkspace {
+		fmt.Fprintf(os.Stderr,
+			"  Cleared workspace_id — it was scoped to the previous organization. "+
+				"Set one for the new org with: ant profile set workspace_id <id>\n")
+	}
 	return nil
 }
