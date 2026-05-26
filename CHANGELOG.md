@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.3 (2026-05-26)
+
+Full Changelog: [v1.9.2...v1.9.3](https://github.com/anthropics/anthropic-cli/compare/v1.9.2...v1.9.3)
+
+### Bug Fixes
+
+* stop clearing org/workspace from profile config on logout ([#406](https://github.com/anthropics/anthropic-cli/issues/406)) ([a9999c8](https://github.com/anthropics/anthropic-cli/commit/a9999c8777fabf5dbb484a556580e134ed1c775c))
+
 ## 1.9.2 (2026-05-26)
 
 Full Changelog: [v1.9.1...v1.9.2](https://github.com/anthropics/anthropic-cli/compare/v1.9.1...v1.9.2)
