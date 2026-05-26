@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9.2 (2026-05-26)
+
+Full Changelog: [v1.9.1...v1.9.2](https://github.com/anthropics/anthropic-cli/compare/v1.9.1...v1.9.2)
+
+### Bug Fixes
+
+* clear organization/workspace on logout and honor --organization-id on login ([1562d45](https://github.com/anthropics/anthropic-cli/commit/1562d45f0a6a6b74fb1eadc4aae8b5ce96bf561f))
+* treat text/plan with format: binary as raw upload ([e7f5c54](https://github.com/anthropics/anthropic-cli/commit/e7f5c54f9306899f6482f1533ed1ec236e3b58cb))
+
 ## 1.9.1 (2026-05-19)
 
 Full Changelog: [v1.9.0...v1.9.1](https://github.com/anthropics/anthropic-cli/compare/v1.9.0...v1.9.1)
