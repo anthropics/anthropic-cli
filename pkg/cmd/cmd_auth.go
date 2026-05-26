@@ -226,6 +226,19 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	}
 
 	wantOrg := resolveLoginOrg(c.Root().String("organization-id"), prev)
+	// When the org comes from the stored profile (no explicit flag), Console
+	// pre-selects it and skips the picker — so a profile pinned to the wrong org
+	// silently re-pins on every login. Surface where it came from and the two
+	// ways to land on a different org by name, since the org id itself is opaque
+	// and not something most users can look up: a fresh profile gets the picker,
+	// and `profile set` retargets this one.
+	if wantOrg != "" && strings.TrimSpace(c.Root().String("organization-id")) == "" {
+		fmt.Fprintf(os.Stderr,
+			"Using organization %s from profile %q.\n"+
+				"  To pick a different org by name, start a new profile: ant auth login --profile <name>\n"+
+				"  To retarget this profile:                             ant profile set organization_id <id>\n",
+			wantOrg, profile)
+	}
 	buildAuthorizeURL := func(redirectURI string) string {
 		params := url.Values{
 			"client_id":             {clientID},
@@ -529,16 +542,12 @@ func authLogout(ctx context.Context, c *cli.Command) error {
 		return nil
 	}
 	profile, _ := activeProfile(c)
-	// Clear the org/workspace binding from configs/<profile>.json *before*
-	// removing the credential file. If the config write fails we want the
-	// credential left in place so a retried `ant auth logout` re-attempts both
-	// steps — otherwise the retry would short-circuit on the credential's
-	// absence ("Not logged in" below) and the stale org would survive,
-	// silently re-pinning the next login. The config file itself is kept
-	// (base_url and other durable intent survive a re-login).
-	if err := clearProfileOrgWorkspace(dir, profile); err != nil {
-		return fmt.Errorf("clear org binding for profile %q: %w", profile, err)
-	}
+	// Logout removes only the credential. The profile config (organization_id,
+	// workspace_id, base_url, auth block) is durable, user- or MDM-provisioned
+	// intent and survives logout untouched — re-login reuses it instead of
+	// re-prompting. To switch org without editing the profile, pass
+	// `ant auth login --organization-id <id>`; to change the profile's binding,
+	// use `ant profile set organization_id <id>`.
 	path := config.ProfileCredentialsPath(dir, profile)
 	if err := os.Remove(path); err != nil {
 		if os.IsNotExist(err) {
@@ -549,35 +558,6 @@ func authLogout(ctx context.Context, c *cli.Command) error {
 	}
 	fmt.Fprintf(os.Stderr, "✓ Logged out of profile %q.\n", profile)
 	return nil
-}
-
-// clearProfileOrgWorkspace strips organization_id and workspace_id from
-// configs/<profile>.json while leaving the rest of the config (authentication
-// block, base_url) intact. workspace_id is org-scoped, so it's meaningless once
-// the org is gone and is cleared alongside it. The file is read directly rather
-// than via config.LoadProfile so environment overrides (ANTHROPIC_*) don't leak
-// into the persisted file. A missing config file, an unparseable one, or a file
-// with no authentication block is treated as nothing-to-clear rather than an
-// error: config.LoadProfile rejects those same files, so authLogin can't read
-// an org out of them either — there's nothing for a stale hint to leak from.
-func clearProfileOrgWorkspace(dir, profile string) error {
-	data, err := os.ReadFile(config.ProfilePath(dir, profile))
-	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			return nil
-		}
-		return err
-	}
-	var cfg config.Config
-	if err := json.Unmarshal(data, &cfg); err != nil || cfg.AuthenticationInfo == nil {
-		return nil
-	}
-	if cfg.OrganizationID == "" && cfg.WorkspaceID == "" {
-		return nil
-	}
-	cfg.OrganizationID = ""
-	cfg.WorkspaceID = ""
-	return config.SaveProfile(dir, profile, &cfg)
 }
 
 // storedCredentials is the subset of credentials/<profile>.json that the CLI
