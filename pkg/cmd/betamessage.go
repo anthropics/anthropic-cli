@@ -33,7 +33,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "model",
-			Usage:    "The model that will complete your prompt.\\n\\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			Usage:    "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
 			Required: true,
 			BodyPath: "model",
 		},
@@ -260,7 +260,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "model",
-			Usage:    "The model that will complete your prompt.\\n\\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			Usage:    "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
 			Required: true,
 			BodyPath: "model",
 		},
