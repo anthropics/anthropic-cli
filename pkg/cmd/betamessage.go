@@ -157,7 +157,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
-			Usage:      `Allowed values: "user", "assistant".`,
+			Usage:      `Allowed values: "user", "assistant", "system".`,
 			InnerField: "role",
 		},
 	},
@@ -326,7 +326,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
-			Usage:      `Allowed values: "user", "assistant".`,
+			Usage:      `Allowed values: "user", "assistant", "system".`,
 			InnerField: "role",
 		},
 	},
