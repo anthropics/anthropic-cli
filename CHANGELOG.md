@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.1 (2026-05-29)
+
+Full Changelog: [v1.10.0...v1.10.1](https://github.com/anthropics/anthropic-cli/compare/v1.10.0...v1.10.1)
+
+### Chores
+
+* **internal:** update private repo name ([c4f0954](https://github.com/anthropics/anthropic-cli/commit/c4f09545a37a0401ee14fee042585ca0e1fefe80))
+
 ## 1.10.0 (2026-05-28)
 
 Full Changelog: [v1.9.3...v1.10.0](https://github.com/anthropics/anthropic-cli/compare/v1.9.3...v1.10.0)
