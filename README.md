@@ -14,7 +14,7 @@ brew install anthropics/tap/ant
 
 ### Installing with Go
 
-To test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.22 or later installed.
+To test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.25 or later installed.
 
 ```sh
 go install 'github.com/anthropics/anthropic-cli/cmd/ant@latest'
