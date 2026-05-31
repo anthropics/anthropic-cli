@@ -225,9 +225,19 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 		return fmt.Errorf("generate state: %w", err)
 	}
 
-	wantOrg := ""
-	if prev != nil {
-		wantOrg = prev.OrganizationID
+	wantOrg := resolveLoginOrg(c.Root().String("organization-id"), prev)
+	// When the org comes from the stored profile (no explicit flag), Console
+	// pre-selects it and skips the picker — so a profile pinned to the wrong org
+	// silently re-pins on every login. Surface where it came from and the two
+	// ways to land on a different org by name, since the org id itself is opaque
+	// and not something most users can look up: a fresh profile gets the picker,
+	// and `profile set` retargets this one.
+	if wantOrg != "" && strings.TrimSpace(c.Root().String("organization-id")) == "" {
+		fmt.Fprintf(os.Stderr,
+			"Using organization %s from profile %q.\n"+
+				"  To pick a different org by name, start a new profile: ant auth login --profile <name>\n"+
+				"  To retarget this profile:                             ant profile set organization_id <id>\n",
+			wantOrg, profile)
 	}
 	buildAuthorizeURL := func(redirectURI string) string {
 		params := url.Values{
@@ -532,9 +542,12 @@ func authLogout(ctx context.Context, c *cli.Command) error {
 		return nil
 	}
 	profile, _ := activeProfile(c)
-	// Remove only the credential file: configs/<profile>.json is intentionally
-	// left in place so workspace_id/base_url survive a re-login (per the
-	// credentials-file spec, the config half is non-secret).
+	// Logout removes only the credential. The profile config (organization_id,
+	// workspace_id, base_url, auth block) is durable, user- or MDM-provisioned
+	// intent and survives logout untouched — re-login reuses it instead of
+	// re-prompting. To switch org without editing the profile, pass
+	// `ant auth login --organization-id <id>`; to change the profile's binding,
+	// use `ant profile set organization_id <id>`.
 	path := config.ProfileCredentialsPath(dir, profile)
 	if err := os.Remove(path); err != nil {
 		if os.IsNotExist(err) {
@@ -1270,6 +1283,23 @@ func resolveWorkspaceID(flag string, prev *config.Config) string {
 		return prev.WorkspaceID
 	}
 	return strings.TrimSpace(os.Getenv("ANTHROPIC_WORKSPACE_ID"))
+}
+
+// resolveLoginOrg picks the org to hint on the authorize URL (?orgUUID=): an
+// explicit --organization-id / ANTHROPIC_ORGANIZATION_ID wins so a user can
+// re-target a login without Console's switcher, else the profile's stored
+// organization_id. A return of "" sends no hint, so Console shows the org
+// picker — which is what a fresh login gets after `ant auth logout` clears the
+// cached org. Note an explicit empty flag falls through to the stored org;
+// "no hint" is the absence of both, not `--organization-id ""`.
+func resolveLoginOrg(flag string, prev *config.Config) string {
+	if v := strings.TrimSpace(flag); v != "" {
+		return v
+	}
+	if prev != nil {
+		return prev.OrganizationID
+	}
+	return ""
 }
 
 // resolveClientID decides which OAuth client_id to use on the authorize URL

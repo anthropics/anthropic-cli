@@ -680,6 +680,13 @@ func driveLogin(t *testing.T, tokenSrvURL string, extraArgs ...string) *url.URL 
 // URL, fires the loopback callback with ?code=CODE, and returns the parsed
 // authorize URL, the full stderr output, and authLogin's final error.
 func driveLoginWithArgs(t *testing.T, args []string) (*url.URL, string, error) {
+	return driveLoginWithArgsRoot(t, nil, args)
+}
+
+// driveLoginWithArgsRoot is driveLoginWithArgs with extra flags installed on the
+// synthetic `ant` root (alongside the default --profile), so tests can exercise
+// global flags authLogin reads via c.Root() — e.g. --organization-id.
+func driveLoginWithArgsRoot(t *testing.T, rootFlags []cli.Flag, args []string) (*url.URL, string, error) {
 	t.Helper()
 
 	r, w, perr := os.Pipe()
@@ -688,8 +695,10 @@ func driveLoginWithArgs(t *testing.T, args []string) (*url.URL, string, error) {
 	os.Stderr = w
 	t.Cleanup(func() { os.Stderr = oldStderr })
 
+	rootFlagSet := append([]cli.Flag{&cli.StringFlag{Name: "profile", Sources: cli.EnvVars("ANTHROPIC_PROFILE")}}, rootFlags...)
+	app := &cli.Command{Name: "ant", Flags: rootFlagSet, Commands: []*cli.Command{loginCmdDef()}}
 	done := make(chan error, 1)
-	go func() { done <- run(t, loginCmdDef(), args...) }()
+	go func() { done <- app.Run(context.Background(), append([]string{"ant"}, args...)) }()
 
 	// Drain the pipe into a buffer in the background so writes never block,
 	// and poll the buffer for the authorize URL. Reading via a single
@@ -1116,6 +1125,146 @@ func TestAuthLoginOrgHintAndMismatch(t *testing.T) {
 		assert.Equal(t, "org-A", cfg["organization_id"],
 			"existing profile config is never rewritten on re-login")
 	})
+}
+
+// TestAuthLoginOrganizationIDFlagOverridesProfile verifies an explicit
+// --organization-id overrides the profile's stored org, so the authorize URL's
+// ?orgUUID hint (and thus Console's pre-selected org) reflects the flag rather
+// than the stale stored value.
+func TestAuthLoginOrganizationIDFlagOverridesProfile(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+	clearEnv(t, "ANTHROPIC_PROFILE")
+	clearEnv(t, "ANTHROPIC_ORGANIZATION_ID")
+
+	// Profile pinned to org-A; --organization-id must override the hint.
+	require.NoError(t, config.SaveProfile(dir, "pinned", &config.Config{
+		AuthenticationInfo: &config.AuthenticationInfo{
+			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{},
+		},
+		OrganizationID: "org-A",
+	}))
+
+	srv := newTokenServer(t, tokenResponse{
+		AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+		Organization: tokenOrganization{UUID: "org-NEW", Name: "Org New"},
+		Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+	})
+
+	rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
+	args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
+		"--base-url", srv.URL, "--profile", "pinned", "--organization-id", "org-NEW"}
+	u, _, err := driveLoginWithArgsRoot(t, rootFlags, args)
+	require.NoError(t, err)
+	assert.Equal(t, "org-NEW", u.Query().Get("orgUUID"),
+		"--organization-id must override the profile's stored org in the authorize hint")
+}
+
+// TestAuthLoginNotesStoredOrgSource verifies that when the org hint comes from
+// the stored profile (no explicit --organization-id), login tells the user
+// which org it's using and points at the override flag — the discoverable
+// escape for a profile pinned to the wrong org, since Console's in-browser
+// switcher can't undo a forced org. An explicit flag suppresses the note.
+func TestAuthLoginNotesStoredOrgSource(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+	clearEnv(t, "ANTHROPIC_PROFILE")
+	clearEnv(t, "ANTHROPIC_ORGANIZATION_ID")
+
+	require.NoError(t, config.SaveProfile(dir, "pinned", &config.Config{
+		AuthenticationInfo: &config.AuthenticationInfo{
+			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{},
+		},
+		OrganizationID: "org-A",
+	}))
+
+	t.Run("stored org prints the override hint", func(t *testing.T) {
+		srv := newTokenServer(t, tokenResponse{
+			AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+			Organization: tokenOrganization{UUID: "org-A", Name: "Org A"},
+			Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+		})
+		_, stderr, err := driveLoginErr(t, srv.URL, "--profile", "pinned")
+		require.NoError(t, err)
+		assert.Contains(t, stderr, "from profile")
+		assert.Contains(t, stderr, "org-A")
+		assert.Contains(t, stderr, "ant auth login --profile",
+			"hint should point at the name-based picker path (a fresh profile)")
+		assert.Contains(t, stderr, "ant profile set organization_id",
+			"hint should point at retargeting the existing profile")
+	})
+
+	t.Run("explicit flag suppresses the hint", func(t *testing.T) {
+		require.NoError(t, os.Remove(config.ProfileCredentialsPath(dir, "pinned")))
+		srv := newTokenServer(t, tokenResponse{
+			AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+			Organization: tokenOrganization{UUID: "org-NEW", Name: "Org New"},
+			Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+		})
+		rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
+		args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
+			"--base-url", srv.URL, "--workspace-id", "wrkspc_test", "--profile", "pinned",
+			"--organization-id", "org-NEW"}
+		_, stderr, err := driveLoginWithArgsRoot(t, rootFlags, args)
+		require.NoError(t, err)
+		assert.NotContains(t, stderr, "from profile",
+			"no profile-source hint when the org came from an explicit flag")
+	})
+}
+
+// TestAuthLoginOrgHintFromEnv covers the env source of the override: with no
+// --organization-id flag, ANTHROPIC_ORGANIZATION_ID (the global flag's env
+// source) drives the ?orgUUID hint and overrides the profile's stored org.
+func TestAuthLoginOrgHintFromEnv(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+	clearEnv(t, "ANTHROPIC_PROFILE")
+	t.Setenv("ANTHROPIC_ORGANIZATION_ID", "org-ENV")
+
+	require.NoError(t, config.SaveProfile(dir, "pinned", &config.Config{
+		AuthenticationInfo: &config.AuthenticationInfo{
+			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{},
+		},
+		OrganizationID: "org-A",
+	}))
+
+	srv := newTokenServer(t, tokenResponse{
+		AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+		Organization: tokenOrganization{UUID: "org-ENV", Name: "Org Env"},
+		Workspace:    tokenWorkspace{ID: "wrkspc_test", Name: "Test Workspace"},
+	})
+
+	rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
+	args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
+		"--base-url", srv.URL, "--profile", "pinned"}
+	u, _, err := driveLoginWithArgsRoot(t, rootFlags, args)
+	require.NoError(t, err)
+	assert.Equal(t, "org-ENV", u.Query().Get("orgUUID"),
+		"ANTHROPIC_ORGANIZATION_ID must override the profile's stored org in the authorize hint")
+}
+
+// TestResolveLoginOrg covers the org-hint precedence directly: explicit flag
+// wins, whitespace-only flag falls through, else stored org, else "".
+func TestResolveLoginOrg(t *testing.T) {
+	withOrg := &config.Config{OrganizationID: "org-stored"}
+	noOrg := &config.Config{}
+	for _, tc := range []struct {
+		name string
+		flag string
+		prev *config.Config
+		want string
+	}{
+		{"flag wins over stored", "org-flag", withOrg, "org-flag"},
+		{"flag wins with nil prev", "org-flag", nil, "org-flag"},
+		{"whitespace flag falls through to stored", "  ", withOrg, "org-stored"},
+		{"empty flag uses stored", "", withOrg, "org-stored"},
+		{"empty flag, no stored org", "", noOrg, ""},
+		{"empty flag, nil prev", "", nil, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.want, resolveLoginOrg(tc.flag, tc.prev))
+		})
+	}
 }
 
 func runPrintCredentials(t *testing.T, args ...string) (string, error) {

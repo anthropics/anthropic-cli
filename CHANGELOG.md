@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.10.0 (2026-05-28)
+
+Full Changelog: [v1.9.3...v1.10.0](https://github.com/anthropics/anthropic-cli/compare/v1.9.3...v1.10.0)
+
+### Features
+
+* **api:** Add support for claude-opus-4-8, mid-conversation system blocks, and usage.output_tokens_details ([1f9b079](https://github.com/anthropics/anthropic-cli/commit/1f9b0794209b7781e36977b970110518e6cd8ac0))
+
+
+### Documentation
+
+* replace literal newlines ([eddcf54](https://github.com/anthropics/anthropic-cli/commit/eddcf5414b6ec53c557c9f2c5188b7286307eee3))
+
+## 1.9.3 (2026-05-26)
+
+Full Changelog: [v1.9.2...v1.9.3](https://github.com/anthropics/anthropic-cli/compare/v1.9.2...v1.9.3)
+
+### Bug Fixes
+
+* stop clearing org/workspace from profile config on logout ([#406](https://github.com/anthropics/anthropic-cli/issues/406)) ([a9999c8](https://github.com/anthropics/anthropic-cli/commit/a9999c8777fabf5dbb484a556580e134ed1c775c))
+
+## 1.9.2 (2026-05-26)
+
+Full Changelog: [v1.9.1...v1.9.2](https://github.com/anthropics/anthropic-cli/compare/v1.9.1...v1.9.2)
+
+### Bug Fixes
+
+* clear organization/workspace on logout and honor --organization-id on login ([1562d45](https://github.com/anthropics/anthropic-cli/commit/1562d45f0a6a6b74fb1eadc4aae8b5ce96bf561f))
+* treat text/plan with format: binary as raw upload ([e7f5c54](https://github.com/anthropics/anthropic-cli/commit/e7f5c54f9306899f6482f1533ed1ec236e3b58cb))
+
 ## 1.9.1 (2026-05-19)
 
 Full Changelog: [v1.9.0...v1.9.1](https://github.com/anthropics/anthropic-cli/compare/v1.9.0...v1.9.1)
