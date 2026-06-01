@@ -5,6 +5,6 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Mark the necessary Go modules as private to avoid Go's proxy
-export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-go,github.com/github.com/anthropics/anthropic-sdk-go-private"
+export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-go,github.com/anthropics/anthropic-sdk-go-private"
 
 go run ./cmd/ant "$@"

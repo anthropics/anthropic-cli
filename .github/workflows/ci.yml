@@ -15,7 +15,7 @@ on:
       - 'stl-preview-base/**'
 
 env:
-  GOPRIVATE: github.com/anthropics/anthropic-sdk-go,github.com/github.com/anthropics/anthropic-sdk-go-private
+  GOPRIVATE: github.com/anthropics/anthropic-sdk-go,github.com/anthropics/anthropic-sdk-go-private
 
 jobs:
   lint:
@@ -32,11 +32,11 @@ jobs:
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Link staging branch
-        if: github.repository == 'github.com/anthropics/anthropic-sdk-cli-private'
+        if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -60,11 +60,11 @@ jobs:
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Link staging branch
-        if: github.repository == 'github.com/anthropics/anthropic-sdk-cli-private'
+        if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -79,7 +79,7 @@ jobs:
 
       - name: Get GitHub OIDC Token
         if: |-
-          github.repository == 'github.com/anthropics/anthropic-sdk-cli-private' &&
+          github.repository == 'anthropics/anthropic-sdk-cli-private' &&
           !startsWith(github.ref, 'refs/heads/stl/')
         id: github-oidc
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
@@ -88,7 +88,7 @@ jobs:
 
       - name: Upload tarball
         if: |-
-          github.repository == 'github.com/anthropics/anthropic-sdk-cli-private' &&
+          github.repository == 'anthropics/anthropic-sdk-cli-private' &&
           !startsWith(github.ref, 'refs/heads/stl/')
         env:
           URL: https://pkg.stainless.com/s
@@ -157,11 +157,11 @@ jobs:
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Link staging branch
-        if: github.repository == 'github.com/anthropics/anthropic-sdk-cli-private'
+        if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
