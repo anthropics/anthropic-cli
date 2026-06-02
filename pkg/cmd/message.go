@@ -33,7 +33,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "model",
-			Usage:    "The model that will complete your prompt.\\n\\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			Usage:    "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
 			Required: true,
 			BodyPath: "model",
 		},
@@ -124,7 +124,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
-			Usage:      `Allowed values: "user", "assistant".`,
+			Usage:      `Allowed values: "user", "assistant", "system".`,
 			InnerField: "role",
 		},
 	},
@@ -173,7 +173,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "model",
-			Usage:    "The model that will complete your prompt.\\n\\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			Usage:    "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
 			Required: true,
 			BodyPath: "model",
 		},
@@ -216,7 +216,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "message.role",
-			Usage:      `Allowed values: "user", "assistant".`,
+			Usage:      `Allowed values: "user", "assistant", "system".`,
 			InnerField: "role",
 		},
 	},
