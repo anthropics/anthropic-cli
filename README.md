@@ -1,31 +1,35 @@
 # Claude Platform CLI
 
-The official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api).
+[![GitHub release](https://img.shields.io/github/v/release/anthropics/anthropic-cli)](https://github.com/anthropics/anthropic-cli/releases)
+[![Homebrew](https://img.shields.io/badge/homebrew-anthropics%2Ftap%2Fant-FBB040?logo=homebrew&logoColor=white)](https://github.com/anthropics/homebrew-tap)
+
+The official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api). The `ant` command gives you access to the Claude API from your terminal — send messages, manage agents and sessions, upload files, and script against every API endpoint.
+
+![Demo of the ant CLI](.github/demo.gif)
+
+## Documentation
+
+Full documentation is available at **[platform.claude.com/docs/en/api/sdks/cli](https://platform.claude.com/docs/en/api/sdks/cli)**.
 
 <!-- x-release-please-start-version -->
 
 ## Installation
 
-### Installing with Homebrew
+### Homebrew
 
 ```sh
 brew install anthropics/tap/ant
 ```
 
-### Installing with Go
+### Go
 
-To test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.22 or later installed.
+To install from source, you need [Go](https://go.dev/doc/install) version 1.22 or later.
 
 ```sh
 go install 'github.com/anthropics/anthropic-cli/cmd/ant@latest'
 ```
 
-Once you have run `go install`, the binary is placed in your Go bin directory:
-
-- **Default location**: `$HOME/go/bin` (or `$GOPATH/bin` if GOPATH is set)
-- **Check your path**: Run `go env GOPATH` to see the base directory
-
-If commands aren't found after installation, add the Go bin directory to your PATH:
+The binary is placed in `$(go env GOPATH)/bin`. If `ant` isn't found after installation, add that directory to your `PATH`:
 
 ```sh
 # Add to your shell profile (.zshrc, .bashrc, etc.)
@@ -34,111 +38,104 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 
 <!-- x-release-please-end -->
 
-### Running Locally
+## Getting started
 
-After cloning the git repository for this project, you can use the
-`scripts/run` script to run the tool locally:
+Log in with your Claude Console account:
+
+```sh
+ant auth login
+```
+
+Or set the `ANTHROPIC_API_KEY` environment variable to an API key from the [Claude Console](https://platform.claude.com/settings/keys).
+
+Then send your first message:
+
+```sh
+ant messages create \
+  --model claude-opus-4-6 \
+  --max-tokens 1024 \
+  --message '{role: user, content: "Hello, Claude"}'
+```
+
+Structured flags accept relaxed JSON or YAML, so unquoted keys are fine.
+
+## Usage
+
+The CLI follows a resource-based command structure, with nested resources separated by colons:
+
+```sh
+ant <resource>[:<subresource>] <command> [flags...]
+```
+
+```sh
+# List available models
+ant models list
+
+# Browse a response in the interactive explorer (the default in a terminal)
+ant models retrieve --model-id claude-opus-4-6
+
+# Extract a single field from a response, jq-style
+ant messages create \
+  --model claude-opus-4-6 \
+  --max-tokens 1024 \
+  --message '{role: user, content: "Hello, Claude"}' \
+  --transform content.0.text --raw-output
+
+# Send a file using the @path syntax
+ant messages create \
+  --model claude-opus-4-6 \
+  --max-tokens 1024 \
+  --message '{role: user, content: [
+    {type: image, source: {type: base64, media_type: image/jpeg, data: "@photo.jpg"}},
+    {type: text, text: "What is in this image?"}
+  ]}'
+
+# Manage beta resources such as agents, sessions, and files
+ant beta:agents list
+```
+
+Run `ant --help` for the full list of resources, or append `--help` to any command to see its flags.
+
+## Requirements
+
+macOS, Linux, or Windows.
+
+## Development
+
+### Running locally
+
+After cloning the git repository for this project, you can use the `scripts/run` script to run the CLI locally:
 
 ```sh
 ./scripts/run args...
 ```
 
-## Usage
+### Linking different Go SDK versions
 
-The CLI follows a resource-based command structure:
+You can link the CLI against a different version of the [Anthropic Go SDK](https://github.com/anthropics/anthropic-sdk-go) for development purposes using the `./scripts/link` script.
 
-```sh
-ant [resource] <command> [flags...]
-```
+To link to a specific version from a repository (version can be a branch, git tag, or commit hash):
 
 ```sh
-ant messages create \
-  --api-key my-anthropic-api-key \
-  --max-tokens 1024 \
-  --message '{content: [{text: x, type: text}], role: user}' \
-  --model claude-sonnet-4-5-20250929
-```
-
-For details about specific commands, use the `--help` flag.
-
-### Environment variables
-
-| Environment variable            | Required | Default value |
-| ------------------------------- | -------- | ------------- |
-| `ANTHROPIC_API_KEY`             | no       | `null`        |
-| `ANTHROPIC_AUTH_TOKEN`          | no       | `null`        |
-| `ANTHROPIC_WEBHOOK_SIGNING_KEY` | no       | `null`        |
-
-### Global flags
-
-- `--api-key` (can also be set with `ANTHROPIC_API_KEY` env var)
-- `--auth-token` (can also be set with `ANTHROPIC_AUTH_TOKEN` env var)
-- `--webhook-key` (can also be set with `ANTHROPIC_WEBHOOK_SIGNING_KEY` env var)
-- `--help` - Show command line usage
-- `--debug` - Enable debug logging (includes HTTP request/response details)
-- `--version`, `-v` - Show the CLI version
-- `--base-url` - Use a custom API backend URL
-- `--format` - Change the output format (`auto`, `explore`, `json`, `jsonl`, `pretty`, `raw`, `yaml`)
-- `--format-error` - Change the output format for errors (`auto`, `explore`, `json`, `jsonl`, `pretty`, `raw`, `yaml`)
-- `--transform` - Transform the data output using [GJSON syntax](https://github.com/tidwall/gjson/blob/master/SYNTAX.md)
-- `--transform-error` - Transform the error output using [GJSON syntax](https://github.com/tidwall/gjson/blob/master/SYNTAX.md)
-
-### Passing files as arguments
-
-To pass files to your API, you can use the `@myfile.ext` syntax:
-
-```bash
-ant <command> --arg @abe.jpg
-```
-
-Files can also be passed inside JSON or YAML blobs:
-
-```bash
-ant <command> --arg '{image: "@abe.jpg"}'
-# Equivalent:
-ant <command> <<YAML
-arg:
-  image: "@abe.jpg"
-YAML
-```
-
-If you need to pass a string literal that begins with an `@` sign, you can
-escape the `@` sign to avoid accidentally passing a file.
-
-```bash
-ant <command> --username '\@abe'
-```
-
-#### Explicit encoding
-
-For JSON endpoints, the CLI tool does filetype sniffing to determine whether the
-file contents should be sent as a string literal (for plain text files) or as a
-base64-encoded string literal (for binary files). If you need to explicitly send
-the file as either plain text or base64-encoded data, you can use
-`@file://myfile.txt` (for string encoding) or `@data://myfile.dat` (for
-base64-encoding). Note that absolute paths will begin with `@file://` or
-`@data://`, followed by a third `/` (for example, `@file:///tmp/file.txt`).
-
-```bash
-ant <command> --arg @data://file.txt
-```
-
-## Linking different Go SDK versions
-
-You can link the CLI against a different version of the Anthropic Go SDK
-for development purposes using the `./scripts/link` script.
-
-To link to a specific version from a repository (version can be a branch,
-git tag, or commit hash):
-
-```bash
 ./scripts/link github.com/org/repo@version
 ```
 
 To link to a local copy of the SDK:
 
-```bash
+```sh
 ./scripts/link ../path/to/anthropic-go
 ```
 
 If you run the link script without any arguments, it will default to `../anthropic-go`.
+
+### Re-recording the demo
+
+The demo GIF at the top of this README is recorded with [VHS](https://github.com/charmbracelet/vhs) from [`.github/demo.tape`](.github/demo.tape). To re-record it after changing the examples, run:
+
+```sh
+./scripts/record-demo
+```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
