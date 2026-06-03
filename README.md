@@ -1,9 +1,9 @@
-# Claude Platform CLI
+# ant — Claude Platform CLI
 
 [![GitHub release](https://img.shields.io/github/v/release/anthropics/anthropic-cli)](https://github.com/anthropics/anthropic-cli/releases)
 [![Homebrew](https://img.shields.io/badge/homebrew-anthropics%2Ftap%2Fant-FBB040?logo=homebrew&logoColor=white)](https://github.com/anthropics/homebrew-tap)
 
-The official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api). The `ant` command gives you access to the Claude API from your terminal — send messages, manage agents and sessions, upload files, and script against every API endpoint.
+`ant` is the official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api). It puts the Claude API in your terminal — send messages, manage agents and sessions, upload files, and script against every API endpoint.
 
 ![Demo of the ant CLI](.github/demo.gif)
 
@@ -52,7 +52,7 @@ Then send your first message:
 
 ```sh
 ant messages create \
-  --model claude-opus-4-6 \
+  --model claude-opus-4-8 \
   --max-tokens 1024 \
   --message '{role: user, content: "Hello, Claude"}'
 ```
@@ -72,18 +72,18 @@ ant <resource>[:<subresource>] <command> [flags...]
 ant models list
 
 # Browse a response in the interactive explorer (the default in a terminal)
-ant models retrieve --model-id claude-opus-4-6
+ant models retrieve --model-id claude-opus-4-8
 
 # Extract a single field from a response, jq-style
 ant messages create \
-  --model claude-opus-4-6 \
+  --model claude-opus-4-8 \
   --max-tokens 1024 \
   --message '{role: user, content: "Hello, Claude"}' \
   --transform content.0.text --raw-output
 
 # Send a file using the @path syntax
 ant messages create \
-  --model claude-opus-4-6 \
+  --model claude-opus-4-8 \
   --max-tokens 1024 \
   --message '{role: user, content: [
     {type: image, source: {type: base64, media_type: image/jpeg, data: "@photo.jpg"}},

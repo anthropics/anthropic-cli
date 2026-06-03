@@ -25,7 +25,7 @@ Show
 # Scene 1: send a message to Claude.
 Type "ant messages create \"
 Enter
-Type "  --model claude-opus-4-6 \"
+Type "  --model claude-opus-4-8 \"
 Enter
 Type "  --max-tokens 1024 \"
 Enter
@@ -37,7 +37,7 @@ Sleep 4.5s
 # Scene 2: the same request, extracting just the reply text.
 Type "ant messages create \"
 Enter
-Type "  --model claude-opus-4-6 \"
+Type "  --model claude-opus-4-8 \"
 Enter
 Type "  --max-tokens 1024 \"
 Enter
@@ -53,7 +53,7 @@ Hide
 Type "clear"
 Enter
 Show
-Type "ant models retrieve --model-id claude-opus-4-6"
+Type "ant models retrieve --model-id claude-opus-4-8"
 Sleep 500ms
 Enter
 Sleep 2.5s
