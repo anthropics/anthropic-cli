@@ -100,34 +100,9 @@ Run `ant --help` for the full list of resources, or append `--help` to any comma
 
 macOS, Linux, or Windows.
 
-## Development
+## Contributing
 
-### Running locally
-
-After cloning the git repository for this project, you can use the `scripts/run` script to run the CLI locally:
-
-```sh
-./scripts/run args...
-```
-
-### Linking different Go SDK versions
-
-You can link the CLI against a different version of the [Anthropic Go SDK](https://github.com/anthropics/anthropic-sdk-go) for development purposes using the `./scripts/link` script.
-
-To link to a specific version from a repository (version can be a branch, git tag, or commit hash):
-
-```sh
-./scripts/link github.com/org/repo@version
-```
-
-To link to a local copy of the SDK:
-
-```sh
-./scripts/link ../path/to/anthropic-go
-```
-
-If you run the link script without any arguments, it will default to `../anthropic-go`.
-
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
