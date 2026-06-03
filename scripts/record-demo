@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# Re-records the README demo video (.github/demo.webm) and its poster frame
-# (.github/demo.png) from .github/demo.tape.
+# Re-records the README demo GIF (.github/demo.gif) from .github/demo.tape.
 #
 # Requires vhs, ttyd, and ffmpeg (https://github.com/charmbracelet/vhs#installation),
 # plus python3 to serve canned API responses. No API credentials are needed:
@@ -130,13 +129,7 @@ python3 "$DEMO_DIR/mock_server.py" "$MOCK_PORT" &
 MOCK_PID=$!
 trap 'kill $MOCK_PID 2>/dev/null' EXIT
 
-echo "==> Recording .github/demo.webm"
+echo "==> Recording .github/demo.gif"
 vhs .github/demo.tape
-
-# GitHub does not play repo-committed videos inline in READMEs, so the README
-# shows this poster frame linking to the webm instead. The timestamp lands on
-# the first completed response.
-echo "==> Extracting poster frame .github/demo.png"
-ffmpeg -y -loglevel error -ss 7.5 -i .github/demo.webm -frames:v 1 .github/demo.png
 
 echo "==> Done"
