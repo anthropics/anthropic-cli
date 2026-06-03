@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/anthropics/anthropic-cli)](https://github.com/anthropics/anthropic-cli/releases)
 [![Homebrew](https://img.shields.io/badge/homebrew-anthropics%2Ftap%2Fant-FBB040?logo=homebrew&logoColor=white)](https://github.com/anthropics/homebrew-tap)
 
-`ant` is the official CLI for the [Claude Developer Platform](https://platform.claude.com/docs/en/api). It puts the Claude API in your terminal — send messages, manage agents and sessions, upload files, and script against every API endpoint.
+`ant` is the official CLI for the [Claude Platform](https://platform.claude.com/docs/en/api). It puts the Claude API in your terminal — send messages, manage agents and sessions, upload files, and script against every API endpoint.
 
 ![Demo of the ant CLI](.github/demo.gif)
 
