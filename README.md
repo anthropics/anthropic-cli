@@ -128,13 +128,6 @@ To link to a local copy of the SDK:
 
 If you run the link script without any arguments, it will default to `../anthropic-go`.
 
-### Re-recording the demo
-
-The demo GIF at the top of this README is recorded with [VHS](https://github.com/charmbracelet/vhs) from [`.github/demo.tape`](.github/demo.tape). To re-record it after changing the examples, run:
-
-```sh
-./scripts/record-demo
-```
 
 ## License
 
