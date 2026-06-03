@@ -13,7 +13,6 @@ $ ./scripts/lint
 
 This will install all the required dependencies and build the CLI.
 
-You can also [install go 1.22+ manually](https://go.dev/doc/install).
 
 ## Modifying/Adding code
 
