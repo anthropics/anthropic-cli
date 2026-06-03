@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+
+# Re-records the README demo GIF (.github/demo.gif) from .github/demo.tape.
+#
+# Requires vhs, ttyd, and ffmpeg (https://github.com/charmbracelet/vhs#installation),
+# plus python3 to serve canned API responses. No API credentials are needed:
+# the recording runs against a local mock so the demo output is deterministic.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+for tool in vhs ttyd ffmpeg python3; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "error: $tool is required to record the demo" >&2
+    exit 1
+  fi
+done
+
+# Mark the necessary Go modules as private to avoid Go's proxy
+export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-go,github.com/anthropics/anthropic-sdk-go-private"
+
+echo "==> Building ant"
+go build ./cmd/ant
+
+DEMO_DIR=/tmp/ant-demo
+MOCK_PORT=4011
+mkdir -p "$DEMO_DIR"
+
+# Mock API server with realistic, deterministic responses for the
+# endpoints used in the tape.
+cat > "$DEMO_DIR/mock_server.py" <<'PYEOF'
+import json
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+MESSAGE = {
+    "id": "msg_01XFUDUfYJgACzvnptvVoYEL",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-opus-4-6",
+    "content": [
+        {
+            "type": "text",
+            "text": "Hello! It's nice to meet you. How can I help you today?",
+        }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": None,
+    "usage": {"input_tokens": 10, "output_tokens": 17},
+}
+
+MODEL = {
+    "type": "model",
+    "id": "claude-opus-4-6",
+    "display_name": "Claude Opus 4.6",
+    "created_at": "2026-02-04T00:00:00Z",
+    "max_input_tokens": 200000,
+    "max_tokens": 128000,
+    "capabilities": {
+        "batch": {"supported": True},
+        "citations": {"supported": True},
+        "code_execution": {"supported": True},
+        "context_management": {
+            "supported": True,
+            "clear_thinking_20251015": {"supported": True},
+            "clear_tool_uses_20250919": {"supported": True},
+            "compact_20260112": {"supported": True},
+        },
+        "effort": {
+            "supported": True,
+            "low": {"supported": True},
+            "medium": {"supported": True},
+            "high": {"supported": True},
+            "max": {"supported": True},
+            "xhigh": {"supported": False},
+        },
+        "image_input": {"supported": True},
+        "pdf_input": {"supported": True},
+        "structured_outputs": {"supported": True},
+        "thinking": {
+            "supported": True,
+            "types": {
+                "adaptive": {"supported": True},
+                "enabled": {"supported": True},
+            },
+        },
+    },
+}
+
+
+class Handler(BaseHTTPRequestHandler):
+    def _send(self, obj):
+        body = json.dumps(obj).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_POST(self):
+        self._send(MESSAGE)
+
+    def do_GET(self):
+        self._send(MODEL)
+
+    def log_message(self, *args):
+        pass
+
+
+if __name__ == "__main__":
+    import sys
+
+    HTTPServer(("127.0.0.1", int(sys.argv[1])), Handler).serve_forever()
+PYEOF
+
+# Wrapper so the tape can run plain `ant ...` commands against the mock.
+cat > "$DEMO_DIR/ant" <<EOF
+#!/usr/bin/env bash
+exec "$PWD/ant" --base-url http://127.0.0.1:$MOCK_PORT --api-key demo-key "\$@"
+EOF
+chmod +x "$DEMO_DIR/ant"
+
+echo "==> Starting mock server on port $MOCK_PORT"
+python3 "$DEMO_DIR/mock_server.py" "$MOCK_PORT" &
+MOCK_PID=$!
+trap 'kill $MOCK_PID 2>/dev/null' EXIT
+
+echo "==> Recording .github/demo.gif"
+vhs .github/demo.tape
+
+echo "==> Done"
