@@ -5,7 +5,7 @@
 
 `ant` is the official CLI for the [Claude Platform](https://platform.claude.com/docs/en/api). It puts the Claude API in your terminal — send messages, manage agents and sessions, upload files, and script against every API endpoint.
 
-![Demo of the ant CLI](.github/demo.gif)
+[![Demo of the ant CLI — click to play](.github/demo.png)](.github/demo.webm)
 
 ## Documentation
 

@@ -70,7 +70,7 @@ $ ./scripts/format
 
 ## Re-recording the README demo
 
-The demo GIF at the top of the README is recorded with [VHS](https://github.com/charmbracelet/vhs) from [`.github/demo.tape`](.github/demo.tape). After changing the tape or the examples it shows, re-record it with:
+The demo video at the top of the README is recorded with [VHS](https://github.com/charmbracelet/vhs) from [`.github/demo.tape`](.github/demo.tape). The script renders `.github/demo.webm` and the poster frame `.github/demo.png` that the README displays. After changing the tape or the examples it shows, re-record both with:
 
 ```sh
 $ ./scripts/record-demo

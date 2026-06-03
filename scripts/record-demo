@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# Re-records the README demo GIF (.github/demo.gif) from .github/demo.tape.
+# Re-records the README demo video (.github/demo.webm) and its poster frame
+# (.github/demo.png) from .github/demo.tape.
 #
 # Requires vhs, ttyd, and ffmpeg (https://github.com/charmbracelet/vhs#installation),
 # plus python3 to serve canned API responses. No API credentials are needed:
@@ -114,8 +115,12 @@ if __name__ == "__main__":
 PYEOF
 
 # Wrapper so the tape can run plain `ant ...` commands against the mock.
+# ANTHROPIC_CONFIG_DIR points at an empty directory so auth profiles on the
+# recording machine can't leak warnings into the demo.
+mkdir -p "$DEMO_DIR/config"
 cat > "$DEMO_DIR/ant" <<EOF
 #!/usr/bin/env bash
+export ANTHROPIC_CONFIG_DIR="$DEMO_DIR/config"
 exec "$PWD/ant" --base-url http://127.0.0.1:$MOCK_PORT --api-key demo-key "\$@"
 EOF
 chmod +x "$DEMO_DIR/ant"
@@ -125,7 +130,13 @@ python3 "$DEMO_DIR/mock_server.py" "$MOCK_PORT" &
 MOCK_PID=$!
 trap 'kill $MOCK_PID 2>/dev/null' EXIT
 
-echo "==> Recording .github/demo.gif"
+echo "==> Recording .github/demo.webm"
 vhs .github/demo.tape
+
+# GitHub does not play repo-committed videos inline in READMEs, so the README
+# shows this poster frame linking to the webm instead. The timestamp lands on
+# the first completed response.
+echo "==> Extracting poster frame .github/demo.png"
+ffmpeg -y -loglevel error -ss 7.5 -i .github/demo.webm -frames:v 1 .github/demo.png
 
 echo "==> Done"

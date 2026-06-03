@@ -1,10 +1,10 @@
-# VHS tape that records the demo GIF embedded in README.md.
+# VHS tape that records the demo video embedded in README.md.
 #
 # To re-record, run ./scripts/record-demo from the repository root. It builds
 # the CLI, starts a local mock API server, places an `ant` wrapper pointed at
 # the mock in /tmp/ant-demo, and runs vhs against this tape.
 
-Output .github/demo.gif
+Output .github/demo.webm
 
 Set Shell "bash"
 Set FontSize 18
