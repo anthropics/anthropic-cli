@@ -192,7 +192,7 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination cursor from a previous response's next_page.",
+			Usage:     "Opaque pagination cursor from a previous response.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{
