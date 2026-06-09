@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.12.0 (2026-06-09)
+
+Full Changelog: [v1.11.0...v1.12.0](https://github.com/anthropics/anthropic-cli/compare/v1.11.0...v1.12.0)
+
+### Features
+
+* **api:** add support for Managed Agents deployments and environment variable credentials ([b36672a](https://github.com/anthropics/anthropic-cli/commit/b36672a68b8b8b5962e4a56c1ac8be6f7325da22))
+* **api:** manual updates ([d94edec](https://github.com/anthropics/anthropic-cli/commit/d94edec20eef87f0e1c98611f1c857379667574f))
+
 ## 1.11.0 (2026-06-09)
 
 Full Changelog: [v1.10.0...v1.11.0](https://github.com/anthropics/anthropic-cli/compare/v1.10.0...v1.11.0)
