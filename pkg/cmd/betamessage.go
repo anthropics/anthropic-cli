@@ -56,6 +56,16 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			BodyPath: "diagnostics",
 		},
 		&requestflag.Flag[*string]{
+			Name:     "fallback-credit-token",
+			Usage:    "The `fallback_credit_token` from a prior refusal's `stop_details`.\n\nWhen a preceding request was refused and returned a `fallback_credit_token`,\npass that code here on the retry to have the retry's cache-creation tokens\nfor the prefix that was warm on the refused model billed at the cache-read\nrate. Must be redeemed by the same organization and workspace, with the same\nrequest body (optionally extended by one appended `assistant` message whose\ncontent is the partial text — with any trailing whitespace stripped from\nthe final text block — and paired server-tool blocks streamed before the\nrefusal; the appended-assistant form is not available for requests with\n`output_format` set or forced `tool_choice`), on an eligible fallback\nmodel, on the same platform,\nand within 5 minutes of the refusal; a mismatch is a 400. A token minted\nmid-server-tool-loop whose partial content was continuable may only be\nredeemed with the appended-assistant form — if an exact-body retry is\nrejected with a 400 saying the token must be redeemed by continuing the\npartial response, retry with the appended-assistant form instead.\n\nWhen the appended-assistant form is used on a model that otherwise disallows\nassistant-turn prefill, this token also authorizes that one prefill.",
+			BodyPath: "fallback_credit_token",
+		},
+		&requestflag.Flag[any]{
+			Name:     "fallback",
+			Usage:    "Opt-in server-side retry on one or more substitute models when the requested model declines for policy reasons. Tried in order: if the first entry also declines, the second is tried, and so on.",
+			BodyPath: "fallbacks",
+		},
+		&requestflag.Flag[*string]{
 			Name:     "inference-geo",
 			Usage:    "Specifies the geographic region for inference processing. If not specified, the workspace's `default_inference_geo` is used.",
 			BodyPath: "inference_geo",
@@ -185,6 +195,35 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "diagnostics.previous-message-id",
 			Usage:      "The `id` (`msg_...`) from this client's previous /v1/messages response. The server compares that request's prompt fingerprint against this one and returns `diagnostics.cache_miss_reason` when the prompt-cache prefix could not be reused. Pass `null` on the first turn to opt in without a prior message to compare.",
 			InnerField: "previous_message_id",
+		},
+	},
+	"fallback": {
+		&requestflag.InnerFlag[string]{
+			Name:                  "fallback.model",
+			Usage:                 "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField:            "model",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:                  "fallback.max-tokens",
+			InnerField:            "max_tokens",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:                  "fallback.output-config",
+			InnerField:            "output_config",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:                  "fallback.speed",
+			Usage:                 `Allowed values: "standard", "fast".`,
+			InnerField:            "speed",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:                  "fallback.thinking",
+			InnerField:            "thinking",
+			OuterIsArrayOfObjects: true,
 		},
 	},
 	"mcp-server": {
