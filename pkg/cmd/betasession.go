@@ -170,6 +170,11 @@ var betaSessionsList = cli.Command{
 			Usage:     "Return sessions created at or before this time (inclusive).",
 			QueryPath: "created_at[lte]",
 		},
+		&requestflag.Flag[string]{
+			Name:      "deployment-id",
+			Usage:     "Filter sessions created by this deployment ID.",
+			QueryPath: "deployment_id",
+		},
 		&requestflag.Flag[bool]{
 			Name:      "include-archived",
 			Usage:     "When true, includes archived sessions. Default: false (exclude archived).",
