@@ -265,6 +265,30 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:deployments",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaDeploymentsCreate,
+					&betaDeploymentsRetrieve,
+					&betaDeploymentsUpdate,
+					&betaDeploymentsList,
+					&betaDeploymentsArchive,
+					&betaDeploymentsPause,
+					&betaDeploymentsRun,
+					&betaDeploymentsUnpause,
+				},
+			},
+			{
+				Name:     "beta:deployment-runs",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaDeploymentRunsRetrieve,
+					&betaDeploymentRunsList,
+				},
+			},
+			{
 				Name:     "beta:vaults",
 				Category: "API RESOURCE",
 				Suggest:  true,
