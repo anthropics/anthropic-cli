@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.11.0 (2026-06-09)
+
+Full Changelog: [v1.10.0...v1.11.0](https://github.com/anthropics/anthropic-cli/compare/v1.10.0...v1.11.0)
+
+### Features
+
+* **api:** add support for claude-mythos-5 and claude-fable-5, with support for server-side fallbacks on refusal ([8302a45](https://github.com/anthropics/anthropic-cli/commit/8302a45f5d5a6df0289f9061e9cd6318d7530c63))
+* **api:** manual updates ([c5d792d](https://github.com/anthropics/anthropic-cli/commit/c5d792d52248a85aa9adf7d33f8ae7bd88ae949a))
+* **api:** small updates to Managed Agents types ([242c693](https://github.com/anthropics/anthropic-cli/commit/242c69330b3c195defc83ffded8eeb634c136968))
+* **client:** adds client-side fallbacks middleware for API providers that do not support server-side fallbacks ([8302a45](https://github.com/anthropics/anthropic-cli/commit/8302a45f5d5a6df0289f9061e9cd6318d7530c63))
+
+
+### Chores
+
+* **internal:** fix artifact url ([20689c3](https://github.com/anthropics/anthropic-cli/commit/20689c394a7eae8edc47a2070d6b65259bd9f1d5))
+* **internal:** fix branch names ([2168a5a](https://github.com/anthropics/anthropic-cli/commit/2168a5a12630129de4cb05e75447ad9d08185d05))
+* **internal:** update private repo name ([c4f0954](https://github.com/anthropics/anthropic-cli/commit/c4f09545a37a0401ee14fee042585ca0e1fefe80))
+
+
+### Documentation
+
+* add animated terminal demo ([7573585](https://github.com/anthropics/anthropic-cli/commit/75735853716522fe7363f6df7efe45e89bf76df9))
+* move development docs into CONTRIBUTING.md ([ab8aed7](https://github.com/anthropics/anthropic-cli/commit/ab8aed756a4edeb242f5470f643eb30348e0a12c))
+* point security reports to Anthropic's HackerOne program ([#5](https://github.com/anthropics/anthropic-cli/issues/5)) ([f5c8f0f](https://github.com/anthropics/anthropic-cli/commit/f5c8f0faa5eeee57e5c644cf09465a0d48852aad))
+* release-branch readiness sweep (model-release Step 5) + coverage-audit refinements ([2454db4](https://github.com/anthropics/anthropic-cli/commit/2454db4a3c1a2d77761c48a3285c0850ff547eea))
+* replace README demo GIF with webm and poster frame ([46d7f93](https://github.com/anthropics/anthropic-cli/commit/46d7f93d32750879f84a15be69e6b674891a7f05))
+* restore README demo GIF ([46e0b71](https://github.com/anthropics/anthropic-cli/commit/46e0b71e0cd581cc3764ff1970dd02d32caf6c00))
+* restructure README to match SDK conventions ([e22f218](https://github.com/anthropics/anthropic-cli/commit/e22f218a4c1b5f6edd955a37e31eb59922c1a7eb))
+* update product name to Claude Platform ([fa89021](https://github.com/anthropics/anthropic-cli/commit/fa89021825e94af94ae5df03ce9a1e0fbdc3ad2a))
+* use claude-opus-4-8 in examples and lead with the ant name ([8ecc617](https://github.com/anthropics/anthropic-cli/commit/8ecc617d62bd23f1df0c6705b8dd289d2cb32cf1))
+
 ## 1.10.0 (2026-05-28)
 
 Full Changelog: [v1.9.3...v1.10.0](https://github.com/anthropics/anthropic-cli/compare/v1.9.3...v1.10.0)
