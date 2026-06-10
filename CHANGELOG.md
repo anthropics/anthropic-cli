@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.12.1 (2026-06-10)
+
+Full Changelog: [v1.12.0...v1.12.1](https://github.com/anthropics/anthropic-cli/compare/v1.12.0...v1.12.1)
+
+### Bug Fixes
+
+* **api:** add `frontier_llm` refusal category ([#10](https://github.com/anthropics/anthropic-cli/issues/10)) ([7144269](https://github.com/anthropics/anthropic-cli/commit/71442696ce0fe6ad3da8128aa1edab006d7dc6e5))
+
 ## 1.12.0 (2026-06-09)
 
 Full Changelog: [v1.11.0...v1.12.0](https://github.com/anthropics/anthropic-cli/compare/v1.11.0...v1.12.0)
