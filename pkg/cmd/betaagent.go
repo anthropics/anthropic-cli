@@ -27,13 +27,13 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "name",
-			Usage:    "Human-readable name for the agent. 1-256 characters.",
+			Usage:    "Human-readable name for the agent.",
 			Required: true,
 			BodyPath: "name",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
-			Usage:    "Description of what the agent does. Up to 2048 characters.",
+			Usage:    "Description of what the agent does.",
 			BodyPath: "description",
 		},
 		&requestflag.Flag[[]map[string]any]{
@@ -53,12 +53,12 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "skill",
-			Usage:    "Skills available to the agent. Maximum 20.",
+			Usage:    "Skills available to the agent.",
 			BodyPath: "skills",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "system",
-			Usage:    "System prompt for the agent. Up to 100,000 characters.",
+			Usage:    "System prompt for the agent.",
 			BodyPath: "system",
 		},
 		&requestflag.Flag[[]map[string]any]{
@@ -150,7 +150,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
-			Usage:    "Description. Up to 2048 characters. Omit to preserve; send empty string or null to clear.",
+			Usage:    "Description. Omit to preserve; send empty string or null to clear.",
 			BodyPath: "description",
 		},
 		&requestflag.Flag[any]{
@@ -175,17 +175,17 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "name",
-			Usage:    "Human-readable name. 1-256 characters. Omit to preserve. Cannot be cleared.",
+			Usage:    "Human-readable name. Must be non-empty. Omit to preserve. Cannot be cleared.",
 			BodyPath: "name",
 		},
 		&requestflag.Flag[any]{
 			Name:     "skill",
-			Usage:    "Skills. Full replacement. Omit to preserve; send empty array or null to clear. Maximum 20.",
+			Usage:    "Skills. Full replacement. Omit to preserve; send empty array or null to clear.",
 			BodyPath: "skills",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "system",
-			Usage:    "System prompt. Up to 100,000 characters. Omit to preserve; send empty string or null to clear.",
+			Usage:    "System prompt. Omit to preserve; send empty string or null to clear.",
 			BodyPath: "system",
 		},
 		&requestflag.Flag[any]{

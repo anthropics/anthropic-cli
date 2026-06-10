@@ -15,13 +15,13 @@ on:
       - 'stl-preview-base/**'
 
 env:
-  GOPRIVATE: github.com/anthropics/anthropic-sdk-go,github.com/stainless-sdks/anthropic-go
+  GOPRIVATE: github.com/anthropics/anthropic-sdk-go,github.com/anthropics/anthropic-sdk-go-private
 
 jobs:
   lint:
     timeout-minutes: 10
     name: lint
-    runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    runs-on: 'ubuntu-latest'
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
 
     steps:
@@ -32,11 +32,11 @@ jobs:
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Link staging branch
-        if: github.repository == 'stainless-sdks/anthropic-cli'
+        if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
+          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -50,7 +50,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    runs-on: 'ubuntu-latest'
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -60,11 +60,11 @@ jobs:
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Link staging branch
-        if: github.repository == 'stainless-sdks/anthropic-cli'
+        if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
+          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -79,7 +79,7 @@ jobs:
 
       - name: Get GitHub OIDC Token
         if: |-
-          github.repository == 'stainless-sdks/anthropic-cli' &&
+          github.repository == 'anthropics/anthropic-sdk-cli-private' &&
           !startsWith(github.ref, 'refs/heads/stl/')
         id: github-oidc
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
@@ -88,7 +88,7 @@ jobs:
 
       - name: Upload tarball
         if: |-
-          github.repository == 'stainless-sdks/anthropic-cli' &&
+          github.repository == 'anthropics/anthropic-sdk-cli-private' &&
           !startsWith(github.ref, 'refs/heads/stl/')
         env:
           URL: https://pkg.stainless.com/s
@@ -147,7 +147,7 @@ jobs:
   test:
     timeout-minutes: 20
     name: test
-    runs-on: ${{ github.repository == 'stainless-sdks/anthropic-cli' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    runs-on: 'ubuntu-latest'
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -157,11 +157,11 @@ jobs:
           stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
 
       - name: Link staging branch
-        if: github.repository == 'stainless-sdks/anthropic-cli'
+        if: github.repository == 'anthropics/anthropic-sdk-cli-private'
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/stainless-sdks/anthropic-go@${{ github.ref_name }}' || true
+          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
