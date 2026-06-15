@@ -619,10 +619,22 @@ func readCredentials(cfg *config.Config, dir, profile string) (storedCredentials
 }
 
 func authStatus(ctx context.Context, c *cli.Command) error {
+	out := os.Stdout
+
+	// Tier 0 — Claude Platform on AWS. When --aws / ANTHROPIC_USE_AWS is active
+	// the request short-circuits to the AWS gateway in getDefaultRequestOptions,
+	// so the profile/key/federation rows below would mislabel a non-winner as
+	// the winner. Render a focused AWS status and return. This matters in the
+	// default CI case: with ANTHROPIC_USE_AWS persistent in the env, Bool("aws")
+	// is true even without typing --aws, and without this the report would claim
+	// "(no credential configured…)" while requests in the same env succeed.
+	if c.Root().Bool("aws") {
+		return awsAuthStatus(out, c.Root())
+	}
+
 	dir := config.DefaultDir()
 	profile, profileSource := activeProfileWithSource(c, dir)
 
-	out := os.Stdout
 	fmt.Fprintf(out, "Active profile:  %s (%s)\n", profile, profileSource)
 	fmt.Fprintf(out, "Config dir:      %s\n", dir)
 	fmt.Fprintf(out, "Profile config:  %s\n", config.ProfilePath(dir, profile))
@@ -890,6 +902,64 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 			}
 			fmt.Fprintf(out, "  --%-22s / %-32s %s\n", f.flag, f.env, display)
 		}
+	}
+
+	return nil
+}
+
+// awsAuthStatus renders `auth status` when the Claude Platform on AWS tier is
+// active (--aws / ANTHROPIC_USE_AWS). It shows AWS as the tier-0 winner and the
+// values the backend will use, mirroring buildAWSConfig / the SDK's resolution
+// (region: --aws-region > AWS_REGION > AWS_DEFAULT_REGION via the flag's
+// Sources; base URL: backend-resolved from region when not overridden). No
+// profile/key/federation rows are printed — they don't apply on this transport.
+func awsAuthStatus(out io.Writer, root *cli.Command) error {
+	fmt.Fprintln(out, "Backend:         Claude Platform on AWS (--aws / ANTHROPIC_USE_AWS)")
+
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Credentials")
+	apiKey := root.String("aws-api-key")
+	if apiKey != "" {
+		writeRow(out, true, "AWS gateway (API key, x-api-key)", formatSecret(apiKey, true))
+		writeDetail(out, "source", "--aws-api-key / ANTHROPIC_AWS_API_KEY")
+	} else {
+		writeRow(out, true, "AWS gateway (SigV4)", "via AWS credential chain")
+		writeDetail(out, "source", "default AWS credential chain (IAM role / AWS_PROFILE / env)")
+	}
+
+	region := root.String("aws-region")
+	workspaceID := root.String("aws-workspace-id")
+
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Region")
+	if region != "" {
+		writeRow(out, true, "--aws-region / AWS_REGION / AWS_DEFAULT_REGION", region)
+	} else {
+		writeRow(out, true, "(unset)", "set --aws-region or AWS_REGION (required)")
+	}
+
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Workspace")
+	if workspaceID != "" {
+		writeRow(out, true, "--aws-workspace-id / ANTHROPIC_AWS_WORKSPACE_ID", workspaceID)
+	} else {
+		writeRow(out, true, "(unset)", "set --aws-workspace-id or ANTHROPIC_AWS_WORKSPACE_ID (required)")
+	}
+
+	// Base URL: --base-url > ANTHROPIC_AWS_BASE_URL > regional derivation. The
+	// AWS backend resolves this itself, so the first-party SDK-default/profile
+	// base-URL rows would mislead — show the AWS-resolved value instead.
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Base URL")
+	switch {
+	case root.String("base-url") != "":
+		writeRow(out, true, "--base-url flag", root.String("base-url"))
+	case os.Getenv("ANTHROPIC_AWS_BASE_URL") != "":
+		writeRow(out, true, "ANTHROPIC_AWS_BASE_URL env", os.Getenv("ANTHROPIC_AWS_BASE_URL"))
+	case region != "":
+		writeRow(out, true, "Regional (derived from region)", fmt.Sprintf("https://aws-external-anthropic.%s.api.aws", region))
+	default:
+		writeRow(out, true, "Regional (derived from region)", "(determined once region is set)")
 	}
 
 	return nil

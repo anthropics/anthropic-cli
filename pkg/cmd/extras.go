@@ -39,5 +39,30 @@ func init() {
 			Usage:   "Optional service-account tagged ID (svac_...) for target_type=SERVICE_ACCOUNT federation rules.",
 			Sources: cli.EnvVars("ANTHROPIC_SERVICE_ACCOUNT_ID"),
 		},
+		// Claude Platform on AWS credential tier. Opt-in only via --aws or the
+		// dedicated ANTHROPIC_USE_AWS toggle (not ambient AWS env vars); when
+		// active, getDefaultRequestOptions short-circuits to the SDK's AWS
+		// gateway backend (SigV4 or x-api-key) ahead of the first-party
+		// precedence switch.
+		&cli.BoolFlag{
+			Name:    "aws",
+			Usage:   "Route requests through the Claude Platform on AWS gateway (SigV4 via the AWS credential chain, or x-api-key when --aws-api-key is set). Persistent CI toggle: ANTHROPIC_USE_AWS.",
+			Sources: cli.EnvVars("ANTHROPIC_USE_AWS"),
+		},
+		&cli.StringFlag{
+			Name:    "aws-region",
+			Usage:   "AWS region for the gateway URL and SigV4 signing scope (required with --aws). Resolves from --aws-region > AWS_REGION > AWS_DEFAULT_REGION; NOT from the AWS profile's config.",
+			Sources: cli.EnvVars("AWS_REGION", "AWS_DEFAULT_REGION"),
+		},
+		&cli.StringFlag{
+			Name:    "aws-workspace-id",
+			Usage:   "Anthropic workspace ID (wrkspc_...) sent as the anthropic-workspace-id header (required with --aws).",
+			Sources: cli.EnvVars("ANTHROPIC_AWS_WORKSPACE_ID"),
+		},
+		&cli.StringFlag{
+			Name:    "aws-api-key",
+			Usage:   "Optional Anthropic API key for the AWS gateway (x-api-key). Its presence selects API-key mode; when unset, SigV4 is used via the default AWS credential chain.",
+			Sources: cli.EnvVars("ANTHROPIC_AWS_API_KEY"),
+		},
 	)
 }
