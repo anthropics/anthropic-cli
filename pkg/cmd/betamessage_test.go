@@ -41,8 +41,8 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
-			"--user-profile-id", "user_profile_id",
 			"--beta", "message-batches-2024-09-24",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -94,8 +94,8 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
-			"--user-profile-id", "user_profile_id",
 			"--beta", "message-batches-2024-09-24",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -237,14 +237,14 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"    strict: true\n" +
 			"    type: custom\n" +
 			"top_k: 5\n" +
-			"top_p: 0.7\n" +
-			"user_profile_id: user_profile_id\n")
+			"top_p: 0.7\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
 			"beta:messages", "create",
 			"--max-items", "10",
 			"--beta", "message-batches-2024-09-24",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 }

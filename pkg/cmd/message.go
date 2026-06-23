@@ -109,6 +109,11 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Use nucleus sampling.\n\nIn nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by `top_p`.\n\nRecommended for advanced use cases only.",
 			BodyPath: "top_p",
 		},
+		&requestflag.Flag[string]{
+			Name:       "user-profile-id",
+			Usage:      "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization. Requires the `user-profiles` beta header.",
+			HeaderPath: "anthropic-user-profile-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -136,7 +141,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.ttl",
-			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`.",
+			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://docs.claude.com/en/docs/build-with-claude/prompt-caching) for details.",
 			InnerField: "ttl",
 		},
 	},
@@ -228,7 +233,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.ttl",
-			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`.",
+			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://docs.claude.com/en/docs/build-with-claude/prompt-caching) for details.",
 			InnerField: "ttl",
 		},
 	},

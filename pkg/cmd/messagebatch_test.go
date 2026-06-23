@@ -15,7 +15,8 @@ func TestMessagesBatchesCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"messages:batches", "create",
-			"--request", "{custom_id: my-custom-id-1, params: {max_tokens: 1024, messages: [{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}], model: claude-opus-4-6, cache_control: {type: ephemeral, ttl: 5m}, container: container, inference_geo: inference_geo, metadata: {user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}}, service_tier: auto, stop_sequences: [string], stream: true, system: [{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], temperature: 1, thinking: {type: adaptive, display: summarized}, tool_choice: {type: auto, disable_parallel_tool_use: true}, tools: [{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}], top_k: 5, top_p: 0.7}}",
+			"--request", "{custom_id: my-custom-id-1, params: {max_tokens: 1024, messages: [{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}], model: claude-opus-4-6, cache_control: {type: ephemeral, ttl: 5m}, container: container, inference_geo: inference_geo, metadata: {user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}}, service_tier: auto, stop_sequences: [string], stream: false, system: [{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], temperature: 1, thinking: {type: adaptive, display: summarized}, tool_choice: {type: auto, disable_parallel_tool_use: true}, tools: [{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}], top_k: 5, top_p: 0.7}}",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -29,7 +30,8 @@ func TestMessagesBatchesCreate(t *testing.T) {
 			"--api-key", "string",
 			"messages:batches", "create",
 			"--request.custom-id", "my-custom-id-1",
-			"--request.params", "{max_tokens: 1024, messages: [{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}], model: claude-opus-4-6, cache_control: {type: ephemeral, ttl: 5m}, container: container, inference_geo: inference_geo, metadata: {user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}}, service_tier: auto, stop_sequences: [string], stream: true, system: [{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], temperature: 1, thinking: {type: adaptive, display: summarized}, tool_choice: {type: auto, disable_parallel_tool_use: true}, tools: [{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}], top_k: 5, top_p: 0.7}",
+			"--request.params", "{max_tokens: 1024, messages: [{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}], model: claude-opus-4-6, cache_control: {type: ephemeral, ttl: 5m}, container: container, inference_geo: inference_geo, metadata: {user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}}, service_tier: auto, stop_sequences: [string], stream: false, system: [{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], temperature: 1, thinking: {type: adaptive, display: summarized}, tool_choice: {type: auto, disable_parallel_tool_use: true}, tools: [{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}], top_k: 5, top_p: 0.7}",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -72,7 +74,7 @@ func TestMessagesBatchesCreate(t *testing.T) {
 			"      service_tier: auto\n" +
 			"      stop_sequences:\n" +
 			"        - string\n" +
-			"      stream: true\n" +
+			"      stream: false\n" +
 			"      system:\n" +
 			"        - text: Today's date is 2024-06-01.\n" +
 			"          type: text\n" +
@@ -120,6 +122,7 @@ func TestMessagesBatchesCreate(t *testing.T) {
 			t, pipeData,
 			"--api-key", "string",
 			"messages:batches", "create",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 }
