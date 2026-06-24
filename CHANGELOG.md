@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.12.2 (2026-06-24)
+
+Full Changelog: [v1.12.1...v1.12.2](https://github.com/anthropics/anthropic-cli/compare/v1.12.1...v1.12.2)
+
+### Chores
+
+* **api:** add support for sending User Profile ID in request headers ([2a9ec20](https://github.com/anthropics/anthropic-cli/commit/2a9ec20801996eb19686496cebfbdfb3a9420d37))
+* **internal:** codegen related update ([70616f5](https://github.com/anthropics/anthropic-cli/commit/70616f54b54e6a48daab449acb3a9e99c42508da))
+
+
+### Documentation
+
+* **model-release:** model-ID-launch checklist ([62562f3](https://github.com/anthropics/anthropic-cli/commit/62562f3cf05adb984e844d831d2db8d461157775))
+
 ## 1.12.1 (2026-06-10)
 
 Full Changelog: [v1.12.0...v1.12.1](https://github.com/anthropics/anthropic-cli/compare/v1.12.0...v1.12.1)
