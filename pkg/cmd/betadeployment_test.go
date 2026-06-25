@@ -22,7 +22,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
-			"--schedule", "{expression: x, timezone: x, type: cron}",
+			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -44,8 +44,8 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
-			"--schedule.expression", "x",
-			"--schedule.timezone", "x",
+			"--schedule.expression", "0 9 * * 1-5",
+			"--schedule.timezone", "America/Los_Angeles",
 			"--schedule.type", "cron",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
@@ -71,8 +71,8 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"    type: file\n" +
 			"    mount_path: /uploads/receipt.pdf\n" +
 			"schedule:\n" +
-			"  expression: x\n" +
-			"  timezone: x\n" +
+			"  expression: 0 9 * * 1-5\n" +
+			"  timezone: America/Los_Angeles\n" +
 			"  type: cron\n" +
 			"vault_ids:\n" +
 			"  - string\n")
@@ -92,7 +92,7 @@ func TestBetaDeploymentsRetrieve(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "retrieve",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -104,7 +104,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "update",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--agent", "string",
 			"--description", "description",
 			"--environment-id", "environment_id",
@@ -112,7 +112,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--metadata", "{foo: string}",
 			"--name", "name",
 			"--resource", "[{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}]",
-			"--schedule", "{expression: x, timezone: x, type: cron}",
+			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "[string]",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -127,7 +127,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "update",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--agent", "string",
 			"--description", "description",
 			"--environment-id", "environment_id",
@@ -135,8 +135,8 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--metadata", "{foo: string}",
 			"--name", "name",
 			"--resource", "[{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}]",
-			"--schedule.expression", "x",
-			"--schedule.timezone", "x",
+			"--schedule.expression", "0 9 * * 1-5",
+			"--schedule.timezone", "America/Los_Angeles",
 			"--schedule.type", "cron",
 			"--vault-id", "[string]",
 			"--beta", "message-batches-2024-09-24",
@@ -162,8 +162,8 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"    type: file\n" +
 			"    mount_path: /uploads/receipt.pdf\n" +
 			"schedule:\n" +
-			"  expression: x\n" +
-			"  timezone: x\n" +
+			"  expression: 0 9 * * 1-5\n" +
+			"  timezone: America/Los_Angeles\n" +
 			"  type: cron\n" +
 			"vault_ids:\n" +
 			"  - string\n")
@@ -171,7 +171,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			t, pipeData,
 			"--api-key", "string",
 			"beta:deployments", "update",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -203,7 +203,7 @@ func TestBetaDeploymentsArchive(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "archive",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -215,7 +215,7 @@ func TestBetaDeploymentsPause(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "pause",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -227,7 +227,7 @@ func TestBetaDeploymentsRun(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "run",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -239,7 +239,7 @@ func TestBetaDeploymentsUnpause(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:deployments", "unpause",
-			"--deployment-id", "deployment_id",
+			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
