@@ -354,6 +354,11 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "user-profile-id",
+			Usage:      "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization. Requires the `user-profiles` beta header.",
+			HeaderPath: "anthropic-user-profile-id",
+		},
 	},
 	Action:          handleBetaMessagesCountTokens,
 	HideHelpCommand: true,
