@@ -126,11 +126,9 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		useProfile()
 	}
 
-	// Override base URL if the --base-url flag is provided. Goes last so it
-	// wins over any base URL the loaded config may have set.
-	if baseURL := cmd.String("base-url"); baseURL != "" {
-		opts = append(opts, option.WithBaseURL(baseURL))
-	}
+	// Appended last so an explicit --base-url wins over any base URL the
+	// loaded config may have set.
+	opts = append(opts, extraClientFlagsFromCmd(cmd).requestOptions()...)
 
 	return opts
 }

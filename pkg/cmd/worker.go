@@ -15,7 +15,6 @@ import (
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/lib/environments"
-	"github.com/anthropics/anthropic-sdk-go/option"
 	"github.com/anthropics/anthropic-sdk-go/tools/agenttoolset"
 	"github.com/urfave/cli/v3"
 )
@@ -71,7 +70,7 @@ var workerRunCommand = cli.Command{
 
 func handleWorkerPoll(ctx context.Context, cmd *cli.Command) error {
 	logger := newWorkerLogger(cmd.String("log-format"))
-	client := newWorkerClient(cmd.String("base-url"))
+	client := newWorkerClient(extraClientFlagsFromCmd(cmd))
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -129,7 +128,7 @@ func handleWorkerPoll(ctx context.Context, cmd *cli.Command) error {
 
 func handleWorkerRun(ctx context.Context, cmd *cli.Command) error {
 	logger := newWorkerLogger(cmd.String("log-format"))
-	client := newWorkerClient(cmd.String("base-url"))
+	client := newWorkerClient(extraClientFlagsFromCmd(cmd))
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -224,17 +223,11 @@ func newOnWorkRunner(cmd *cli.Command, logger *slog.Logger) func(context.Context
 	}
 }
 
-// newWorkerClient builds the SDK client the worker uses for all calls.
-// The environment helpers attach the environment key as a per-request auth
-// token override on every call they issue — the work poll/ack/stop calls and
-// the session-level heartbeat/force-stop and event stream/list/send — so the
-// client itself carries no credential and only needs an optional base URL.
-func newWorkerClient(baseURL string) anthropic.Client {
-	opts := []option.RequestOption{}
-	if baseURL != "" {
-		opts = append(opts, option.WithBaseURL(baseURL))
-	}
-	return anthropic.NewClient(opts...)
+// newWorkerClient builds the SDK client the worker uses for all calls. The
+// environment helpers attach the environment key per-request, so the client
+// itself carries no credential, only the client-level flag overrides.
+func newWorkerClient(extra extraClientFlags) anthropic.Client {
+	return anthropic.NewClient(extra.requestOptions()...)
 }
 
 func newWorkerLogger(format string) *slog.Logger {
