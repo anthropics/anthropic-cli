@@ -33,7 +33,7 @@ var completionsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "prompt",
-			Usage:    "The prompt that you want Claude to complete.\n\nFor proper response generation you will need to format your prompt using alternating `\\n\\nHuman:` and `\\n\\nAssistant:` conversational turns. For example:\n\n```\n\"\\n\\nHuman: {userQuestion}\\n\\nAssistant:\"\n```\n\nSee [prompt validation](https://docs.claude.com/en/api/prompt-validation) and our guide to [prompt design](https://docs.claude.com/en/docs/intro-to-prompting) for more details.",
+			Usage:    "The prompt that you want Claude to complete.\n\nFor proper response generation you will need to format your prompt using alternating `\\n\\nHuman:` and `\\n\\nAssistant:` conversational turns. For example:\n\n```\n\"\\n\\nHuman: {userQuestion}\\n\\nAssistant:\"\n```\n\nSee [prompt validation](https://platform.claude.com/docs/en/build-with-claude/working-with-messages) and our guide to [prompt design](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview) for more details.",
 			Required: true,
 			BodyPath: "prompt",
 		},
@@ -48,7 +48,7 @@ var completionsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[bool]{
 			Name:     "stream",
-			Usage:    "Whether to incrementally stream the response using server-sent events.\n\nSee [streaming](https://docs.claude.com/en/api/streaming) for details.",
+			Usage:    "Whether to incrementally stream the response using server-sent events.\n\nSee [streaming](https://platform.claude.com/docs/en/build-with-claude/streaming) for details.",
 			BodyPath: "stream",
 		},
 		&requestflag.Flag[float64]{

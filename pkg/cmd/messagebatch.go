@@ -42,7 +42,7 @@ var messagesBatchesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "request.params",
-			Usage:      "Messages API creation parameters for the individual request.\n\nSee the [Messages API reference](https://docs.claude.com/en/api/messages) for full documentation on available parameters.",
+			Usage:      "Messages API creation parameters for the individual request.\n\nSee the [Messages API reference](https://platform.claude.com/docs/en/api/messages) for full documentation on available parameters.",
 			InnerField: "params",
 		},
 	},
