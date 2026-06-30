@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.13.0 (2026-06-30)
+
+Full Changelog: [v1.12.2...v1.13.0](https://github.com/anthropics/anthropic-cli/compare/v1.12.2...v1.13.0)
+
+### Features
+
+* add global --workspace-id flag to set the anthropic-workspace-id header ([#6](https://github.com/anthropics/anthropic-cli/issues/6)) ([2479219](https://github.com/anthropics/anthropic-cli/commit/2479219db8ba2eeb9713f6e16f11911a5c9204d1))
+* **api:** add support for 20260318 web fetch and support tools ([7bb4c88](https://github.com/anthropics/anthropic-cli/commit/7bb4c8890dababac8de194af8547341784e19c1c))
+* **api:** add support for claude-sonnet-5 ([f558ef8](https://github.com/anthropics/anthropic-cli/commit/f558ef8f66d82b4271eb9e6a1c2aadc1b0256cca))
+* **api:** manual updates ([05f8243](https://github.com/anthropics/anthropic-cli/commit/05f82439094b1b28bcbca25d8ef31e4743a059a6))
+* **api:** manual updates ([f2230c3](https://github.com/anthropics/anthropic-cli/commit/f2230c38f272faec4964a7967a5928baddf5ef3d))
+
+
+### Chores
+
+* **api:** accept user profile ID's when counting tokens ([ac6bf4b](https://github.com/anthropics/anthropic-cli/commit/ac6bf4b7c0b702d1886394a9bc4c61ab441c7354))
+* **docs:** updates to descriptions and example values ([7708932](https://github.com/anthropics/anthropic-cli/commit/77089320c047ef10a0b5a81d00d4bbfd546bcc7a))
+
 ## 1.12.2 (2026-06-24)
 
 Full Changelog: [v1.12.1...v1.12.2](https://github.com/anthropics/anthropic-cli/compare/v1.12.1...v1.12.2)
