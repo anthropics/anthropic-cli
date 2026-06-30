@@ -56,7 +56,7 @@ ant messages create \
   --api-key my-anthropic-api-key \
   --max-tokens 1024 \
   --message '{content: [{text: x, type: text}], role: user}' \
-  --model claude-sonnet-4-5-20250929
+  --model claude-sonnet-5
 ```
 
 For details about specific commands, use the `--help` flag.
