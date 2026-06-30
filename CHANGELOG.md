@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.14.0 (2026-06-30)
+
+Full Changelog: [v1.13.0...v1.14.0](https://github.com/anthropics/anthropic-cli/compare/v1.13.0...v1.14.0)
+
+### Features
+
+* **api:** add support for Managed Agents event delta streaming, agent overrides, reverse pagination, vault credential injection scoping, and agent and deployment webhook events ([9dfd032](https://github.com/anthropics/anthropic-cli/commit/9dfd032a96cdcee357c5a49fa64c33d6fa9a8e70))
+
 ## 1.13.0 (2026-06-30)
 
 Full Changelog: [v1.12.2...v1.13.0](https://github.com/anthropics/anthropic-cli/compare/v1.12.2...v1.13.0)
