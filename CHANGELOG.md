@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.15.0 (2026-07-01)
+
+Full Changelog: [v1.14.1...v1.15.0](https://github.com/anthropics/anthropic-cli/compare/v1.14.1...v1.15.0)
+
+### Features
+
+* **api:** manual updates ([c54265c](https://github.com/anthropics/anthropic-cli/commit/c54265c572d7b20bc750a97c21031f4c5de1c68d))
+
+
+### Chores
+
+* **api:** remove some nonfunctional types from the SDKs ([c297011](https://github.com/anthropics/anthropic-cli/commit/c2970117b64c724fe1dc81cd0c66190ed0711936))
+
 ## 1.14.1 (2026-07-01)
 
 Full Changelog: [v1.14.0...v1.14.1](https://github.com/anthropics/anthropic-cli/compare/v1.14.0...v1.14.1)
