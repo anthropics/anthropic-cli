@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.14.1 (2026-07-01)
+
+Full Changelog: [v1.14.0...v1.14.1](https://github.com/anthropics/anthropic-cli/compare/v1.14.0...v1.14.1)
+
+### Chores
+
+* bump go sdk version ([c55fa73](https://github.com/anthropics/anthropic-cli/commit/c55fa7383667a03205b149c873a2e4ae9ca62d2d))
+* sync ([aa1cf31](https://github.com/anthropics/anthropic-cli/commit/aa1cf31e02dcc4c8fc2696bb9d3be917a2976fa3))
+
 ## 1.14.0 (2026-06-30)
 
 Full Changelog: [v1.13.0...v1.14.0](https://github.com/anthropics/anthropic-cli/compare/v1.13.0...v1.14.0)
