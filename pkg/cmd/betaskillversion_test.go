@@ -16,7 +16,7 @@ func TestBetaSkillsVersionsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills:versions", "create",
 			"--skill-id", "skill_id",
-			"--file", mocktest.TestFile(t, "[Example data]"),
+			"--file", mocktest.TestFile(t, "Example data"),
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
