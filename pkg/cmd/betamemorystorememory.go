@@ -161,16 +161,6 @@ var betaMemoryStoresMemoriesList = cli.Command{
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
-			Name:      "order",
-			Usage:     "Query parameter for order",
-			QueryPath: "order",
-		},
-		&requestflag.Flag[string]{
-			Name:      "order-by",
-			Usage:     "Query parameter for order_by",
-			QueryPath: "order_by",
-		},
-		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Opaque pagination cursor (a `page_...` value). Pass the `next_page` value from a previous response to fetch the next page; omit for the first page.",
 			QueryPath: "page",

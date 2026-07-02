@@ -120,8 +120,6 @@ func TestBetaMemoryStoresMemoriesList(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--depth", "0",
 			"--limit", "0",
-			"--order", "asc",
-			"--order-by", "order_by",
 			"--page", "page",
 			"--path-prefix", "path_prefix",
 			"--view", "basic",
