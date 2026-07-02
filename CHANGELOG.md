@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.16.0 (2026-07-02)
+
+Full Changelog: [v1.15.0...v1.16.0](https://github.com/anthropics/anthropic-cli/compare/v1.15.0...v1.16.0)
+
+### Features
+
+* **api:** add agent-memory-2026-07-22 beta header ([4789498](https://github.com/anthropics/anthropic-cli/commit/4789498f89818f216b03d99ce30da1a5b1af88f3))
+
 ## 1.15.0 (2026-07-01)
 
 Full Changelog: [v1.14.1...v1.15.0](https://github.com/anthropics/anthropic-cli/compare/v1.14.1...v1.15.0)
