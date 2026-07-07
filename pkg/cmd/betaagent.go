@@ -38,7 +38,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "mcp-server",
-			Usage:    "MCP servers this agent connects to. Maximum 20. Names must be unique within the array.",
+			Usage:    "MCP servers this agent connects to. Maximum 20. Names must be unique within the array. Every server must be referenced by an `mcp_toolset` in `tools`; unreferenced servers are rejected. See the [MCP connector guide](https://platform.claude.com/docs/en/managed-agents/mcp-connector).",
 			BodyPath: "mcp_servers",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -155,7 +155,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[any]{
 			Name:     "mcp-server",
-			Usage:    "MCP servers. Full replacement. Omit to preserve; send empty array or null to clear. Names must be unique. Maximum 20.",
+			Usage:    "MCP servers. Full replacement. Omit to preserve; send empty array or `null` to clear. Names must be unique. Maximum 20. Every server must be referenced by an `mcp_toolset` in the agent's resulting `tools`; unreferenced servers are rejected. See the [MCP connector guide](https://platform.claude.com/docs/en/managed-agents/mcp-connector).",
 			BodyPath: "mcp_servers",
 		},
 		&requestflag.Flag[map[string]any]{

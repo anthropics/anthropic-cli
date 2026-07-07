@@ -1,5 +1,75 @@
 # Changelog
 
+## 1.16.0 (2026-07-02)
+
+Full Changelog: [v1.15.0...v1.16.0](https://github.com/anthropics/anthropic-cli/compare/v1.15.0...v1.16.0)
+
+### Features
+
+* **api:** add agent-memory-2026-07-22 beta header ([4789498](https://github.com/anthropics/anthropic-cli/commit/4789498f89818f216b03d99ce30da1a5b1af88f3))
+
+## 1.15.0 (2026-07-01)
+
+Full Changelog: [v1.14.1...v1.15.0](https://github.com/anthropics/anthropic-cli/compare/v1.14.1...v1.15.0)
+
+### Features
+
+* **api:** manual updates ([c54265c](https://github.com/anthropics/anthropic-cli/commit/c54265c572d7b20bc750a97c21031f4c5de1c68d))
+
+
+### Chores
+
+* **api:** remove some nonfunctional types from the SDKs ([c297011](https://github.com/anthropics/anthropic-cli/commit/c2970117b64c724fe1dc81cd0c66190ed0711936))
+
+## 1.14.1 (2026-07-01)
+
+Full Changelog: [v1.14.0...v1.14.1](https://github.com/anthropics/anthropic-cli/compare/v1.14.0...v1.14.1)
+
+### Chores
+
+* bump go sdk version ([c55fa73](https://github.com/anthropics/anthropic-cli/commit/c55fa7383667a03205b149c873a2e4ae9ca62d2d))
+* sync ([aa1cf31](https://github.com/anthropics/anthropic-cli/commit/aa1cf31e02dcc4c8fc2696bb9d3be917a2976fa3))
+
+## 1.14.0 (2026-06-30)
+
+Full Changelog: [v1.13.0...v1.14.0](https://github.com/anthropics/anthropic-cli/compare/v1.13.0...v1.14.0)
+
+### Features
+
+* **api:** add support for Managed Agents event delta streaming, agent overrides, reverse pagination, vault credential injection scoping, and agent and deployment webhook events ([9dfd032](https://github.com/anthropics/anthropic-cli/commit/9dfd032a96cdcee357c5a49fa64c33d6fa9a8e70))
+
+## 1.13.0 (2026-06-30)
+
+Full Changelog: [v1.12.2...v1.13.0](https://github.com/anthropics/anthropic-cli/compare/v1.12.2...v1.13.0)
+
+### Features
+
+* add global --workspace-id flag to set the anthropic-workspace-id header ([#6](https://github.com/anthropics/anthropic-cli/issues/6)) ([2479219](https://github.com/anthropics/anthropic-cli/commit/2479219db8ba2eeb9713f6e16f11911a5c9204d1))
+* **api:** add support for 20260318 web fetch and support tools ([7bb4c88](https://github.com/anthropics/anthropic-cli/commit/7bb4c8890dababac8de194af8547341784e19c1c))
+* **api:** add support for claude-sonnet-5 ([f558ef8](https://github.com/anthropics/anthropic-cli/commit/f558ef8f66d82b4271eb9e6a1c2aadc1b0256cca))
+* **api:** manual updates ([05f8243](https://github.com/anthropics/anthropic-cli/commit/05f82439094b1b28bcbca25d8ef31e4743a059a6))
+* **api:** manual updates ([f2230c3](https://github.com/anthropics/anthropic-cli/commit/f2230c38f272faec4964a7967a5928baddf5ef3d))
+
+
+### Chores
+
+* **api:** accept user profile ID's when counting tokens ([ac6bf4b](https://github.com/anthropics/anthropic-cli/commit/ac6bf4b7c0b702d1886394a9bc4c61ab441c7354))
+* **docs:** updates to descriptions and example values ([7708932](https://github.com/anthropics/anthropic-cli/commit/77089320c047ef10a0b5a81d00d4bbfd546bcc7a))
+
+## 1.12.2 (2026-06-24)
+
+Full Changelog: [v1.12.1...v1.12.2](https://github.com/anthropics/anthropic-cli/compare/v1.12.1...v1.12.2)
+
+### Chores
+
+* **api:** add support for sending User Profile ID in request headers ([2a9ec20](https://github.com/anthropics/anthropic-cli/commit/2a9ec20801996eb19686496cebfbdfb3a9420d37))
+* **internal:** codegen related update ([70616f5](https://github.com/anthropics/anthropic-cli/commit/70616f54b54e6a48daab449acb3a9e99c42508da))
+
+
+### Documentation
+
+* **model-release:** model-ID-launch checklist ([62562f3](https://github.com/anthropics/anthropic-cli/commit/62562f3cf05adb984e844d831d2db8d461157775))
+
 ## 1.12.1 (2026-06-10)
 
 Full Changelog: [v1.12.0...v1.12.1](https://github.com/anthropics/anthropic-cli/compare/v1.12.0...v1.12.1)

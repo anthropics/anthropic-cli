@@ -152,32 +152,22 @@ var betaMemoryStoresMemoriesList = cli.Command{
 		},
 		&requestflag.Flag[int64]{
 			Name:      "depth",
-			Usage:     "Query parameter for depth",
+			Usage:     "`0` (or omitted) returns all descendants below `path_prefix` (recursive). `1` returns immediate children only; deeper entries roll up as `memory_prefix` items. `depth=1` behaves like `ls`; omitting `depth` behaves like `find`.",
 			QueryPath: "depth",
 		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Query parameter for limit",
+			Usage:     "Maximum number of items to return per page. Must be between 1 and 100. Defaults to 20 when omitted. Capped at 20 when `view=full`. Both `memory` and `memory_prefix` items count toward the limit.",
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
-			Name:      "order",
-			Usage:     "Query parameter for order",
-			QueryPath: "order",
-		},
-		&requestflag.Flag[string]{
-			Name:      "order-by",
-			Usage:     "Query parameter for order_by",
-			QueryPath: "order_by",
-		},
-		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Query parameter for page",
+			Usage:     "Opaque pagination cursor (a `page_...` value). Pass the `next_page` value from a previous response to fetch the next page; omit for the first page.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[string]{
 			Name:      "path-prefix",
-			Usage:     "Optional path prefix filter (raw string-prefix match; include a trailing slash for directory-scoped lists). This value appears in request URLs. Do not include secrets or personally identifiable information.",
+			Usage:     "Optional path prefix filter. Must end with `/` (segment-aligned), e.g., `/notes/`. This value appears in request URLs. Do not include secrets or personally identifiable information.",
 			QueryPath: "path_prefix",
 		},
 		&requestflag.Flag[string]{

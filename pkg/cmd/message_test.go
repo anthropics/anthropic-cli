@@ -34,6 +34,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -68,6 +69,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--top-k", "5",
 			"--top-p", "0.7",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -156,6 +158,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--api-key", "string",
 			"messages", "create",
 			"--max-items", "10",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 }
@@ -174,6 +177,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -197,6 +201,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 
@@ -272,6 +277,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			t, pipeData,
 			"--api-key", "string",
 			"messages", "count-tokens",
+			"--user-profile-id", "anthropic-user-profile-id",
 		)
 	})
 }

@@ -68,6 +68,7 @@ func TestBetaSessionsEventsStream(t *testing.T) {
 			"beta:sessions:events", "stream",
 			"--max-items", "10",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
+			"--event-delta", "agent.message",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})

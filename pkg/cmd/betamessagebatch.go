@@ -30,6 +30,11 @@ var betaMessagesBatchesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "user-profile-id",
+			Usage:      "The user profile ID to attribute the requests in this batch to. Use when acting on behalf of a party other than your organization. Requires the `user-profiles` beta header. Applies to every request in the batch; an individual request whose `user_profile_id` body field conflicts with this header is errored.",
+			HeaderPath: "anthropic-user-profile-id",
+		},
 	},
 	Action:          handleBetaMessagesBatchesCreate,
 	HideHelpCommand: true,
@@ -42,7 +47,7 @@ var betaMessagesBatchesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "request.params",
-			Usage:      "Messages API creation parameters for the individual request.\n\nSee the [Messages API reference](https://docs.claude.com/en/api/messages) for full documentation on available parameters.",
+			Usage:      "Messages API creation parameters for the individual request.\n\nSee the [Messages API reference](https://platform.claude.com/docs/en/api/messages) for full documentation on available parameters.",
 			InnerField: "params",
 		},
 	},

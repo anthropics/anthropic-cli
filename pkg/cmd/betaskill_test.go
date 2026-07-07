@@ -16,8 +16,8 @@ func TestBetaSkillsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:skills", "create",
+			"--file", mocktest.TestFile(t, "Example data"),
 			"--display-title", "display_title",
-			"--file", mocktest.TestFile(t, "[Example data]"),
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -26,9 +26,9 @@ func TestBetaSkillsCreate(t *testing.T) {
 		testFile := mocktest.TestFile(t, "Example data")
 		// Test piping YAML data over stdin
 		pipeDataStr := "" +
-			"display_title: display_title\n" +
 			"files:\n" +
-			"  - Example data\n"
+			"  - Example data\n" +
+			"display_title: display_title\n"
 		pipeDataStr = strings.ReplaceAll(pipeDataStr, "Example data", testFile)
 		pipeData := []byte(pipeDataStr)
 		mocktest.TestRunMockTestWithPipeAndFlags(
