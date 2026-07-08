@@ -17,7 +17,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"beta:messages", "create",
 			"--max-items", "10",
 			"--max-tokens", "1024",
-			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
+			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-4-6",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
@@ -34,7 +34,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--speed", "standard",
 			"--stop-sequence", "string",
 			"--stream=false",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--temperature", "1",
 			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
@@ -57,7 +57,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"beta:messages", "create",
 			"--max-items", "10",
 			"--max-tokens", "1024",
-			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
 			"--model", "claude-opus-4-6",
 			"--cache-control.type", "ephemeral",
@@ -87,7 +87,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--speed", "standard",
 			"--stop-sequence", "string",
 			"--stream=false",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--temperature", "1",
 			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
@@ -111,7 +111,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"          type: ephemeral\n" +
 			"          ttl: 5m\n" +
 			"        citations:\n" +
-			"          - cited_text: cited_text\n" +
+			"          - cited_text: The grass is green. The sky is blue.\n" +
 			"            document_index: 0\n" +
 			"            document_title: x\n" +
 			"            end_char_index: 0\n" +
@@ -202,7 +202,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"      type: ephemeral\n" +
 			"      ttl: 5m\n" +
 			"    citations:\n" +
-			"      - cited_text: cited_text\n" +
+			"      - cited_text: The grass is green. The sky is blue.\n" +
 			"        document_index: 0\n" +
 			"        document_title: x\n" +
 			"        end_char_index: 0\n" +
@@ -255,7 +255,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:messages", "count-tokens",
-			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
+			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-4-6",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
@@ -263,7 +263,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}",
 			"--output-format", "{schema: {foo: bar}, type: json_schema}",
 			"--speed", "standard",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
@@ -281,7 +281,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:messages", "count-tokens",
-			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
 			"--model", "claude-opus-4-6",
 			"--cache-control.type", "ephemeral",
@@ -298,7 +298,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--output-format.schema", "{foo: bar}",
 			"--output-format.type", "json_schema",
 			"--speed", "standard",
-			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: cited_text, document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
+			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--thinking", "{type: adaptive, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
@@ -318,7 +318,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"          type: ephemeral\n" +
 			"          ttl: 5m\n" +
 			"        citations:\n" +
-			"          - cited_text: cited_text\n" +
+			"          - cited_text: The grass is green. The sky is blue.\n" +
 			"            document_index: 0\n" +
 			"            document_title: x\n" +
 			"            end_char_index: 0\n" +
@@ -375,7 +375,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"      type: ephemeral\n" +
 			"      ttl: 5m\n" +
 			"    citations:\n" +
-			"      - cited_text: cited_text\n" +
+			"      - cited_text: The grass is green. The sky is blue.\n" +
 			"        document_index: 0\n" +
 			"        document_title: x\n" +
 			"        end_char_index: 0\n" +
