@@ -15,7 +15,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:agents", "create",
-			"--model", "{id: claude-opus-4-6, speed: standard}",
+			"--model", "{id: claude-opus-4-8, speed: standard}",
 			"--name", "My First Agent",
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server", "{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}",
@@ -37,7 +37,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:agents", "create",
-			"--model", "{id: claude-opus-4-6, speed: standard}",
+			"--model", "{id: claude-opus-4-8, speed: standard}",
 			"--name", "My First Agent",
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server.name", "example-mcp",
@@ -57,7 +57,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"model:\n" +
-			"  id: claude-opus-4-6\n" +
+			"  id: claude-opus-4-8\n" +
 			"  speed: standard\n" +
 			"name: My First Agent\n" +
 			"description: A general-purpose starter agent.\n" +
@@ -124,7 +124,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--description", "description",
 			"--mcp-server", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
 			"--metadata", "{foo: string}",
-			"--model", "{id: claude-opus-4-6, speed: standard}",
+			"--model", "{id: claude-opus-4-8, speed: standard}",
 			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
@@ -150,7 +150,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--mcp-server.type", "url",
 			"--mcp-server.url", "https://example-server.modelcontextprotocol.io/sse",
 			"--metadata", "{foo: string}",
-			"--model", "{id: claude-opus-4-6, speed: standard}",
+			"--model", "{id: claude-opus-4-8, speed: standard}",
 			"--multiagent.agents", "[agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}]",
 			"--multiagent.type", "coordinator",
 			"--name", "name",
@@ -173,7 +173,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"metadata:\n" +
 			"  foo: string\n" +
 			"model:\n" +
-			"  id: claude-opus-4-6\n" +
+			"  id: claude-opus-4-8\n" +
 			"  speed: standard\n" +
 			"multiagent:\n" +
 			"  agents:\n" +
