@@ -399,6 +399,18 @@ func init() {
 			},
 			&workerCommand,
 			{
+				Name:     "beta:dreams",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaDreamsCreate,
+					&betaDreamsRetrieve,
+					&betaDreamsList,
+					&betaDreamsArchive,
+					&betaDreamsCancel,
+				},
+			},
+			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",
 				UsageText:       "ant @manpages [-o ant.1] [--gzip]",

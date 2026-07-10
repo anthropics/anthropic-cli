@@ -94,7 +94,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
+			Usage:    "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[[]string]{
@@ -216,7 +216,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:                  "fallback.speed",
-			Usage:                 `Allowed values: "standard", "fast".`,
+			Usage:                 "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
 			InnerField:            "speed",
 			OuterIsArrayOfObjects: true,
 		},
@@ -326,7 +326,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
+			Usage:    "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[any]{
