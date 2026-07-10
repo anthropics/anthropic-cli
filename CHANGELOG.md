@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.17.0 (2026-07-10)
+
+Full Changelog: [v1.16.0...v1.17.0](https://github.com/anthropics/anthropic-cli/compare/v1.16.0...v1.17.0)
+
+### Features
+
+* **api:** add support for dreaming ([9ed8015](https://github.com/anthropics/anthropic-cli/commit/9ed8015b7afee21bd0a6e780fa89957978564e77))
+
+
+### Chores
+
+* **docs:** update model example ([4a5da72](https://github.com/anthropics/anthropic-cli/commit/4a5da72740a9f0aba52292c416547b78995b0806))
+* **docs:** updates to descriptions and examples ([f81cd30](https://github.com/anthropics/anthropic-cli/commit/f81cd30432a93fdb628d29017080e5adf9b9f54a))
+
 ## 1.16.0 (2026-07-02)
 
 Full Changelog: [v1.15.0...v1.16.0](https://github.com/anthropics/anthropic-cli/compare/v1.15.0...v1.16.0)
