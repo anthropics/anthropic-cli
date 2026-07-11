@@ -151,8 +151,12 @@ func (tv *TableView) loadMoreData(raw bool) tea.Cmd {
 		}
 
 		if !tv.iterator.Next() {
+			err := tv.iterator.Err()
+			// Detach the exhausted iterator so cursor moves at the last row
+			// stop re-polling it on every update.
+			tv.iterator = nil
 			tv.isLoading = false
-			return tv.iterator.Err()
+			return err
 		}
 
 		obj := tv.iterator.Current()
@@ -314,14 +318,23 @@ type hasRawJSON interface {
 	RawJSON() string
 }
 
+// streamPreloadCount is how many items to fetch before the explorer opens:
+// one terminal-height's worth fills the first screen without paging the
+// iterator (and thus the API) far past it. term.GetSize returns
+// (width, height); only the height matters here. Falls back to 20 when
+// stdout isn't a terminal.
+func streamPreloadCount() int {
+	if _, height, err := term.GetSize(os.Stdout.Fd()); err == nil && height > 0 {
+		return height
+	}
+	return 20
+}
+
 // ExploreJSONStream explores JSON data loaded incrementally via an iterator
 func ExploreJSONStream[T any](title string, it Iterator[T]) error {
 	anyIt := genericToAnyIterator(it)
 
-	preloadCount := 20
-	if termHeight, _, err := term.GetSize(os.Stdout.Fd()); err == nil {
-		preloadCount = termHeight
-	}
+	preloadCount := streamPreloadCount()
 
 	items := make([]any, 0, preloadCount)
 	for i := 0; i < preloadCount && anyIt.Next(); i++ {
@@ -421,7 +434,13 @@ func (v *JSONViewer) getSelectedContent() string {
 		return v.current().GetData().Raw
 	}
 
-	selected := tableView.rowData[tableView.table.Cursor()]
+	cursor := tableView.table.Cursor()
+	if cursor < 0 || cursor >= len(tableView.rowData) {
+		// Nothing selectable (an empty object/array view) — print the
+		// container itself rather than indexing into no rows.
+		return tableView.data.Raw
+	}
+	selected := tableView.rowData[cursor]
 	if selected.Type == gjson.String {
 		return selected.String()
 	}
