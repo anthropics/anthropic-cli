@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.18.0 (2026-07-16)
+
+Full Changelog: [v1.17.0...v1.18.0](https://github.com/anthropics/anthropic-cli/compare/v1.17.0...v1.18.0)
+
+### Features
+
+* **api:** add support for MCP Tunnels ([25b0012](https://github.com/anthropics/anthropic-cli/commit/25b0012f97a040e2f9f7f4c05c87ac2ade31988a))
+* **api:** manual updates ([f40ef8a](https://github.com/anthropics/anthropic-cli/commit/f40ef8a3abdf4a651fa0447ec4ef73f9cf15dbc1))
+
 ## 1.17.0 (2026-07-10)
 
 Full Changelog: [v1.16.0...v1.17.0](https://github.com/anthropics/anthropic-cli/compare/v1.16.0...v1.17.0)
