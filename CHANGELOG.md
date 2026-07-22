@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.19.0 (2026-07-22)
+
+Full Changelog: [v1.18.0...v1.19.0](https://github.com/anthropics/anthropic-cli/compare/v1.18.0...v1.19.0)
+
+### Features
+
+* **api:** add support for Managed Agents model effort, initial session events, and threads delta streaming ([1d61ed6](https://github.com/anthropics/anthropic-cli/commit/1d61ed66d31c4cff85ec9fa64bdd0a9f8755b8ac))
+
+
+### Chores
+
+* **internal:** codegen related update ([fd751e4](https://github.com/anthropics/anthropic-cli/commit/fd751e48b1f39ba9dacee90fc211b51a8b8a00e0))
+
 ## 1.18.0 (2026-07-16)
 
 Full Changelog: [v1.17.0...v1.18.0](https://github.com/anthropics/anthropic-cli/compare/v1.17.0...v1.18.0)
