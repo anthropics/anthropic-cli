@@ -31,6 +31,11 @@ var betaSessionsCreate = cli.Command{
 			Required: true,
 			BodyPath: "environment_id",
 		},
+		&requestflag.Flag[[]map[string]any]{
+			Name:     "initial-event",
+			Usage:    "Initial events to send to the `session` at creation, processed in order. Supports `user.message` and `user.define_outcome` events. Maximum 50 events.",
+			BodyPath: "initial_events",
+		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Arbitrary key-value metadata attached to the session. Maximum 16 pairs, keys up to 64 chars, values up to 512 chars.",

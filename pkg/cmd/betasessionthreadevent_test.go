@@ -34,6 +34,7 @@ func TestBetaSessionsThreadsEventsStream(t *testing.T) {
 			"--max-items", "10",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--thread-id", "sthr_011CZkZVWa6oIjw0rgXZpnBt",
+			"--event-delta", "agent.message",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})

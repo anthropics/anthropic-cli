@@ -142,12 +142,6 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			PathParam:   "agent_id",
 			DataAliases: []string{"id"},
 		},
-		&requestflag.Flag[int64]{
-			Name:     "version",
-			Usage:    "The agent's current version, used to prevent concurrent overwrites. Obtain this value from a create or retrieve response. The request fails if this does not match the server's current version.",
-			Required: true,
-			BodyPath: "version",
-		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Description. Omit to preserve; send empty string or null to clear.",
@@ -192,6 +186,11 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "tool",
 			Usage:    "Tool configurations available to the agent. Full replacement. Omit to preserve; send empty array or null to clear. Maximum of 128 tools across all toolsets allowed.",
 			BodyPath: "tools",
+		},
+		&requestflag.Flag[int64]{
+			Name:     "version",
+			Usage:    "The agent's current version, used to prevent concurrent overwrites. Obtain this value from a create or retrieve response. Must be at least 1 if specified. When supplied, the request fails if it does not match the server's current version; omit to apply the update unconditionally.",
+			BodyPath: "version",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
