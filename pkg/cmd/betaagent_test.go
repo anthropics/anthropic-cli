@@ -15,7 +15,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:agents", "create",
-			"--model", "{id: claude-opus-4-8, speed: standard}",
+			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
 			"--name", "My First Agent",
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server", "{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}",
@@ -37,7 +37,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:agents", "create",
-			"--model", "{id: claude-opus-4-8, speed: standard}",
+			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
 			"--name", "My First Agent",
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server.name", "example-mcp",
@@ -58,6 +58,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"model:\n" +
 			"  id: claude-opus-4-8\n" +
+			"  effort: low\n" +
 			"  speed: standard\n" +
 			"name: My First Agent\n" +
 			"description: A general-purpose starter agent.\n" +
@@ -120,16 +121,16 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--api-key", "string",
 			"beta:agents", "update",
 			"--agent-id", "agent_011CZkYpogX7uDKUyvBTophP",
-			"--version", "1",
-			"--description", "description",
+			"--description", "updated",
 			"--mcp-server", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
 			"--metadata", "{foo: string}",
-			"--model", "{id: claude-opus-4-8, speed: standard}",
+			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
 			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -144,19 +145,19 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--api-key", "string",
 			"beta:agents", "update",
 			"--agent-id", "agent_011CZkYpogX7uDKUyvBTophP",
-			"--version", "1",
-			"--description", "description",
+			"--description", "updated",
 			"--mcp-server.name", "example-mcp",
 			"--mcp-server.type", "url",
 			"--mcp-server.url", "https://example-server.modelcontextprotocol.io/sse",
 			"--metadata", "{foo: string}",
-			"--model", "{id: claude-opus-4-8, speed: standard}",
+			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
 			"--multiagent.agents", "[agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}]",
 			"--multiagent.type", "coordinator",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -164,8 +165,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"version: 1\n" +
-			"description: description\n" +
+			"description: updated\n" +
 			"mcp_servers:\n" +
 			"  - name: example-mcp\n" +
 			"    type: url\n" +
@@ -174,6 +174,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"  foo: string\n" +
 			"model:\n" +
 			"  id: claude-opus-4-8\n" +
+			"  effort: low\n" +
 			"  speed: standard\n" +
 			"multiagent:\n" +
 			"  agents:\n" +
@@ -198,7 +199,8 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"    default_config:\n" +
 			"      enabled: true\n" +
 			"      permission_policy:\n" +
-			"        type: always_allow\n")
+			"        type: always_allow\n" +
+			"version: 1\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
