@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.20.0 (2026-07-23)
+
+Full Changelog: [v1.19.0...v1.20.0](https://github.com/anthropics/anthropic-cli/compare/v1.19.0...v1.20.0)
+
+### Features
+
+* **api:** add new stop reason 'model_context_window_exceeded' ([cb2f59e](https://github.com/anthropics/anthropic-cli/commit/cb2f59e48d4b205496534bd7fa1d8f29487fb7a4))
+* **api:** manual updates ([8f87e6a](https://github.com/anthropics/anthropic-cli/commit/8f87e6aac8b898b8a37d50cb13d0a568158a98a8))
+
 ## 1.19.0 (2026-07-22)
 
 Full Changelog: [v1.18.0...v1.19.0](https://github.com/anthropics/anthropic-cli/compare/v1.18.0...v1.19.0)
