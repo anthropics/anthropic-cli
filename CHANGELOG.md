@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.20.1 (2026-07-23)
+
+Full Changelog: [v1.20.0...v1.20.1](https://github.com/anthropics/anthropic-cli/compare/v1.20.0...v1.20.1)
+
+### Chores
+
+* **ci:** cap macOS notarize timeout at 40m; add notary-status debug workflow ([#42](https://github.com/anthropics/anthropic-cli/issues/42)) ([3aa7a80](https://github.com/anthropics/anthropic-cli/commit/3aa7a80a5adf820bdb826ff28beed836e3d08f3a))
+
 ## 1.20.0 (2026-07-23)
 
 Full Changelog: [v1.19.0...v1.20.0](https://github.com/anthropics/anthropic-cli/compare/v1.19.0...v1.20.0)
