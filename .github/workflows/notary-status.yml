@@ -1,0 +1,42 @@
+---
+name: Notary Status
+
+on:
+  workflow_dispatch:
+    inputs:
+      submission_id:
+        description: Notary submission ID to inspect (leave empty to list recent submissions)
+        required: false
+        type: string
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    # MACOS_* secrets are scoped to this environment.
+    environment: production-release
+    steps:
+    - name: Query notary service
+      env:
+        SUBMISSION_ID: ${{ inputs.submission_id }}
+        KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+        ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+        NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
+      run: |
+        set -euo pipefail
+        KEY_FILE="$RUNNER_TEMP/notary_key.p8"
+        trap 'rm -f "$KEY_FILE"' EXIT
+        umask 077
+        printf '%s' "$NOTARY_KEY" > "$KEY_FILE"
+        chmod 600 "$KEY_FILE"
+        if [ -n "$SUBMISSION_ID" ]; then
+          xcrun notarytool info "$SUBMISSION_ID" \
+            --key "$KEY_FILE" --key-id "$KEY_ID" --issuer "$ISSUER_ID"
+          xcrun notarytool log "$SUBMISSION_ID" \
+            --key "$KEY_FILE" --key-id "$KEY_ID" --issuer "$ISSUER_ID" || true
+        else
+          xcrun notarytool history \
+            --key "$KEY_FILE" --key-id "$KEY_ID" --issuer "$ISSUER_ID"
+        fi
