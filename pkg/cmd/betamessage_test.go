@@ -24,7 +24,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
 			"--diagnostics", "{previous_message_id: previous_message_id}",
 			"--fallback-credit-token", "x",
-			"--fallback", "[{model: claude-sonnet-5, max_tokens: 0, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}, speed: standard, thinking: {budget_tokens: 1024, type: enabled, display: summarized}}]",
+			"--fallbacks", "default",
 			"--inference-geo", "inference_geo",
 			"--mcp-server", "{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}",
 			"--metadata", "{user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}",
@@ -66,11 +66,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--context-management.edits", "[{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]",
 			"--diagnostics.previous-message-id", "previous_message_id",
 			"--fallback-credit-token", "x",
-			"--fallback.model", "claude-sonnet-5",
-			"--fallback.max-tokens", "0",
-			"--fallback.output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}",
-			"--fallback.speed", "standard",
-			"--fallback.thinking", "{budget_tokens: 1024, type: enabled, display: summarized}",
+			"--fallbacks", "default",
 			"--inference-geo", "inference_geo",
 			"--mcp-server.name", "name",
 			"--mcp-server.type", "url",
@@ -146,24 +142,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"diagnostics:\n" +
 			"  previous_message_id: previous_message_id\n" +
 			"fallback_credit_token: x\n" +
-			"fallbacks:\n" +
-			"  - model: claude-sonnet-5\n" +
-			"    max_tokens: 0\n" +
-			"    output_config:\n" +
-			"      effort: low\n" +
-			"      format:\n" +
-			"        schema:\n" +
-			"          foo: bar\n" +
-			"        type: json_schema\n" +
-			"      task_budget:\n" +
-			"        total: 1024\n" +
-			"        type: tokens\n" +
-			"        remaining: 0\n" +
-			"    speed: standard\n" +
-			"    thinking:\n" +
-			"      budget_tokens: 1024\n" +
-			"      type: enabled\n" +
-			"      display: summarized\n" +
+			"fallbacks: default\n" +
 			"inference_geo: inference_geo\n" +
 			"mcp_servers:\n" +
 			"  - name: name\n" +
