@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.21.0 (2026-07-24)
+
+Full Changelog: [v1.20.0...v1.21.0](https://github.com/anthropics/anthropic-cli/compare/v1.20.0...v1.21.0)
+
+### Features
+
+* **api:** add claude-opus-5 model ([3e67b3d](https://github.com/anthropics/anthropic-cli/commit/3e67b3d753f87f813fbf6cca58277c723bd15e74))
+* **api:** add tool addition/removal blocks and tool_change events ([3e67b3d](https://github.com/anthropics/anthropic-cli/commit/3e67b3d753f87f813fbf6cca58277c723bd15e74))
+* **api:** expand client-side fallback credit token types and add server-side fallbacks default option ([3e67b3d](https://github.com/anthropics/anthropic-cli/commit/3e67b3d753f87f813fbf6cca58277c723bd15e74))
+
+
+### Bug Fixes
+
+* **client:** honor ANTHROPIC_BASE_URL in API requests ([#43](https://github.com/anthropics/anthropic-cli/issues/43)) ([0dcaa4f](https://github.com/anthropics/anthropic-cli/commit/0dcaa4f2badc95cc11f29a8773f13ceb188fbbeb))
+
+
+### Chores
+
+* bump dependency ([8358acd](https://github.com/anthropics/anthropic-cli/commit/8358acd45ce1313ff15bf4f15cbd14d5b5fe86fc))
+* **ci:** cap macOS notarize timeout at 40m; add notary-status debug workflow ([#42](https://github.com/anthropics/anthropic-cli/issues/42)) ([3aa7a80](https://github.com/anthropics/anthropic-cli/commit/3aa7a80a5adf820bdb826ff28beed836e3d08f3a))
+
 ## 1.20.0 (2026-07-23)
 
 Full Changelog: [v1.19.0...v1.20.0](https://github.com/anthropics/anthropic-cli/compare/v1.19.0...v1.20.0)
