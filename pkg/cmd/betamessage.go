@@ -55,14 +55,14 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Request-level diagnostics. Currently carries the previous response\nid for prompt-cache divergence reporting.",
 			BodyPath: "diagnostics",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[any]{
 			Name:     "fallback-credit-token",
 			Usage:    "The `fallback_credit_token` from a prior refusal's `stop_details`.\n\nWhen a preceding request was refused and returned a `fallback_credit_token`,\npass that code here on the retry to have the retry's cache-creation tokens\nfor the prefix that was warm on the refused model billed at the cache-read\nrate. Must be redeemed by the same organization and workspace, with the same\nrequest body (optionally extended by one appended `assistant` message whose\ncontent is the partial text — with any trailing whitespace stripped from\nthe final text block — and paired server-tool blocks streamed before the\nrefusal; the appended-assistant form is not available for requests with\n`output_format` set or forced `tool_choice`), on an eligible fallback\nmodel, on the same platform,\nand within 5 minutes of the refusal; a mismatch is a 400. A token minted\nmid-server-tool-loop whose partial content was continuable may only be\nredeemed with the appended-assistant form — if an exact-body retry is\nrejected with a 400 saying the token must be redeemed by continuing the\npartial response, retry with the appended-assistant form instead.\n\nWhen the appended-assistant form is used on a model that otherwise disallows\nassistant-turn prefill, this token also authorizes that one prefill.",
 			BodyPath: "fallback_credit_token",
 		},
 		&requestflag.Flag[any]{
-			Name:     "fallback",
-			Usage:    "Opt-in server-side retry on one or more substitute models when the requested model declines for policy reasons. Tried in order: if the first entry also declines, the second is tried, and so on.",
+			Name:     "fallbacks",
+			Usage:    `Opt-in server-side retry on one or more substitute models when the requested model declines for policy reasons. Tried in order: if the first entry also declines, the second is tried, and so on. The string "default" requests the requested model's server-defined default fallback configuration.`,
 			BodyPath: "fallbacks",
 		},
 		&requestflag.Flag[*string]{
@@ -94,7 +94,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
+			Usage:    "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[[]string]{
@@ -197,35 +197,6 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "previous_message_id",
 		},
 	},
-	"fallback": {
-		&requestflag.InnerFlag[string]{
-			Name:                  "fallback.model",
-			Usage:                 "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
-			InnerField:            "model",
-			OuterIsArrayOfObjects: true,
-		},
-		&requestflag.InnerFlag[*int64]{
-			Name:                  "fallback.max-tokens",
-			InnerField:            "max_tokens",
-			OuterIsArrayOfObjects: true,
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:                  "fallback.output-config",
-			InnerField:            "output_config",
-			OuterIsArrayOfObjects: true,
-		},
-		&requestflag.InnerFlag[*string]{
-			Name:                  "fallback.speed",
-			Usage:                 `Allowed values: "standard", "fast".`,
-			InnerField:            "speed",
-			OuterIsArrayOfObjects: true,
-		},
-		&requestflag.InnerFlag[map[string]any]{
-			Name:                  "fallback.thinking",
-			InnerField:            "thinking",
-			OuterIsArrayOfObjects: true,
-		},
-	},
 	"mcp-server": {
 		&requestflag.InnerFlag[string]{
 			Name:       "mcp-server.name",
@@ -326,7 +297,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.",
+			Usage:    "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[any]{

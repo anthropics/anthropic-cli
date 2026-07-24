@@ -17,6 +17,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"beta:sessions", "create",
 			"--agent", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
 			"--title", "Order #1234 inquiry",
@@ -30,6 +31,11 @@ func TestBetaSessionsCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"agent: agent_011CZkYpogX7uDKUyvBTophP\n" +
 			"environment_id: env_011CZkZ9X2dpNyB7HsEFoRfW\n" +
+			"initial_events:\n" +
+			"  - content:\n" +
+			"      - text: 'Where is my order #1234?'\n" +
+			"        type: text\n" +
+			"    type: user.message\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
 			"resources:\n" +

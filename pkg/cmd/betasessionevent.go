@@ -26,22 +26,22 @@ var betaSessionsEventsList = cli.Command{
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-gt",
-			Usage:     "Return events created after this time (exclusive).",
+			Usage:     "Return events created after this time (exclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[gt]",
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-gte",
-			Usage:     "Return events created at or after this time (inclusive).",
+			Usage:     "Return events created at or after this time (inclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[gte]",
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-lt",
-			Usage:     "Return events created before this time (exclusive).",
+			Usage:     "Return events created before this time (exclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[lt]",
 		},
 		&requestflag.Flag[any]{
 			Name:      "created-at-lte",
-			Usage:     "Return events created at or before this time (inclusive).",
+			Usage:     "Return events created at or before this time (inclusive). Compared against the event's `processed_at` value.",
 			QueryPath: "created_at[lte]",
 		},
 		&requestflag.Flag[int64]{
@@ -51,7 +51,7 @@ var betaSessionsEventsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by created_at. Defaults to asc (chronological).",
+			Usage:     "Sort direction for results, ordered by the event's `processed_at`. Defaults to asc (chronological).",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{

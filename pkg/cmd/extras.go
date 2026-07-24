@@ -37,6 +37,16 @@ func (o extraClientFlags) requestOptions() []option.RequestOption {
 }
 
 func init() {
+	// cmd.go declares --base-url without an env source and the SDK's own
+	// env handling is disabled (WithoutEnvironmentDefaults), so attach
+	// ANTHROPIC_BASE_URL here. TestBaseURLEnvRealTree fails if a regen
+	// reshapes the flag and this patch stops applying.
+	for _, f := range Command.Flags {
+		if sf, ok := f.(*cli.StringFlag); ok && sf.Name == "base-url" {
+			sf.Sources = cli.EnvVars("ANTHROPIC_BASE_URL")
+			break
+		}
+	}
 	Command.Flags = append(Command.Flags,
 		&cli.StringFlag{
 			Name:    "profile",

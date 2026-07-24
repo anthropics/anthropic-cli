@@ -1,5 +1,71 @@
 # Changelog
 
+## 1.21.0 (2026-07-24)
+
+Full Changelog: [v1.20.0...v1.21.0](https://github.com/anthropics/anthropic-cli/compare/v1.20.0...v1.21.0)
+
+### Features
+
+* **api:** add claude-opus-5 model ([3e67b3d](https://github.com/anthropics/anthropic-cli/commit/3e67b3d753f87f813fbf6cca58277c723bd15e74))
+* **api:** add tool addition/removal blocks and tool_change events ([3e67b3d](https://github.com/anthropics/anthropic-cli/commit/3e67b3d753f87f813fbf6cca58277c723bd15e74))
+* **api:** expand client-side fallback credit token types and add server-side fallbacks default option ([3e67b3d](https://github.com/anthropics/anthropic-cli/commit/3e67b3d753f87f813fbf6cca58277c723bd15e74))
+
+
+### Bug Fixes
+
+* **client:** honor ANTHROPIC_BASE_URL in API requests ([#43](https://github.com/anthropics/anthropic-cli/issues/43)) ([0dcaa4f](https://github.com/anthropics/anthropic-cli/commit/0dcaa4f2badc95cc11f29a8773f13ceb188fbbeb))
+
+
+### Chores
+
+* bump dependency ([8358acd](https://github.com/anthropics/anthropic-cli/commit/8358acd45ce1313ff15bf4f15cbd14d5b5fe86fc))
+* **ci:** cap macOS notarize timeout at 40m; add notary-status debug workflow ([#42](https://github.com/anthropics/anthropic-cli/issues/42)) ([3aa7a80](https://github.com/anthropics/anthropic-cli/commit/3aa7a80a5adf820bdb826ff28beed836e3d08f3a))
+
+## 1.20.0 (2026-07-23)
+
+Full Changelog: [v1.19.0...v1.20.0](https://github.com/anthropics/anthropic-cli/compare/v1.19.0...v1.20.0)
+
+### Features
+
+* **api:** add new stop reason 'model_context_window_exceeded' ([cb2f59e](https://github.com/anthropics/anthropic-cli/commit/cb2f59e48d4b205496534bd7fa1d8f29487fb7a4))
+* **api:** manual updates ([8f87e6a](https://github.com/anthropics/anthropic-cli/commit/8f87e6aac8b898b8a37d50cb13d0a568158a98a8))
+
+## 1.19.0 (2026-07-22)
+
+Full Changelog: [v1.18.0...v1.19.0](https://github.com/anthropics/anthropic-cli/compare/v1.18.0...v1.19.0)
+
+### Features
+
+* **api:** add support for Managed Agents model effort, initial session events, and threads delta streaming ([1d61ed6](https://github.com/anthropics/anthropic-cli/commit/1d61ed66d31c4cff85ec9fa64bdd0a9f8755b8ac))
+
+
+### Chores
+
+* **internal:** codegen related update ([fd751e4](https://github.com/anthropics/anthropic-cli/commit/fd751e48b1f39ba9dacee90fc211b51a8b8a00e0))
+
+## 1.18.0 (2026-07-16)
+
+Full Changelog: [v1.17.0...v1.18.0](https://github.com/anthropics/anthropic-cli/compare/v1.17.0...v1.18.0)
+
+### Features
+
+* **api:** add support for MCP Tunnels ([25b0012](https://github.com/anthropics/anthropic-cli/commit/25b0012f97a040e2f9f7f4c05c87ac2ade31988a))
+* **api:** manual updates ([f40ef8a](https://github.com/anthropics/anthropic-cli/commit/f40ef8a3abdf4a651fa0447ec4ef73f9cf15dbc1))
+
+## 1.17.0 (2026-07-10)
+
+Full Changelog: [v1.16.0...v1.17.0](https://github.com/anthropics/anthropic-cli/compare/v1.16.0...v1.17.0)
+
+### Features
+
+* **api:** add support for dreaming ([9ed8015](https://github.com/anthropics/anthropic-cli/commit/9ed8015b7afee21bd0a6e780fa89957978564e77))
+
+
+### Chores
+
+* **docs:** update model example ([4a5da72](https://github.com/anthropics/anthropic-cli/commit/4a5da72740a9f0aba52292c416547b78995b0806))
+* **docs:** updates to descriptions and examples ([f81cd30](https://github.com/anthropics/anthropic-cli/commit/f81cd30432a93fdb628d29017080e5adf9b9f54a))
+
 ## 1.16.0 (2026-07-02)
 
 Full Changelog: [v1.15.0...v1.16.0](https://github.com/anthropics/anthropic-cli/compare/v1.15.0...v1.16.0)
