@@ -17,6 +17,29 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"beta:sessions", "create",
 			"--agent", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
+			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
+			"--metadata", "{foo: string}",
+			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
+			"--title", "Order #1234 inquiry",
+			"--vault-id", "string",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
+
+	t.Run("inner flags", func(t *testing.T) {
+		// Check that inner flags have been set up correctly
+		requestflag.CheckInnerFlags(betaSessionsCreate)
+
+		// Alternative argument passing style using inner flags
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"beta:sessions", "create",
+			"--agent", "agent_011CZkYpogX7uDKUyvBTophP",
+			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
@@ -31,6 +54,11 @@ func TestBetaSessionsCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"agent: agent_011CZkYpogX7uDKUyvBTophP\n" +
 			"environment_id: env_011CZkZ9X2dpNyB7HsEFoRfW\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"initial_events:\n" +
 			"  - content:\n" +
 			"      - text: 'Where is my order #1234?'\n" +
@@ -74,6 +102,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--agent", "{mcp_servers: [{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}], tools: [{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]}",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
@@ -93,6 +122,8 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--agent.mcp-servers", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
 			"--agent.tools", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
@@ -119,6 +150,11 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
 			"          type: always_allow\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
 			"title: 'Order #1234 inquiry'\n" +
