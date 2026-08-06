@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.22.0 (2026-08-06)
+
+Full Changelog: [v1.21.0...v1.22.0](https://github.com/anthropics/anthropic-cli/compare/v1.21.0...v1.22.0)
+
+### Features
+
+* **api:** add support for session budgets, advisor tool, pinned inference location and skills auto-loading from GitHub ([8aeb8e7](https://github.com/anthropics/anthropic-cli/commit/8aeb8e73454d4d9c54be1ed412cebd050109ce55))
+
 ## 1.21.0 (2026-07-24)
 
 Full Changelog: [v1.20.0...v1.21.0](https://github.com/anthropics/anthropic-cli/compare/v1.20.0...v1.21.0)
