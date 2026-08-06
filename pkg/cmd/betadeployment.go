@@ -43,6 +43,11 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Required: true,
 			BodyPath: "name",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "budget",
+			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			BodyPath: "budget",
+		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Description of what the deployment does.",
@@ -77,6 +82,18 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Action:          handleBetaDeploymentsCreate,
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
+	"budget": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "budget.max-list-cost",
+			Usage:      "A monetary amount in a specific currency.",
+			InnerField: "max_list_cost",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "budget.type",
+			Usage:      `Allowed values: "limit".`,
+			InnerField: "type",
+		},
+	},
 	"schedule": {
 		&requestflag.InnerFlag[string]{
 			Name:       "schedule.expression",
@@ -132,6 +149,11 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "Agent to deploy. Accepts the `agent` ID string, which re-pins to the latest version, or an `agent` object with both id and version specified. Omit to preserve. Cannot be cleared.",
 			BodyPath: "agent",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "budget",
+			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			BodyPath: "budget",
+		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
 			Usage:    "Description. Omit to preserve; send empty string or null to clear.",
@@ -181,6 +203,18 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Action:          handleBetaDeploymentsUpdate,
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
+	"budget": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "budget.max-list-cost",
+			Usage:      "A monetary amount in a specific currency.",
+			InnerField: "max_list_cost",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "budget.type",
+			Usage:      `Allowed values: "limit".`,
+			InnerField: "type",
+		},
+	},
 	"schedule": {
 		&requestflag.InnerFlag[string]{
 			Name:       "schedule.expression",

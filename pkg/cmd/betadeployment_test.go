@@ -19,6 +19,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--environment-id", "x",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--name", "x",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
@@ -41,6 +42,8 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--environment-id", "x",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--name", "x",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
@@ -63,6 +66,11 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"        type: text\n" +
 			"    type: user.message\n" +
 			"name: x\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"description: description\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
@@ -106,6 +114,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--agent", "string",
+			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--description", "description",
 			"--environment-id", "environment_id",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
@@ -129,6 +138,8 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--agent", "string",
+			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
+			"--budget.type", "limit",
 			"--description", "description",
 			"--environment-id", "environment_id",
 			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
@@ -147,6 +158,11 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"agent: string\n" +
+			"budget:\n" +
+			"  max_list_cost:\n" +
+			"    amount: '2500'\n" +
+			"    currency: USD\n" +
+			"  type: limit\n" +
 			"description: description\n" +
 			"environment_id: environment_id\n" +
 			"initial_events:\n" +

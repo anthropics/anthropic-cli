@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaSessionsCreate = cli.Command{
+var betaSessionsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create Session",
 	Suggest: true,
@@ -30,6 +30,11 @@ var betaSessionsCreate = cli.Command{
 			Usage:    "ID of the `environment` defining the container configuration for this session.",
 			Required: true,
 			BodyPath: "environment_id",
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "budget",
+			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			BodyPath: "budget",
 		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "initial-event",
@@ -64,7 +69,20 @@ var betaSessionsCreate = cli.Command{
 	},
 	Action:          handleBetaSessionsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"budget": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "budget.max-list-cost",
+			Usage:      "A monetary amount in a specific currency.",
+			InnerField: "max_list_cost",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "budget.type",
+			Usage:      `Allowed values: "limit".`,
+			InnerField: "type",
+		},
+	},
+})
 
 var betaSessionsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -103,6 +121,11 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 			BodyPath: "agent",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "budget",
+			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			BodyPath: "budget",
+		},
+		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Metadata patch. Set a key to a string to upsert it, or to null to delete it. Omit the field to preserve.",
 			BodyPath: "metadata",
@@ -136,6 +159,18 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "agent.tools",
 			Usage:      "Replacement tool list. Full replacement: the provided array becomes the new value. Send an empty array to clear; omit to preserve.",
 			InnerField: "tools",
+		},
+	},
+	"budget": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "budget.max-list-cost",
+			Usage:      "A monetary amount in a specific currency.",
+			InnerField: "max_list_cost",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "budget.type",
+			Usage:      `Allowed values: "limit".`,
+			InnerField: "type",
 		},
 	},
 })
