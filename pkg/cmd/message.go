@@ -163,6 +163,129 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "format",
 		},
 	},
+	"thinking": {
+		&requestflag.InnerFlag[string]{
+			Name:       "thinking.type",
+			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "thinking.budget-tokens",
+			Usage:      "Determines how many tokens Claude can use for its internal reasoning process. Larger budgets can enable more thorough analysis for complex problems, improving response quality.\n\nMust be ≥1024 and less than `max_tokens`.\n\nSee [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) for details.",
+			InnerField: "budget_tokens",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "thinking.display",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. Defaults to `summarized`.",
+			InnerField: "display",
+		},
+	},
+	"tool-choice": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.type",
+			Usage:      `Allowed values: "auto", "any", "tool", "none".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool-choice.disable-parallel-tool-use",
+			Usage:      "Whether to disable parallel tool use.\n\nDefaults to `false`. If set to `true`, the model will output at most one tool use.",
+			InnerField: "disable_parallel_tool_use",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.name",
+			Usage:      "The name of the tool to use.",
+			InnerField: "name",
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-callers",
+			InnerField: "allowed_callers",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-domains",
+			InnerField: "allowed_domains",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.blocked-domains",
+			InnerField: "blocked_domains",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.cache-control",
+			InnerField: "cache_control",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.citations",
+			InnerField: "citations",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.defer-loading",
+			Usage:      "If true, tool will not be included in initial system prompt. Only loaded when returned via tool_reference from tool search.",
+			InnerField: "defer_loading",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			Usage:      "Description of what this tool does.\n\nTool descriptions should be as detailed as possible. The more information that the model has about what the tool is and how to use it, the better it will perform. You can use natural language descriptions to reinforce important aspects of the tool input JSON schema.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*bool]{
+			Name:       "tool.eager-input-streaming",
+			Usage:      "Enable eager input streaming for this tool. When true, tool input parameters will be streamed incrementally as they are generated, and types will be inferred on-the-fly rather than buffering the full JSON output. When false, streaming is disabled for this tool even if the fine-grained-tool-streaming beta is active. When null (default), uses the default behavior based on beta headers.",
+			InnerField: "eager_input_streaming",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-examples",
+			InnerField: "input_examples",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-schema",
+			InnerField: "input_schema",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-characters",
+			Usage:      "Maximum number of characters to display when viewing a file. If not specified, defaults to displaying the full file.",
+			InnerField: "max_characters",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-content-tokens",
+			Usage:      "Maximum number of tokens used by including web page text content in the context. The limit is approximate and does not apply to binary content such as PDFs.",
+			InnerField: "max_content_tokens",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-uses",
+			Usage:      "Maximum number of times the tool can be used in the API request.",
+			InnerField: "max_uses",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.response-inclusion",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			InnerField: "response_inclusion",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.strict",
+			Usage:      "When true, guarantees schema validation on tool names and inputs",
+			InnerField: "strict",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "tool.type",
+			Usage:      `Allowed values: "custom", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "memory_20250818", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.use-cache",
+			Usage:      "Whether to use cached content. Set to false to bypass the cache and fetch fresh content. Only set to false when the user explicitly requests fresh content or when fetching rapidly-changing sources.",
+			InnerField: "use_cache",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.user-location",
+			InnerField: "user_location",
+		},
+	},
 })
 
 var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
@@ -251,6 +374,129 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
 			InnerField: "format",
+		},
+	},
+	"thinking": {
+		&requestflag.InnerFlag[string]{
+			Name:       "thinking.type",
+			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "thinking.budget-tokens",
+			Usage:      "Determines how many tokens Claude can use for its internal reasoning process. Larger budgets can enable more thorough analysis for complex problems, improving response quality.\n\nMust be ≥1024 and less than `max_tokens`.\n\nSee [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) for details.",
+			InnerField: "budget_tokens",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "thinking.display",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. Defaults to `summarized`.",
+			InnerField: "display",
+		},
+	},
+	"tool-choice": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.type",
+			Usage:      `Allowed values: "auto", "any", "tool", "none".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool-choice.disable-parallel-tool-use",
+			Usage:      "Whether to disable parallel tool use.\n\nDefaults to `false`. If set to `true`, the model will output at most one tool use.",
+			InnerField: "disable_parallel_tool_use",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.name",
+			Usage:      "The name of the tool to use.",
+			InnerField: "name",
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-callers",
+			InnerField: "allowed_callers",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-domains",
+			InnerField: "allowed_domains",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.blocked-domains",
+			InnerField: "blocked_domains",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.cache-control",
+			InnerField: "cache_control",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.citations",
+			InnerField: "citations",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.defer-loading",
+			Usage:      "If true, tool will not be included in initial system prompt. Only loaded when returned via tool_reference from tool search.",
+			InnerField: "defer_loading",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			Usage:      "Description of what this tool does.\n\nTool descriptions should be as detailed as possible. The more information that the model has about what the tool is and how to use it, the better it will perform. You can use natural language descriptions to reinforce important aspects of the tool input JSON schema.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*bool]{
+			Name:       "tool.eager-input-streaming",
+			Usage:      "Enable eager input streaming for this tool. When true, tool input parameters will be streamed incrementally as they are generated, and types will be inferred on-the-fly rather than buffering the full JSON output. When false, streaming is disabled for this tool even if the fine-grained-tool-streaming beta is active. When null (default), uses the default behavior based on beta headers.",
+			InnerField: "eager_input_streaming",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-examples",
+			InnerField: "input_examples",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-schema",
+			InnerField: "input_schema",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-characters",
+			Usage:      "Maximum number of characters to display when viewing a file. If not specified, defaults to displaying the full file.",
+			InnerField: "max_characters",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-content-tokens",
+			Usage:      "Maximum number of tokens used by including web page text content in the context. The limit is approximate and does not apply to binary content such as PDFs.",
+			InnerField: "max_content_tokens",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-uses",
+			Usage:      "Maximum number of times the tool can be used in the API request.",
+			InnerField: "max_uses",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.response-inclusion",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			InnerField: "response_inclusion",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.strict",
+			Usage:      "When true, guarantees schema validation on tool names and inputs",
+			InnerField: "strict",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "tool.type",
+			Usage:      `Allowed values: "custom", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "memory_20250818", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.use-cache",
+			Usage:      "Whether to use cached content. Set to false to bypass the cache and fetch fresh content. Only set to false when the user explicitly requests fresh content or when fetching rapidly-changing sources.",
+			InnerField: "use_cache",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.user-location",
+			InnerField: "user_location",
 		},
 	},
 })

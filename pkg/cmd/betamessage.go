@@ -183,6 +183,17 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "ttl",
 		},
 	},
+	"container": {
+		&requestflag.InnerFlag[*string]{
+			Name:       "container.id",
+			Usage:      "Container id",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "container.skills",
+			InnerField: "skills",
+		},
+	},
 	"context-management": {
 		&requestflag.InnerFlag[[]map[string]any]{
 			Name:       "context-management.edits",
@@ -195,6 +206,18 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "diagnostics.previous-message-id",
 			Usage:      "The `id` (`msg_...`) from this client's previous /v1/messages response. The server compares that request's prompt fingerprint against this one and returns `diagnostics.cache_miss_reason` when the prompt-cache prefix could not be reused. Pass `null` on the first turn to opt in without a prior message to compare.",
 			InnerField: "previous_message_id",
+		},
+	},
+	"fallback-credit-token": {
+		&requestflag.InnerFlag[string]{
+			Name:       "fallback-credit-token.token",
+			Usage:      "The opaque `fallback_credit_token` from a prior refusal's `stop_details` — the same string the bare-string form carries.",
+			InnerField: "token",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "fallback-credit-token.mode",
+			Usage:      "How a failing token affects the retry. `strict` (the default, and the bare-string behavior): a failing redemption is a 400 and the retry is not served. `best_effort`: the retry is served either way — a token-layer failure no longer rejects the request; the retry proceeds at normal price and the outcome is reported on the response's `usage.fallback_credit`. Two failures stay hard in both modes: a malformed token, and combining `fallback_credit_token` with `fallbacks`.",
+			InnerField: "mode",
 		},
 	},
 	"mcp-server": {
@@ -253,6 +276,177 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "output-format.type",
 			Usage:      `Allowed values: "json_schema".`,
 			InnerField: "type",
+		},
+	},
+	"thinking": {
+		&requestflag.InnerFlag[string]{
+			Name:       "thinking.type",
+			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "thinking.budget-tokens",
+			Usage:      "Determines how many tokens Claude can use for its internal reasoning process. Larger budgets can enable more thorough analysis for complex problems, improving response quality.\n\nMust be ≥1024 and less than `max_tokens`.\n\nSee [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) for details.",
+			InnerField: "budget_tokens",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "thinking.display",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. Defaults to `summarized`.",
+			InnerField: "display",
+		},
+	},
+	"tool-choice": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.type",
+			Usage:      `Allowed values: "auto", "any", "tool", "none".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool-choice.disable-parallel-tool-use",
+			Usage:      "Whether to disable parallel tool use.\n\nDefaults to `false`. If set to `true`, the model will output at most one tool use.",
+			InnerField: "disable_parallel_tool_use",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.name",
+			Usage:      "The name of the tool to use.",
+			InnerField: "name",
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-callers",
+			InnerField: "allowed_callers",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-domains",
+			InnerField: "allowed_domains",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.blocked-domains",
+			InnerField: "blocked_domains",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.cache-control",
+			InnerField: "cache_control",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.caching",
+			InnerField: "caching",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.citations",
+			InnerField: "citations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.configs",
+			InnerField: "configs",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.default-config",
+			Usage:      "Default configuration for tools in an MCP toolset.",
+			InnerField: "default_config",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.defer-loading",
+			Usage:      "If true, tool will not be included in initial system prompt. Only loaded when returned via tool_reference from tool search.",
+			InnerField: "defer_loading",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			Usage:      "Description of what this tool does.\n\nTool descriptions should be as detailed as possible. The more information that the model has about what the tool is and how to use it, the better it will perform. You can use natural language descriptions to reinforce important aspects of the tool input JSON schema.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "tool.display-height-px",
+			Usage:      "The height of the display in pixels.",
+			InnerField: "display_height_px",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.display-number",
+			Usage:      "The X11 display number (e.g. 0, 1) for the display.",
+			InnerField: "display_number",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "tool.display-width-px",
+			Usage:      "The width of the display in pixels.",
+			InnerField: "display_width_px",
+		},
+		&requestflag.InnerFlag[*bool]{
+			Name:       "tool.eager-input-streaming",
+			Usage:      "Enable eager input streaming for this tool. When true, tool input parameters will be streamed incrementally as they are generated, and types will be inferred on-the-fly rather than buffering the full JSON output. When false, streaming is disabled for this tool even if the fine-grained-tool-streaming beta is active. When null (default), uses the default behavior based on beta headers.",
+			InnerField: "eager_input_streaming",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.enable-zoom",
+			Usage:      "Whether to enable an action to take a zoomed-in screenshot of the screen.",
+			InnerField: "enable_zoom",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-examples",
+			InnerField: "input_examples",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-schema",
+			InnerField: "input_schema",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-characters",
+			Usage:      "Maximum number of characters to display when viewing a file. If not specified, defaults to displaying the full file.",
+			InnerField: "max_characters",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-content-tokens",
+			Usage:      "Maximum number of tokens used by including web page text content in the context. The limit is approximate and does not apply to binary content such as PDFs.",
+			InnerField: "max_content_tokens",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-tokens",
+			Usage:      "Bounds the advisor's total output (thinking + text) per call. When the advisor hits this cap, the returned advisor_result or advisor_redacted_result block carries stop_reason='max_tokens', and a truncation note is appended to the advice text the worker model sees (inside the encrypted blob in redacted mode). When set, the server also emits a remaining-tokens budget block in the advisor's prompt so the advisor self-shapes toward the cap. When omitted, the advisor model's default output cap applies and no budget block is emitted.",
+			InnerField: "max_tokens",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-uses",
+			Usage:      "Maximum number of times the tool can be used in the API request.",
+			InnerField: "max_uses",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.mcp-server-name",
+			Usage:      "Name of the MCP server to configure tools for",
+			InnerField: "mcp_server_name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.model",
+			Usage:      "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField: "model",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.response-inclusion",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			InnerField: "response_inclusion",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.strict",
+			Usage:      "When true, guarantees schema validation on tool names and inputs",
+			InnerField: "strict",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "tool.type",
+			Usage:      `Allowed values: "custom", "bash_20241022", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "computer_20241022", "memory_20250818", "computer_20250124", "text_editor_20241022", "computer_20251124", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "advisor_20260301", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex", "mcp_toolset".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.use-cache",
+			Usage:      "Whether to use cached content. Set to false to bypass the cache and fetch fresh content. Only set to false when the user explicitly requests fresh content or when fetching rapidly-changing sources.",
+			InnerField: "use_cache",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.user-location",
+			InnerField: "user_location",
 		},
 	},
 })
@@ -413,6 +607,177 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:       "output-format.type",
 			Usage:      `Allowed values: "json_schema".`,
 			InnerField: "type",
+		},
+	},
+	"thinking": {
+		&requestflag.InnerFlag[string]{
+			Name:       "thinking.type",
+			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "thinking.budget-tokens",
+			Usage:      "Determines how many tokens Claude can use for its internal reasoning process. Larger budgets can enable more thorough analysis for complex problems, improving response quality.\n\nMust be ≥1024 and less than `max_tokens`.\n\nSee [extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) for details.",
+			InnerField: "budget_tokens",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "thinking.display",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. Defaults to `summarized`.",
+			InnerField: "display",
+		},
+	},
+	"tool-choice": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.type",
+			Usage:      `Allowed values: "auto", "any", "tool", "none".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool-choice.disable-parallel-tool-use",
+			Usage:      "Whether to disable parallel tool use.\n\nDefaults to `false`. If set to `true`, the model will output at most one tool use.",
+			InnerField: "disable_parallel_tool_use",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool-choice.name",
+			Usage:      "The name of the tool to use.",
+			InnerField: "name",
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-callers",
+			InnerField: "allowed_callers",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.allowed-domains",
+			InnerField: "allowed_domains",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.blocked-domains",
+			InnerField: "blocked_domains",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.cache-control",
+			InnerField: "cache_control",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.caching",
+			InnerField: "caching",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.citations",
+			InnerField: "citations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.configs",
+			InnerField: "configs",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.default-config",
+			Usage:      "Default configuration for tools in an MCP toolset.",
+			InnerField: "default_config",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.defer-loading",
+			Usage:      "If true, tool will not be included in initial system prompt. Only loaded when returned via tool_reference from tool search.",
+			InnerField: "defer_loading",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			Usage:      "Description of what this tool does.\n\nTool descriptions should be as detailed as possible. The more information that the model has about what the tool is and how to use it, the better it will perform. You can use natural language descriptions to reinforce important aspects of the tool input JSON schema.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "tool.display-height-px",
+			Usage:      "The height of the display in pixels.",
+			InnerField: "display_height_px",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.display-number",
+			Usage:      "The X11 display number (e.g. 0, 1) for the display.",
+			InnerField: "display_number",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "tool.display-width-px",
+			Usage:      "The width of the display in pixels.",
+			InnerField: "display_width_px",
+		},
+		&requestflag.InnerFlag[*bool]{
+			Name:       "tool.eager-input-streaming",
+			Usage:      "Enable eager input streaming for this tool. When true, tool input parameters will be streamed incrementally as they are generated, and types will be inferred on-the-fly rather than buffering the full JSON output. When false, streaming is disabled for this tool even if the fine-grained-tool-streaming beta is active. When null (default), uses the default behavior based on beta headers.",
+			InnerField: "eager_input_streaming",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.enable-zoom",
+			Usage:      "Whether to enable an action to take a zoomed-in screenshot of the screen.",
+			InnerField: "enable_zoom",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-examples",
+			InnerField: "input_examples",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.input-schema",
+			InnerField: "input_schema",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-characters",
+			Usage:      "Maximum number of characters to display when viewing a file. If not specified, defaults to displaying the full file.",
+			InnerField: "max_characters",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-content-tokens",
+			Usage:      "Maximum number of tokens used by including web page text content in the context. The limit is approximate and does not apply to binary content such as PDFs.",
+			InnerField: "max_content_tokens",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-tokens",
+			Usage:      "Bounds the advisor's total output (thinking + text) per call. When the advisor hits this cap, the returned advisor_result or advisor_redacted_result block carries stop_reason='max_tokens', and a truncation note is appended to the advice text the worker model sees (inside the encrypted blob in redacted mode). When set, the server also emits a remaining-tokens budget block in the advisor's prompt so the advisor self-shapes toward the cap. When omitted, the advisor model's default output cap applies and no budget block is emitted.",
+			InnerField: "max_tokens",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "tool.max-uses",
+			Usage:      "Maximum number of times the tool can be used in the API request.",
+			InnerField: "max_uses",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.mcp-server-name",
+			Usage:      "Name of the MCP server to configure tools for",
+			InnerField: "mcp_server_name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.model",
+			Usage:      "The model that will complete your prompt.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField: "model",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.response-inclusion",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			InnerField: "response_inclusion",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.strict",
+			Usage:      "When true, guarantees schema validation on tool names and inputs",
+			InnerField: "strict",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "tool.type",
+			Usage:      `Allowed values: "custom", "bash_20241022", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "computer_20241022", "memory_20250818", "computer_20250124", "text_editor_20241022", "computer_20251124", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "advisor_20260301", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex", "mcp_toolset".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[bool]{
+			Name:       "tool.use-cache",
+			Usage:      "Whether to use cached content. Set to false to bypass the cache and fetch fresh content. Only set to false when the user explicitly requests fresh content or when fetching rapidly-changing sources.",
+			InnerField: "use_cache",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.user-location",
+			InnerField: "user_location",
 		},
 	},
 })
