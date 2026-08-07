@@ -75,6 +75,27 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Action:          handleBetaAgentsCreate,
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
+	"model": {
+		&requestflag.InnerFlag[string]{
+			Name:       "model.id",
+			Usage:      "The model that will power your agent.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "model.effort",
+			InnerField: "effort",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.inference-geo",
+			Usage:      "Geographic region for model inference. When unset, requests fall through to the workspace's default_inference_geo. On update, `model` is whole-object replacement — omitting inference_geo clears it.",
+			InnerField: "inference_geo",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.speed",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
+			InnerField: "speed",
+		},
+	},
 	"mcp-server": {
 		&requestflag.InnerFlag[string]{
 			Name:       "mcp-server.name",
@@ -102,6 +123,58 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "multiagent.type",
 			Usage:      `Allowed values: "coordinator".`,
 			InnerField: "type",
+		},
+	},
+	"skill": {
+		&requestflag.InnerFlag[string]{
+			Name:       "skill.skill-id",
+			Usage:      `Identifier of the Anthropic skill (e.g., "xlsx").`,
+			InnerField: "skill_id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "skill.type",
+			Usage:      `Allowed values: "anthropic", "custom".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "skill.version",
+			Usage:      "Version to pin. Defaults to latest if omitted.",
+			InnerField: "version",
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.type",
+			Usage:      `Allowed values: "agent_toolset_20260401", "mcp_toolset", "custom".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.configs",
+			InnerField: "configs",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.default-config",
+			InnerField: "default_config",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			Usage:      "Description of what the tool does, shown to the agent to help it decide when to use the tool.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.input-schema",
+			Usage:      "JSON Schema for custom tool input parameters.",
+			InnerField: "input_schema",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.mcp-server-name",
+			Usage:      "Name of the MCP server. Must match a server name from the mcp_servers array. 1-255 characters.",
+			InnerField: "mcp_server_name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Unique name for the tool. 1-128 characters; letters, digits, underscores, and hyphens.",
+			InnerField: "name",
 		},
 	},
 })
@@ -221,6 +294,27 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			OuterIsArrayOfObjects: true,
 		},
 	},
+	"model": {
+		&requestflag.InnerFlag[string]{
+			Name:       "model.id",
+			Usage:      "The model that will power your agent.\n\nSee [models](https://docs.anthropic.com/en/docs/models-overview) for additional details and options.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "model.effort",
+			InnerField: "effort",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.inference-geo",
+			Usage:      "Geographic region for model inference. When unset, requests fall through to the workspace's default_inference_geo. On update, `model` is whole-object replacement — omitting inference_geo clears it.",
+			InnerField: "inference_geo",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.speed",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
+			InnerField: "speed",
+		},
+	},
 	"multiagent": {
 		&requestflag.InnerFlag[[]any]{
 			Name:       "multiagent.agents",
@@ -231,6 +325,68 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "multiagent.type",
 			Usage:      `Allowed values: "coordinator".`,
 			InnerField: "type",
+		},
+	},
+	"skill": {
+		&requestflag.InnerFlag[string]{
+			Name:                  "skill.skill-id",
+			Usage:                 `Identifier of the Anthropic skill (e.g., "xlsx").`,
+			InnerField:            "skill_id",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "skill.type",
+			Usage:                 `Allowed values: "anthropic", "custom".`,
+			InnerField:            "type",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:                  "skill.version",
+			Usage:                 "Version to pin. Defaults to latest if omitted.",
+			InnerField:            "version",
+			OuterIsArrayOfObjects: true,
+		},
+	},
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.type",
+			Usage:                 `Allowed values: "agent_toolset_20260401", "mcp_toolset", "custom".`,
+			InnerField:            "type",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[any]{
+			Name:                  "tool.configs",
+			InnerField:            "configs",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[any]{
+			Name:                  "tool.default-config",
+			InnerField:            "default_config",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.description",
+			Usage:                 "Description of what the tool does, shown to the agent to help it decide when to use the tool.",
+			InnerField:            "description",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:                  "tool.input-schema",
+			Usage:                 "JSON Schema for custom tool input parameters.",
+			InnerField:            "input_schema",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.mcp-server-name",
+			Usage:                 "Name of the MCP server. Must match a server name from the mcp_servers array. 1-255 characters.",
+			InnerField:            "mcp_server_name",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "tool.name",
+			Usage:                 "Unique name for the tool. 1-128 characters; letters, digits, underscores, and hyphens.",
+			InnerField:            "name",
+			OuterIsArrayOfObjects: true,
 		},
 	},
 })

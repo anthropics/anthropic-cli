@@ -82,6 +82,48 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Action:          handleBetaDeploymentsCreate,
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
+	"agent": {
+		&requestflag.InnerFlag[string]{
+			Name:       "agent.id",
+			Usage:      "The `agent` ID.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "agent.type",
+			Usage:      `Allowed values: "agent".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "agent.version",
+			Usage:      "The specific `agent` version to use. Omit to use the latest version. Must be at least 1 if specified.",
+			InnerField: "version",
+		},
+	},
+	"initial-event": {
+		&requestflag.InnerFlag[string]{
+			Name:       "initial-event.type",
+			Usage:      `Allowed values: "user.message", "user.define_outcome", "system.message".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "initial-event.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "initial-event.description",
+			Usage:      "What the agent should produce. This is the task specification.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "initial-event.max-iterations",
+			Usage:      "Eval→revision cycles before giving up. Default 3, max 20.",
+			InnerField: "max_iterations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "initial-event.rubric",
+			InnerField: "rubric",
+		},
+	},
 	"budget": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "budget.max-list-cost",
@@ -92,6 +134,52 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "budget.type",
 			Usage:      `Allowed values: "limit".`,
 			InnerField: "type",
+		},
+	},
+	"resource": {
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.type",
+			Usage:      `Allowed values: "github_repository", "file", "memory_store".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "resource.access",
+			Usage:      "Access mode for an attached memory store.",
+			InnerField: "access",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.authorization-token",
+			Usage:      "GitHub authorization token used to clone the repository.",
+			InnerField: "authorization_token",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "resource.checkout",
+			InnerField: "checkout",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.file-id",
+			Usage:      "ID of a previously uploaded file.",
+			InnerField: "file_id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "resource.instructions",
+			Usage:      "Per-attachment guidance for the agent on how to use this store. Rendered into the memory section of the system prompt. Max 4096 chars.",
+			InnerField: "instructions",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.memory-store-id",
+			Usage:      "The memory store ID (memstore_...). Must belong to the caller's organization and workspace.",
+			InnerField: "memory_store_id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "resource.mount-path",
+			Usage:      "Mount path in the container. Defaults to `/workspace/<repo-name>`.",
+			InnerField: "mount_path",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "resource.url",
+			Usage:      "Github URL of the repository",
+			InnerField: "url",
 		},
 	},
 	"schedule": {
@@ -203,6 +291,23 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Action:          handleBetaDeploymentsUpdate,
 	HideHelpCommand: true,
 }, map[string][]requestflag.HasOuterFlag{
+	"agent": {
+		&requestflag.InnerFlag[string]{
+			Name:       "agent.id",
+			Usage:      "The `agent` ID.",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "agent.type",
+			Usage:      `Allowed values: "agent".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[int64]{
+			Name:       "agent.version",
+			Usage:      "The specific `agent` version to use. Omit to use the latest version. Must be at least 1 if specified.",
+			InnerField: "version",
+		},
+	},
 	"budget": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "budget.max-list-cost",
@@ -213,6 +318,86 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "budget.type",
 			Usage:      `Allowed values: "limit".`,
 			InnerField: "type",
+		},
+	},
+	"initial-event": {
+		&requestflag.InnerFlag[string]{
+			Name:       "initial-event.type",
+			Usage:      `Allowed values: "user.message", "user.define_outcome", "system.message".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "initial-event.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "initial-event.description",
+			Usage:      "What the agent should produce. This is the task specification.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "initial-event.max-iterations",
+			Usage:      "Eval→revision cycles before giving up. Default 3, max 20.",
+			InnerField: "max_iterations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "initial-event.rubric",
+			InnerField: "rubric",
+		},
+	},
+	"resource": {
+		&requestflag.InnerFlag[string]{
+			Name:                  "resource.type",
+			Usage:                 `Allowed values: "github_repository", "file", "memory_store".`,
+			InnerField:            "type",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:                  "resource.access",
+			Usage:                 "Access mode for an attached memory store.",
+			InnerField:            "access",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "resource.authorization-token",
+			Usage:                 "GitHub authorization token used to clone the repository.",
+			InnerField:            "authorization_token",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[any]{
+			Name:                  "resource.checkout",
+			InnerField:            "checkout",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "resource.file-id",
+			Usage:                 "ID of a previously uploaded file.",
+			InnerField:            "file_id",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:                  "resource.instructions",
+			Usage:                 "Per-attachment guidance for the agent on how to use this store. Rendered into the memory section of the system prompt. Max 4096 chars.",
+			InnerField:            "instructions",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "resource.memory-store-id",
+			Usage:                 "The memory store ID (memstore_...). Must belong to the caller's organization and workspace.",
+			InnerField:            "memory_store_id",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:                  "resource.mount-path",
+			Usage:                 "Mount path in the container. Defaults to `/workspace/<repo-name>`.",
+			InnerField:            "mount_path",
+			OuterIsArrayOfObjects: true,
+		},
+		&requestflag.InnerFlag[string]{
+			Name:                  "resource.url",
+			Usage:                 "Github URL of the repository",
+			InnerField:            "url",
+			OuterIsArrayOfObjects: true,
 		},
 	},
 	"schedule": {

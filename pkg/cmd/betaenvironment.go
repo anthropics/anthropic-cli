@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaEnvironmentsCreate = cli.Command{
+var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create a new environment with the specified configuration.",
 	Suggest: true,
@@ -53,7 +53,24 @@ var betaEnvironmentsCreate = cli.Command{
 	},
 	Action:          handleBetaEnvironmentsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"config": {
+		&requestflag.InnerFlag[string]{
+			Name:       "config.type",
+			Usage:      "Environment type",
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "config.networking",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "config.packages",
+			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.",
+			InnerField: "packages",
+		},
+	},
+})
 
 var betaEnvironmentsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -75,7 +92,7 @@ var betaEnvironmentsRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
-var betaEnvironmentsUpdate = cli.Command{
+var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update an existing environment's configuration.",
 	Suggest: true,
@@ -119,7 +136,24 @@ var betaEnvironmentsUpdate = cli.Command{
 	},
 	Action:          handleBetaEnvironmentsUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"config": {
+		&requestflag.InnerFlag[string]{
+			Name:       "config.type",
+			Usage:      "Environment type",
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "config.networking",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "config.packages",
+			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.",
+			InnerField: "packages",
+		},
+	},
+})
 
 var betaEnvironmentsList = cli.Command{
 	Name:    "list",

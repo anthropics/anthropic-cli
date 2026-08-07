@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaVaultsCredentialsCreate = cli.Command{
+var betaVaultsCredentialsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create Credential",
 	Suggest: true,
@@ -48,7 +48,60 @@ var betaVaultsCredentialsCreate = cli.Command{
 	},
 	Action:          handleBetaVaultsCredentialsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"auth": {
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.type",
+			Usage:      `Allowed values: "mcp_oauth", "static_bearer", "environment_variable".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.token",
+			Usage:      "Static bearer token value.",
+			InnerField: "token",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.access-token",
+			Usage:      "OAuth access token.",
+			InnerField: "access_token",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "auth.expires-at",
+			Usage:      "A timestamp in RFC 3339 format",
+			InnerField: "expires_at",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.injection-location",
+			Usage:      "Where in the outbound request the secret value may be substituted.",
+			InnerField: "injection_location",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.mcp-server-url",
+			Usage:      "URL of the MCP server this credential authenticates against.",
+			InnerField: "mcp_server_url",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.networking",
+			Usage:      "Substitute the secret on any host the session's Environment network policy permits egress to. The Environment's network policy is the only boundary on where the secret can reach.",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.refresh",
+			Usage:      "OAuth refresh token parameters for creating a credential with refresh support.",
+			InnerField: "refresh",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.secret-name",
+			Usage:      "Name of the environment variable. Immutable after create.",
+			InnerField: "secret_name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.secret-value",
+			Usage:      "Secret value. Write-only; never returned in responses.",
+			InnerField: "secret_value",
+		},
+	},
+})
 
 var betaVaultsCredentialsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -75,7 +128,7 @@ var betaVaultsCredentialsRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
-var betaVaultsCredentialsUpdate = cli.Command{
+var betaVaultsCredentialsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update Credential",
 	Suggest: true,
@@ -114,7 +167,50 @@ var betaVaultsCredentialsUpdate = cli.Command{
 	},
 	Action:          handleBetaVaultsCredentialsUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"auth": {
+		&requestflag.InnerFlag[string]{
+			Name:       "auth.type",
+			Usage:      `Allowed values: "mcp_oauth", "static_bearer", "environment_variable".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "auth.token",
+			Usage:      "Updated static bearer token value.",
+			InnerField: "token",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "auth.access-token",
+			Usage:      "Updated OAuth access token.",
+			InnerField: "access_token",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "auth.expires-at",
+			Usage:      "A timestamp in RFC 3339 format",
+			InnerField: "expires_at",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.injection-location",
+			Usage:      "Updated injection location.",
+			InnerField: "injection_location",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.networking",
+			Usage:      "Substitute the secret on any host the session's Environment network policy permits egress to. The Environment's network policy is the only boundary on where the secret can reach.",
+			InnerField: "networking",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "auth.refresh",
+			Usage:      "Parameters for updating OAuth refresh token configuration.",
+			InnerField: "refresh",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "auth.secret-value",
+			Usage:      "Updated secret value.",
+			InnerField: "secret_value",
+		},
+	},
+})
 
 var betaVaultsCredentialsList = cli.Command{
 	Name:    "list",
