@@ -26,6 +26,63 @@ func TestStreamOutput(t *testing.T) {
 	}
 }
 
+func TestGetPagerArgs(t *testing.T) {
+	t.Run("defaults to less", func(t *testing.T) {
+		t.Setenv("PAGER", "")
+
+		args, err := getPagerArgs()
+		require.NoError(t, err)
+		assert.Equal(t, []string{"less"}, args)
+	})
+
+	t.Run("accepts a pager command", func(t *testing.T) {
+		t.Setenv("PAGER", "less")
+
+		args, err := getPagerArgs()
+		require.NoError(t, err)
+		assert.Equal(t, []string{"less"}, args)
+	})
+
+	t.Run("splits command and arguments", func(t *testing.T) {
+		t.Setenv("PAGER", "cat -n")
+
+		args, err := getPagerArgs()
+		require.NoError(t, err)
+		assert.Equal(t, []string{"cat", "-n"}, args)
+	})
+
+	t.Run("rejects whitespace-only values", func(t *testing.T) {
+		t.Setenv("PAGER", " \t")
+
+		_, err := getPagerArgs()
+		require.Error(t, err)
+		assert.EqualError(t, err, "PAGER must contain a command")
+	})
+}
+
+func TestStreamToPagerWithPipeSupportsArguments(t *testing.T) {
+	t.Setenv("PAGER", "cat -n")
+
+	err := streamToPagerWithPipe("stream test", func(w *os.File) error {
+		_, err := w.WriteString("Hello world\n")
+		return err
+	})
+	require.NoError(t, err)
+}
+
+func TestStreamToPagerWithPipeRejectsMissingPager(t *testing.T) {
+	t.Setenv("PAGER", filepath.Join(t.TempDir(), "missing-pager")+" --flag")
+
+	called := false
+	err := streamToPagerWithPipe("stream test", func(w *os.File) error {
+		called = true
+		_, err := w.WriteString("Hello world\n")
+		return err
+	})
+	require.Error(t, err)
+	assert.False(t, called)
+}
+
 func TestWriteBinaryResponse(t *testing.T) {
 	t.Run("write to explicit file", func(t *testing.T) {
 		tmpDir := t.TempDir()
