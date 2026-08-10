@@ -17,6 +17,7 @@ func TestBetaDreamsCreate(t *testing.T) {
 			"--input", "{memory_store_id: x, type: memory_store}",
 			"--model", "string",
 			"--instructions", "x",
+			"--output-behavior", "{type: create_new}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -28,7 +29,9 @@ func TestBetaDreamsCreate(t *testing.T) {
 			"  - memory_store_id: x\n" +
 			"    type: memory_store\n" +
 			"model: string\n" +
-			"instructions: x\n")
+			"instructions: x\n" +
+			"output_behavior:\n" +
+			"  type: create_new\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
