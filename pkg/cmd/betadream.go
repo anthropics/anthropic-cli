@@ -34,6 +34,11 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "instructions",
 			BodyPath: "instructions",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "output-behavior",
+			Usage:    "The default destination: the job creates a new output memory store as a clone of the memory_store input and writes the consolidated memories into it. The input store is never mutated.",
+			BodyPath: "output_behavior",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -68,6 +73,17 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "model.speed",
 			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
 			InnerField: "speed",
+		},
+	},
+	"output-behavior": {
+		&requestflag.InnerFlag[string]{
+			Name:       "output-behavior.type",
+			Usage:      `Allowed values: "create_new", "update_existing".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "output-behavior.memory-store-id",
+			InnerField: "memory_store_id",
 		},
 	},
 })
