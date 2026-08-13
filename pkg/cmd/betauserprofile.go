@@ -31,7 +31,7 @@ var betaUserProfilesCreate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "name",
-			Usage:    "Display name of the entity this profile represents. Required when relationship is `resold` (the resold-to company's name); optional otherwise. Maximum 255 characters.",
+			Usage:    "Optional for all profiles. Real-world name of the entity this profile represents (company or individual); for `resold` profiles, the resold-to company's name where known. Maximum 255 characters.",
 			BodyPath: "name",
 		},
 		&requestflag.Flag[string]{
