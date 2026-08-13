@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.23.0 (2026-08-13)
+
+Full Changelog: [v1.22.1...v1.23.0](https://github.com/anthropics/anthropic-cli/compare/v1.22.1...v1.23.0)
+
+### Features
+
+* **api:** add output_behavior to dream creation (create a new memory store or update the input store in place) ([c9223e4](https://github.com/anthropics/anthropic-cli/commit/c9223e447d68fa37c77599b570618301d1ef3b9f))
+
+
+### Bug Fixes
+
+* **ci:** upload ant binaries instead of nonexistent cdp paths ([99bc95e](https://github.com/anthropics/anthropic-cli/commit/99bc95ef086da0b8b25745ab58df8344fd47dde0))
+
+
+### Chores
+
+* **internal:** codegen related update ([90f3c73](https://github.com/anthropics/anthropic-cli/commit/90f3c7340dcf489df7cf7cb84a00df578c84a7bd))
+* **internal:** codegen related update ([adcaf9f](https://github.com/anthropics/anthropic-cli/commit/adcaf9f6a19c3033289c195bcfa7163ab2a1dee2))
+* **internal:** migrate legacy openapi transforms to core commands ([2dc0ae4](https://github.com/anthropics/anthropic-cli/commit/2dc0ae435accf3935cc108215682cb4e82dd45cb))
+
+
+### Documentation
+
+* **api:** clarify that user profile name is optional for resold profiles ([f0619ca](https://github.com/anthropics/anthropic-cli/commit/f0619ca2956ef227f74fb772d9500b6c7d4f0598))
+
 ## 1.22.1 (2026-08-07)
 
 Full Changelog: [v1.22.0...v1.22.1](https://github.com/anthropics/anthropic-cli/compare/v1.22.0...v1.22.1)
