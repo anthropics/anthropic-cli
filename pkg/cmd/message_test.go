@@ -18,7 +18,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--max-items", "10",
 			"--max-tokens", "1024",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
-			"--model", "claude-opus-4-6",
+			"--model", "claude-opus-5",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--container", "container",
 			"--inference-geo", "inference_geo",
@@ -51,7 +51,7 @@ func TestMessagesCreate(t *testing.T) {
 			"--max-tokens", "1024",
 			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
-			"--model", "claude-opus-4-6",
+			"--model", "claude-opus-5",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
 			"--container", "container",
@@ -92,7 +92,7 @@ func TestMessagesCreate(t *testing.T) {
 			"            start_char_index: 0\n" +
 			"            type: char_location\n" +
 			"    role: user\n" +
-			"model: claude-opus-4-6\n" +
+			"model: claude-opus-5\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +
@@ -170,7 +170,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"--api-key", "string",
 			"messages", "count-tokens",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
-			"--model", "claude-opus-4-6",
+			"--model", "claude-opus-5",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--output-config", "{effort: low, format: {schema: {foo: bar}, type: json_schema}}",
 			"--system", "[{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
@@ -192,7 +192,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"messages", "count-tokens",
 			"--message.content", "[{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}]",
 			"--message.role", "user",
-			"--model", "claude-opus-4-6",
+			"--model", "claude-opus-5",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
 			"--output-config.effort", "low",
@@ -223,7 +223,7 @@ func TestMessagesCountTokens(t *testing.T) {
 			"            start_char_index: 0\n" +
 			"            type: char_location\n" +
 			"    role: user\n" +
-			"model: claude-opus-4-6\n" +
+			"model: claude-opus-5\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +

@@ -66,7 +66,7 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 	"model": {
 		&requestflag.InnerFlag[string]{
 			Name:       "model.id",
-			Usage:      `Model identifier, e.g. "claude-opus-4-7". 1-256 characters.`,
+			Usage:      `Model identifier, e.g. "claude-opus-5". 1-256 characters.`,
 			InnerField: "id",
 		},
 		&requestflag.InnerFlag[*string]{
