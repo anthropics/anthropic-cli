@@ -110,7 +110,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "description",
-			Usage:    "Updated description of the environment",
+			Usage:    "Updated description of the environment. Omit to preserve; null clears to null; an empty string is stored as an empty string.",
 			BodyPath: "description",
 		},
 		&requestflag.Flag[map[string]any]{
