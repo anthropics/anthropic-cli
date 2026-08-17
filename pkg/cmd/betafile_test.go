@@ -69,6 +69,7 @@ func TestBetaFilesUpload(t *testing.T) {
 			"--api-key", "string",
 			"beta:files", "upload",
 			"--file", mocktest.TestFile(t, "Example data"),
+			"--expires-in-seconds", "3600",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -76,7 +77,9 @@ func TestBetaFilesUpload(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		testFile := mocktest.TestFile(t, "Example data")
 		// Test piping YAML data over stdin
-		pipeDataStr := "file: Example data"
+		pipeDataStr := "" +
+			"file: Example data\n" +
+			"expires_in_seconds: 3600\n"
 		pipeDataStr = strings.ReplaceAll(pipeDataStr, "Example data", testFile)
 		pipeData := []byte(pipeDataStr)
 		mocktest.TestRunMockTestWithPipeAndFlags(

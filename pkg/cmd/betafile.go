@@ -135,6 +135,11 @@ var betaFilesUpload = cli.Command{
 			BodyPath:  "file",
 			FileInput: true,
 		},
+		&requestflag.Flag[int64]{
+			Name:     "expires-in-seconds",
+			Usage:    "Seconds from upload until the file expires and its bytes become permanently unavailable. Must be between 3600 (one hour) and 7776000 (ninety days).",
+			BodyPath: "expires_in_seconds",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",

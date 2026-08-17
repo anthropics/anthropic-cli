@@ -38,6 +38,7 @@ func TestBetaMemoryStoresMemoryVersionsList(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--operation", "created",
 			"--page", "page",
+			"--service-account-id", "service_account_id",
 			"--session-id", "session_id",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
