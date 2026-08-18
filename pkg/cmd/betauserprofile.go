@@ -19,6 +19,11 @@ var betaUserProfilesCreate = cli.Command{
 	Usage:   "Create User Profile",
 	Suggest: true,
 	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:     "access-type",
+			Usage:    "How the platform uses the API on behalf of the entity this profile represents. `application`: the platform sells a product that uses the API behind the scenes, and the profile represents an individual end-user of that product. `passthrough`: the platform resells raw inference, and the profile identifies the resold-to company.",
+			BodyPath: "access_type",
+		},
 		&requestflag.Flag[*string]{
 			Name:     "external-id",
 			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
@@ -31,7 +36,7 @@ var betaUserProfilesCreate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "name",
-			Usage:    "Optional for all profiles. Real-world name of the entity this profile represents (company or individual); for `resold` profiles, the resold-to company's name where known. Maximum 255 characters.",
+			Usage:    "Optional for all profiles. Real-world name of the entity this profile represents (company or individual); for a resold-to company (`relationship` `resold` / `access_type` `passthrough`), that company's name where known. Maximum 255 characters.",
 			BodyPath: "name",
 		},
 		&requestflag.Flag[string]{
@@ -78,6 +83,11 @@ var betaUserProfilesUpdate = cli.Command{
 			Name:      "user-profile-id",
 			Required:  true,
 			PathParam: "user_profile_id",
+		},
+		&requestflag.Flag[*string]{
+			Name:     "access-type",
+			Usage:    "How the platform uses the API on behalf of the entity this profile represents. `application`: the platform sells a product that uses the API behind the scenes, and the profile represents an individual end-user of that product. `passthrough`: the platform resells raw inference, and the profile identifies the resold-to company.",
+			BodyPath: "access_type",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "external-id",
