@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.24.0 (2026-08-18)
+
+Full Changelog: [v1.23.0...v1.24.0](https://github.com/anthropics/anthropic-cli/compare/v1.23.0...v1.24.0)
+
+### Features
+
+* **api:** additions to files and memory stores ([addfe40](https://github.com/anthropics/anthropic-cli/commit/addfe403dc474b5cc859d589c9886fc409714e22))
+* **api:** updates to skill, files, and user profiles ([3ebd6ce](https://github.com/anthropics/anthropic-cli/commit/3ebd6ce2b9ab09d069f154f887a7c26c80ebf17c))
+
+
+### Bug Fixes
+
+* **api:** remove unsupported mid_conv_system content block ([26f42f9](https://github.com/anthropics/anthropic-cli/commit/26f42f9a6b7f980fb81de62a3a65df0f55b48724))
+
+
+### Chores
+
+* **internal:** remove leftover prism references ([1032305](https://github.com/anthropics/anthropic-cli/commit/10323058cbda781f1047bad1c309926d0e990b2f))
+
 ## 1.23.0 (2026-08-13)
 
 Full Changelog: [v1.22.1...v1.23.0](https://github.com/anthropics/anthropic-cli/compare/v1.22.1...v1.23.0)
