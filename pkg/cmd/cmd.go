@@ -132,6 +132,40 @@ func init() {
 				},
 			},
 			{
+				Name:     "files",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&filesList,
+					&filesDelete,
+					&filesDownload,
+					&filesRetrieveMetadata,
+					&filesUpload,
+				},
+			},
+			{
+				Name:     "skills",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&skillsCreate,
+					&skillsRetrieve,
+					&skillsList,
+					&skillsDelete,
+				},
+			},
+			{
+				Name:     "skills:versions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&skillsVersionsCreate,
+					&skillsVersionsRetrieve,
+					&skillsVersionsList,
+					&skillsVersionsDelete,
+				},
+			},
+			{
 				Name:     "beta:models",
 				Category: "API RESOURCE",
 				Suggest:  true,

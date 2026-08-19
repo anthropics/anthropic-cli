@@ -41,7 +41,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "cache-control",
 			BodyPath: "cache_control",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[any]{
 			Name:     "container",
 			Usage:    "Container identifier for reuse across requests.",
 			BodyPath: "container",
@@ -145,6 +145,17 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "ttl",
 		},
 	},
+	"container": {
+		&requestflag.InnerFlag[*string]{
+			Name:       "container.id",
+			Usage:      "Container id",
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "container.skills",
+			InnerField: "skills",
+		},
+	},
 	"metadata": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "metadata.user-id",
@@ -198,11 +209,6 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 	},
 	"tool": {
-		&requestflag.InnerFlag[string]{
-			Name:       "tool.name",
-			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
-			InnerField: "name",
-		},
 		&requestflag.InnerFlag[any]{
 			Name:       "tool.allowed-callers",
 			InnerField: "allowed_callers",
@@ -222,6 +228,10 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.citations",
 			InnerField: "citations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.configs",
+			InnerField: "configs",
 		},
 		&requestflag.InnerFlag[bool]{
 			Name:       "tool.defer-loading",
@@ -262,6 +272,11 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "max_uses",
 		},
 		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
 			Name:       "tool.response-inclusion",
 			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
 			InnerField: "response_inclusion",
@@ -273,7 +288,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "tool.type",
-			Usage:      `Allowed values: "custom", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "memory_20250818", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex".`,
+			Usage:      `Allowed values: "custom", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "browser_toolset_20260801", "memory_20250818", "computer_toolset_20260801", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -411,11 +426,6 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 	},
 	"tool": {
-		&requestflag.InnerFlag[string]{
-			Name:       "tool.name",
-			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
-			InnerField: "name",
-		},
 		&requestflag.InnerFlag[any]{
 			Name:       "tool.allowed-callers",
 			InnerField: "allowed_callers",
@@ -435,6 +445,10 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.citations",
 			InnerField: "citations",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "tool.configs",
+			InnerField: "configs",
 		},
 		&requestflag.InnerFlag[bool]{
 			Name:       "tool.defer-loading",
@@ -475,6 +489,11 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "max_uses",
 		},
 		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			Usage:      "Name of the tool.\n\nThis is how the tool will be called by the model and in `tool_use` blocks.",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
 			Name:       "tool.response-inclusion",
 			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
 			InnerField: "response_inclusion",
@@ -486,7 +505,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "tool.type",
-			Usage:      `Allowed values: "custom", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "memory_20250818", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex".`,
+			Usage:      `Allowed values: "custom", "bash_20250124", "code_execution_20250522", "code_execution_20250825", "code_execution_20260120", "code_execution_20260521", "browser_toolset_20260801", "memory_20250818", "computer_toolset_20260801", "text_editor_20250124", "text_editor_20250429", "text_editor_20250728", "web_search_20250305", "web_fetch_20250910", "web_search_20260209", "web_fetch_20260209", "web_fetch_20260309", "web_search_20260318", "web_fetch_20260318", "tool_search_tool_bm25_20251119", "tool_search_tool_bm25", "tool_search_tool_regex_20251119", "tool_search_tool_regex".`,
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[bool]{
