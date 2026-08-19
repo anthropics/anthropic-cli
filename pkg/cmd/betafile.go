@@ -360,7 +360,7 @@ func handleBetaFilesUpload(ctx context.Context, cmd *cli.Command) error {
 		apiquery.NestedQueryFormatBrackets,
 		apiquery.ArrayQueryFormatBrackets,
 		MultipartFormEncoded,
-		false,
+		true,
 	)
 	if err != nil {
 		return err
