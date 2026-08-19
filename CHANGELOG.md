@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.26.0 (2026-08-19)
+
+Full Changelog: [v1.25.0...v1.26.0](https://github.com/anthropics/anthropic-cli/compare/v1.25.0...v1.26.0)
+
+### Features
+
+* **api:** managed agents web search config and self hosted sandbox memory ([8abb4e9](https://github.com/anthropics/anthropic-cli/commit/8abb4e9528d19640935e17a72217ca7e20ab1294))
+
 ## 1.25.0 (2026-08-19)
 
 Full Changelog: [v1.24.0...v1.25.0](https://github.com/anthropics/anthropic-cli/compare/v1.24.0...v1.25.0)
