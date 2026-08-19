@@ -101,7 +101,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--api-key", "string",
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
-			"--agent", "{mcp_servers: [{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}], tools: [{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]}",
+			"--agent", "{mcp_servers: [{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}], tools: [{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]}",
 			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
@@ -121,7 +121,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--agent.mcp-servers", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
-			"--agent.tools", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--agent.tools", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
 			"--budget.type", "limit",
 			"--metadata", "{foo: string}",
@@ -146,6 +146,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"          enabled: true\n" +
 			"          permission_policy:\n" +
 			"            type: always_allow\n" +
+			"          type: bash\n" +
 			"      default_config:\n" +
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
