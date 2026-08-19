@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.26.1 (2026-08-19)
+
+Full Changelog: [v1.26.0...v1.26.1](https://github.com/anthropics/anthropic-cli/compare/v1.26.0...v1.26.1)
+
+### Chores
+
+* bump sdk version ([#66](https://github.com/anthropics/anthropic-cli/issues/66)) ([acdc28b](https://github.com/anthropics/anthropic-cli/commit/acdc28b15a9665e35dde952146d62c57bb6a2d82))
+
 ## 1.26.0 (2026-08-19)
 
 Full Changelog: [v1.25.0...v1.26.0](https://github.com/anthropics/anthropic-cli/compare/v1.25.0...v1.26.0)
