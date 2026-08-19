@@ -23,7 +23,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
+			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -48,7 +48,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--multiagent.type", "coordinator",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
+			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -88,6 +88,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
 			"          type: always_allow\n" +
+			"        type: bash\n" +
 			"    default_config:\n" +
 			"      enabled: true\n" +
 			"      permission_policy:\n" +
@@ -130,7 +131,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -157,7 +158,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -198,6 +199,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
 			"          type: always_allow\n" +
+			"        type: bash\n" +
 			"    default_config:\n" +
 			"      enabled: true\n" +
 			"      permission_policy:\n" +
