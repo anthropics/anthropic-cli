@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.25.0 (2026-08-19)
+
+Full Changelog: [v1.24.0...v1.25.0](https://github.com/anthropics/anthropic-cli/compare/v1.24.0...v1.25.0)
+
+### Features
+
+* **api:** Files and Skills APIs are now GA; add computer use and browser use toolsets ([db63120](https://github.com/anthropics/anthropic-cli/commit/db63120f2f9dee76023f2a5d46a419e8436d8b80))
+* **api:** manual updates ([fe7e0a5](https://github.com/anthropics/anthropic-cli/commit/fe7e0a5244d1dc45fdde0bb7b0d71277ee2470d3))
+
 ## 1.24.0 (2026-08-18)
 
 Full Changelog: [v1.23.0...v1.24.0](https://github.com/anthropics/anthropic-cli/compare/v1.23.0...v1.24.0)
