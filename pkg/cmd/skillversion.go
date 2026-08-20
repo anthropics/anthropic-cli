@@ -70,13 +70,13 @@ var skillsVersionsList = cli.Command{
 			Required:  true,
 			PathParam: "skill_id",
 		},
-		&requestflag.Flag[*int64]{
+		&requestflag.Flag[int64]{
 			Name:      "limit",
 			Usage:     "Number of results to return per page.\n\nRanges from `1` to `1000`. Defaults to `20`.",
-			Default:   requestflag.Ptr[int64](20),
+			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Optionally set to the `next_page` token from the previous response.",
 			QueryPath: "page",

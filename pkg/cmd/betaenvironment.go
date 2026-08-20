@@ -172,7 +172,7 @@ var betaEnvironmentsList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Opaque cursor from previous response for pagination. Pass the `next_page` value from the previous response.",
 			QueryPath: "page",

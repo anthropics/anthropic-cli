@@ -20,7 +20,7 @@ var filesList = cli.Command{
 	Usage:   "List Files",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[any]{
+		&requestflag.Flag[[]string]{
 			Name:      "id",
 			Usage:     "Restrict the result set to Files whose `id` is in this list. At most 100 entries (after de-duplication). Mutually exclusive with `page` and `limit`. When supplied, the response is always a single page (`next_page` is null). IDs that do not resolve to a visible File — including deleted Files — are silently omitted.",
 			QueryPath: "ids",
@@ -31,7 +31,7 @@ var filesList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Opaque page cursor returned in a prior list response's `next_page`. Prefixed `page_`.",
 			QueryPath: "page",

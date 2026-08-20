@@ -86,7 +86,7 @@ var betaEnvironmentsWorkList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Opaque cursor from previous response for pagination",
 			QueryPath: "page",
@@ -145,12 +145,12 @@ var betaEnvironmentsWorkHeartbeat = cli.Command{
 			Required:  true,
 			PathParam: "work_id",
 		},
-		&requestflag.Flag[*int64]{
+		&requestflag.Flag[int64]{
 			Name:      "desired-ttl-seconds",
 			Usage:     "Desired TTL in seconds",
 			QueryPath: "desired_ttl_seconds",
 		},
-		&requestflag.Flag[*string]{
+		&requestflag.Flag[string]{
 			Name:      "expected-last-heartbeat",
 			Usage:     "Expected last_heartbeat for conditional update (optimistic concurrency). Use literal 'NO_HEARTBEAT' to claim an unclaimed lease (first heartbeat). For subsequent heartbeats, echo the server's previous last_heartbeat value exactly. Returns 412 Precondition Failed if the actual value doesn't match.",
 			QueryPath: "expected_last_heartbeat",
@@ -175,12 +175,12 @@ var betaEnvironmentsWorkPoll = cli.Command{
 			Required:  true,
 			PathParam: "environment_id",
 		},
-		&requestflag.Flag[*int64]{
+		&requestflag.Flag[int64]{
 			Name:      "block-ms",
 			Usage:     "How long to wait for work to arrive before returning. Must be 1-999 in milliseconds. Defaults to non-blocking (returns immediately if no work is available).",
 			QueryPath: "block_ms",
 		},
-		&requestflag.Flag[*int64]{
+		&requestflag.Flag[int64]{
 			Name:      "reclaim-older-than-ms",
 			Usage:     "Reclaim unacknowledged work items older than this many milliseconds. If omitted, uses the default (5000ms).",
 			QueryPath: "reclaim_older_than_ms",

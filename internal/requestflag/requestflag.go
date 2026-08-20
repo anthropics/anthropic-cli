@@ -33,6 +33,29 @@ func formatForFlagSet(val any) (string, error) {
 	}
 }
 
+// setFromPiped applies one piped YAML/JSON value to a flag. Repeatable (slice-typed) flags take a piped
+// array one element per Set so each item goes through the typed element parser; anything else is a
+// single Set.
+func setFromPiped(flag cli.Flag, val any) error {
+	name := flag.Names()[0]
+	items := []any{val}
+	if arr, ok := val.([]any); ok {
+		if mv, ok := flag.(cli.DocGenerationMultiValueFlag); ok && mv.IsMultiValueFlag() {
+			items = arr
+		}
+	}
+	for _, item := range items {
+		setVal, err := formatForFlagSet(item)
+		if err != nil {
+			return fmt.Errorf("cannot format piped value for flag %q: %w", name, err)
+		}
+		if err := flag.Set(name, setVal); err != nil {
+			return fmt.Errorf("cannot set flag %q from piped data: %w", name, err)
+		}
+	}
+	return nil
+}
+
 // Flag [T] is a generic flag base which can be used to implement the most
 // common interfaces used by urfave/cli. Additionally, it allows specifying
 // where in an HTTP request the flag values should be placed (e.g. query, body, etc.).
@@ -139,7 +162,10 @@ type RequestContents struct {
 // set via the command line. This allows piped YAML/JSON data to satisfy path, query, and header parameters.
 // Body parameters are excluded: they are already handled by the maps.Copy merge in flagOptions.
 // For each unset flag, if the parsed data map contains a key matching the flag's QueryPath, HeaderPath, or
-// PathParam (or any of its DataAliases), the flag is set to that value via flag.Set.
+// PathParam (or any of its DataAliases), the flag is set to that value via flag.Set and the key (plus its
+// aliases) is removed from data so it cannot also reach the request body. A piped null or empty array is
+// consumed the same way but leaves the flag unset: outside the body, null/[] and "omitted" are the same
+// request.
 //
 // Inner flags (those with an outer flag) are also handled: if the outer flag's body path key exists in the
 // data map and contains a nested map with a key matching the inner flag's field (or aliases), the inner
@@ -207,12 +233,14 @@ func ApplyStdinDataToFlags(cmd *cli.Command, data map[string]any) error {
 			if !found {
 				continue
 			}
-			setVal, err := formatForFlagSet(val)
-			if err != nil {
-				return fmt.Errorf("cannot format piped value for flag %q: %w", flag.Names()[0], err)
+			for _, key := range append([]string{path}, inReq.GetDataAliases()...) {
+				delete(data, key)
 			}
-			if err := flag.Set(flag.Names()[0], setVal); err != nil {
-				return fmt.Errorf("cannot set flag %q from piped data: %w", flag.Names()[0], err)
+			if arr, isArr := val.([]any); val == nil || (isArr && len(arr) == 0) {
+				break
+			}
+			if err := setFromPiped(flag, val); err != nil {
+				return err
 			}
 			break
 		}
