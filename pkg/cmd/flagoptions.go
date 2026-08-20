@@ -339,7 +339,7 @@ func flagOptions(
 	}
 
 	stdinConsumedByPipe := false
-	if bodyType != ApplicationOctetStream && !ignoreStdin && isInputPiped() {
+	if bodyType != ApplicationOctetStream && !ignoreStdin && stdinConsumedByCredential == "" && isInputPiped() {
 		pipeData, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err
@@ -420,6 +420,8 @@ func flagOptions(
 		stdinReader = onceStdinReader{failureReason: "stdin is already being used for the request body"}
 	} else if stdinConsumedByPipe {
 		stdinReader = onceStdinReader{failureReason: "stdin was already consumed by piped YAML/JSON input"}
+	} else if stdinConsumedByCredential != "" {
+		stdinReader = onceStdinReader{failureReason: "stdin was already consumed by " + stdinConsumedByCredential}
 	} else {
 		stdinReader = onceStdinReader{stdinReader: os.Stdin}
 	}

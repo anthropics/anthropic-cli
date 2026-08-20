@@ -637,6 +637,10 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	profileTokenPresent := cfgErr == nil && cfg != nil && credsErr == nil && creds.AccessToken != ""
 
 	root := c.Root()
+	warnIfCredentialOnCommandLine(os.Stderr)
+	if err := applyStdinCredential(root); err != nil {
+		return err
+	}
 	apiKeySet := root.IsSet("api-key")
 	authTokenSet := root.IsSet("auth-token")
 	fed := federationFromRoot(root)
@@ -682,10 +686,10 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		fmt.Fprintln(out, "  (no credential configured — set ANTHROPIC_API_KEY or run `ant auth login`)")
 	}
 	if apiKeySet {
-		writeRow(out, credWinner == 1, "--api-key / ANTHROPIC_API_KEY", formatSecret(root.String("api-key"), true))
+		writeRow(out, credWinner == 1, credentialSourceLabel(root, "api-key"), formatSecret(root.String("api-key"), true))
 	}
 	if authTokenSet {
-		writeRow(out, credWinner == 2, "--auth-token / ANTHROPIC_AUTH_TOKEN", formatSecret(root.String("auth-token"), true))
+		writeRow(out, credWinner == 2, credentialSourceLabel(root, "auth-token"), formatSecret(root.String("auth-token"), true))
 	}
 	if profileTokenPresent {
 		authType := "unknown"
@@ -740,14 +744,19 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	// Surface the surprising-override case: the user ran `ant auth login` but
 	// has a credential env var set that silently beats the profile on every
 	// request.
-	if profileTokenPresent && (apiKeySet || authTokenSet) {
-		overrideEnv := "ANTHROPIC_API_KEY"
-		if !apiKeySet {
-			overrideEnv = "ANTHROPIC_AUTH_TOKEN"
-		}
+	// A credential piped via --api-key-stdin / --auth-token-stdin is a
+	// per-invocation choice, not an ambient override, so it doesn't warn.
+	envOverride := ""
+	switch {
+	case apiKeySet && !credentialFromStdin(root, "api-key"):
+		envOverride = "ANTHROPIC_API_KEY"
+	case !apiKeySet && authTokenSet && !credentialFromStdin(root, "auth-token"):
+		envOverride = "ANTHROPIC_AUTH_TOKEN"
+	}
+	if profileTokenPresent && envOverride != "" {
 		fmt.Fprintln(out)
-		fmt.Fprintf(out, "⚠  %s is set in your environment and overrides the logged-in profile.\n", overrideEnv)
-		fmt.Fprintf(out, "   Unset it to use the profile:  unset %s\n", overrideEnv)
+		fmt.Fprintf(out, "⚠  %s is set in your environment and overrides the logged-in profile.\n", envOverride)
+		fmt.Fprintf(out, "   Unset it to use the profile:  unset %s\n", envOverride)
 	}
 
 	// Surface partial federation config: the user set some federation inputs

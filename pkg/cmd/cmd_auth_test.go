@@ -407,7 +407,7 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("api-key and explicit profile", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(true, false, true, false, false) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("--api-key / ANTHROPIC_API_KEY", "", true, false, false) })
 		assert.Contains(t, out, "multiple auth sources configured")
 		assert.Contains(t, out, "--api-key / ANTHROPIC_API_KEY")
 		assert.Contains(t, out, "profile from --profile / ANTHROPIC_PROFILE")
@@ -417,7 +417,7 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("federation beats implicit profile", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(false, false, false, true, true) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", false, true, true) })
 		assert.Contains(t, out, "federation env")
 		assert.Contains(t, out, "active profile (active_config)")
 		assert.Contains(t, out, "using federation env per precedence")
@@ -425,20 +425,20 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("explicit profile beats federation", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(false, false, true, true, false) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", true, true, false) })
 		assert.Contains(t, out, "using profile from --profile / ANTHROPIC_PROFILE per precedence")
 	})
 
 	t.Run("single source is silent", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources(true, false, false, false, false) })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("--api-key / ANTHROPIC_API_KEY", "", false, false, false) })
 		assert.Empty(t, out)
 	})
 
 	t.Run("emits once", func(t *testing.T) {
 		reset()
-		first := captureStderr(t, func() { warnIfMultipleAuthSources(false, true, true, true, false) })
-		second := captureStderr(t, func() { warnIfMultipleAuthSources(false, true, true, true, false) })
+		first := captureStderr(t, func() { warnIfMultipleAuthSources("", "--auth-token / ANTHROPIC_AUTH_TOKEN", true, true, false) })
+		second := captureStderr(t, func() { warnIfMultipleAuthSources("", "--auth-token / ANTHROPIC_AUTH_TOKEN", true, true, false) })
 		assert.NotEmpty(t, first)
 		assert.Empty(t, second)
 	})
@@ -1689,7 +1689,7 @@ func TestAuthLogoutAllWithoutActiveConfig(t *testing.T) {
 // organization-id/federation inputs). None are set in these tests; the flags
 // exist so root.String/root.IsSet resolve to zero values rather than depend
 // on undefined-flag behaviour.
-func runStatus(t *testing.T) (string, error) {
+func runStatus(t *testing.T, globalArgs ...string) (string, error) {
 	t.Helper()
 	root := &cli.Command{
 		Name: "ant",
@@ -1697,6 +1697,8 @@ func runStatus(t *testing.T) (string, error) {
 			&cli.StringFlag{Name: "profile", Sources: cli.EnvVars("ANTHROPIC_PROFILE")},
 			&cli.StringFlag{Name: "api-key"},
 			&cli.StringFlag{Name: "auth-token"},
+			&cli.BoolFlag{Name: "api-key-stdin"},
+			&cli.BoolFlag{Name: "auth-token-stdin"},
 			&cli.StringFlag{Name: "base-url"},
 			&cli.StringFlag{Name: "organization-id"},
 			&cli.StringFlag{Name: "identity-token"},
@@ -1711,7 +1713,7 @@ func runStatus(t *testing.T) (string, error) {
 		}},
 	}
 	return captureStdout(t, func() error {
-		return root.Run(context.Background(), []string{"ant", "auth", "status"})
+		return root.Run(context.Background(), append(append([]string{"ant"}, globalArgs...), "auth", "status"))
 	})
 }
 

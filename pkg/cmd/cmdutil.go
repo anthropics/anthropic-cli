@@ -64,9 +64,15 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		option.WithHeader("X-Stainless-Runtime", "cli"),
 		option.WithHeader("X-Stainless-CLI-Command", cmd.FullName()),
 	}
+	warnIfCredentialOnCommandLine(os.Stderr)
+	if err := applyStdinCredential(cmd); err != nil {
+		// TODO: same os.Exit wart as the OAuth resolution failure below.
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	// Credential precedence mirrors the WIF User Guide's "Credential resolution" section:
-	//   1. --api-key / ANTHROPIC_API_KEY         (flag or env; doc tiers 1+2)
-	//   2. --auth-token / ANTHROPIC_AUTH_TOKEN   (flag or env; doc tiers 1+2)
+	//   1. --api-key-stdin / ANTHROPIC_API_KEY (or deprecated --api-key)          (doc tiers 1+2)
+	//   2. --auth-token-stdin / ANTHROPIC_AUTH_TOKEN (or deprecated --auth-token) (doc tiers 1+2)
 	//   3. profile named by --profile / ANTHROPIC_PROFILE (explicit)
 	//   4. ANTHROPIC_FEDERATION_RULE_ID + ANTHROPIC_ORGANIZATION_ID +
 	//      ANTHROPIC_IDENTITY_TOKEN[_FILE]
@@ -85,7 +91,14 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		ServiceAccountID: cmd.String("service-account-id"),
 	}
 	fedAnySet := fed.AnySet()
-	warnIfMultipleAuthSources(apiKeySet, authTokenSet, cfg != nil && profileExplicit, fedAnySet, cfg != nil && !profileExplicit)
+	apiKeySrc, authTokenSrc := "", ""
+	if apiKeySet {
+		apiKeySrc = credentialSourceLabel(cmd, "api-key")
+	}
+	if authTokenSet {
+		authTokenSrc = credentialSourceLabel(cmd, "auth-token")
+	}
+	warnIfMultipleAuthSources(apiKeySrc, authTokenSrc, cfg != nil && profileExplicit, fedAnySet, cfg != nil && !profileExplicit)
 
 	useProfile := func() {
 		opts = append(opts, option.WithConfigQuiet(cfg))
@@ -137,7 +150,9 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 // credential source is configured, naming the sources and the precedence
 // winner. No secret values are printed. Order matches the User Guide's
 // 5-tier precedence (explicit profile beats federation; implicit doesn't).
-func warnIfMultipleAuthSources(apiKey, authToken, profileExplicit, federation, profileImplicit bool) {
+// apiKeySrc / authTokenSrc are the source labels for those tiers ("" when
+// unset) so a stdin-supplied credential isn't reported as --api-key.
+func warnIfMultipleAuthSources(apiKeySrc, authTokenSrc string, profileExplicit, federation, profileImplicit bool) {
 	type src struct {
 		on   bool
 		name string
@@ -147,8 +162,8 @@ func warnIfMultipleAuthSources(apiKey, authToken, profileExplicit, federation, p
 	// orderings derive from the precedence comment block at the top of
 	// getDefaultRequestOptions; if you reorder one, reorder all three.
 	all := []src{
-		{apiKey, "--api-key / ANTHROPIC_API_KEY"},
-		{authToken, "--auth-token / ANTHROPIC_AUTH_TOKEN"},
+		{apiKeySrc != "", apiKeySrc},
+		{authTokenSrc != "", authTokenSrc},
 		{profileExplicit, "profile from --profile / ANTHROPIC_PROFILE"},
 		{federation, "federation env"},
 		{profileImplicit, "active profile (active_config)"},

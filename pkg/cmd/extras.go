@@ -4,6 +4,9 @@ package cmd
 // must survive a regen lives here rather than in the generated files.
 
 import (
+	"fmt"
+
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 	"github.com/anthropics/anthropic-sdk-go/option"
 	"github.com/urfave/cli/v3"
 )
@@ -44,10 +47,22 @@ func init() {
 	for _, f := range Command.Flags {
 		if sf, ok := f.(*cli.StringFlag); ok && sf.Name == "base-url" {
 			sf.Sources = cli.EnvVars("ANTHROPIC_BASE_URL")
-			break
+		}
+		if rf, ok := f.(*requestflag.Flag[string]); ok {
+			if alt, deprecated := argvCredentialFlags[rf.Name]; deprecated {
+				rf.Usage = fmt.Sprintf(argvCredentialDeprecation, alt)
+			}
 		}
 	}
 	Command.Flags = append(Command.Flags,
+		&cli.BoolFlag{
+			Name:  "api-key-stdin",
+			Usage: "Read the API key from standard input (e.g. op read op://vault/anthropic/key | ant --api-key-stdin models list). Consumes stdin, so the request body must come from flags.",
+		},
+		&cli.BoolFlag{
+			Name:  "auth-token-stdin",
+			Usage: "Read the bearer auth token from standard input. Consumes stdin, so the request body must come from flags.",
+		},
 		&cli.StringFlag{
 			Name:    "profile",
 			Usage:   "Named auth profile to use (default: active profile from active_config)",

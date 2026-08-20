@@ -48,6 +48,14 @@ ant auth login
 
 Or set the `ANTHROPIC_API_KEY` environment variable to an API key from the [Claude Console](https://platform.claude.com/settings/keys).
 
+To hand the CLI a key from a secret manager without putting it in the environment or on the command line, pipe it on stdin:
+
+```sh
+op read op://vault/anthropic/api-key | ant --api-key-stdin models list
+```
+
+Passing a credential as `--api-key <value>` / `--auth-token <value>` is deprecated: the value is visible in shell history and process listings.
+
 Then send your first message:
 
 ```sh
