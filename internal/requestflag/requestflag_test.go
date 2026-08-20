@@ -901,6 +901,43 @@ func TestApplyStdinDataToFlags(t *testing.T) {
 		assert.Equal(t, "acct_123", flag.Get())
 	})
 
+	t.Run("applies piped arrays element-wise to typed repeatable query flags", func(t *testing.T) {
+		t.Parallel()
+
+		ids := &Flag[[]string]{Name: "id", QueryPath: "ids"}
+		limits := &Flag[[]int64]{Name: "limit", QueryPath: "limits"}
+		assert.NoError(t, ids.PreParse())
+		assert.NoError(t, limits.PreParse())
+
+		data := map[string]any{"ids": []any{"a", "b"}, "limits": []any{1, 2}, "keep": "body"}
+		cmd := &cli.Command{Flags: []cli.Flag{ids, limits}}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.Equal(t, []string{"a", "b"}, ids.Get())
+		assert.Equal(t, []int64{1, 2}, limits.Get())
+		assert.Equal(t, map[string]any{"keep": "body"}, data, "consumed keys must not also reach the body merge")
+	})
+
+	t.Run("piped null or [] is consumed but leaves query/header flags unset (same request as omitted)", func(t *testing.T) {
+		t.Parallel()
+
+		ids := &Flag[[]int64]{Name: "id", QueryPath: "ids"}
+		tags := &Flag[[]string]{Name: "tag", QueryPath: "tags"}
+		name := &Flag[string]{Name: "name", HeaderPath: "X-Name"}
+		for _, f := range []cli.Flag{ids, tags, name} {
+			assert.NoError(t, f.(interface{ PreParse() error }).PreParse())
+		}
+
+		cmd := &cli.Command{Flags: []cli.Flag{ids, tags, name}}
+		data := map[string]any{"ids": nil, "tags": []any{}, "X-Name": nil, "keep": "body"}
+		assert.NoError(t, ApplyStdinDataToFlags(cmd, data))
+
+		assert.False(t, ids.IsSet())
+		assert.False(t, tags.IsSet())
+		assert.False(t, name.IsSet())
+		assert.Equal(t, map[string]any{"keep": "body"}, data, "consumed keys must not leak into the body merge")
+	})
+
 	t.Run("sets header path flag from piped data", func(t *testing.T) {
 		t.Parallel()
 

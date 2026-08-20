@@ -16,7 +16,7 @@ func TestFilesList(t *testing.T) {
 			"--api-key", "string",
 			"files", "list",
 			"--max-items", "10",
-			"--id", "[string]",
+			"--id", "string",
 			"--limit", "1",
 			"--page", "page",
 		)
