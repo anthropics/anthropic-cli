@@ -133,6 +133,10 @@ func init() {
 						Name:  "debug",
 						Usage: "Print the token exchange status and Request-Id to stderr",
 					},
+					&cli.BoolFlag{
+						Name:  "no-activate",
+						Usage: "Do not update active_config after login; pass --profile or ANTHROPIC_PROFILE on later commands.",
+					},
 				},
 			},
 			{
@@ -486,6 +490,8 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	}
 
 	// Decide whether this login should also become the active profile:
+	//   - --no-activate → never activate (opt-out for external-tool bootstrap;
+	//     active_config is shared with Claude Code / the Claude Agent SDK).
 	//   - --profile/ANTHROPIC_PROFILE explicitly given → always activate
 	//     (the user named a target; make subsequent commands use it).
 	//   - profile came from active_config / "default" → only write
@@ -494,7 +500,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	if data, err := os.ReadFile(config.ActiveConfigPath(dir)); err == nil {
 		prevActive = strings.TrimSpace(string(data))
 	}
-	wantActivate := c.IsSet("profile") || prevActive == ""
+	wantActivate := !c.Bool("no-activate") && (c.IsSet("profile") || prevActive == "")
 	activated := false
 	if wantActivate && prevActive != profile {
 		if err := config.SetActiveProfile(dir, profile); err != nil {
@@ -517,6 +523,9 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 		} else {
 			fmt.Fprintf(os.Stderr, "  → set as active profile (was %q)\n", prevActive)
 		}
+	}
+	if !activated && c.Bool("no-activate") && prevActive != "" && prevActive != profile {
+		fmt.Fprintf(os.Stderr, "  → active profile unchanged (still %q; --no-activate in effect)\n", prevActive)
 	}
 	fmt.Fprintf(os.Stderr, "  config:       %s\n  credentials:  %s\n",
 		config.ProfilePath(dir, profile), credsPath)
