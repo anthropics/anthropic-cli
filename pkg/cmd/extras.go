@@ -16,8 +16,8 @@ import (
 // newWorkerClient).
 type extraClientFlags struct {
 	BaseURL string
-	// Sent as the anthropic-workspace-id header. Required on Claude Platform
-	// on AWS; ignored by the first-party API.
+	// Sent as the anthropic-workspace-id header. Picks the workspace for API keys
+	// that have access to multiple workspaces; required on Claude Platform on AWS.
 	WorkspaceID string
 }
 
@@ -95,7 +95,7 @@ func init() {
 		},
 		&cli.StringFlag{
 			Name:    "workspace-id",
-			Usage:   "Workspace (wrkspc_...) to send as the anthropic-workspace-id header; only needed on Claude Platform on AWS.",
+			Usage:   "Workspace ID (wrkspc_...) to send as the anthropic-workspace-id header. Only needed for API keys that aren't scoped to a single workspace or on Claude Platform on AWS.",
 			Sources: cli.EnvVars("ANTHROPIC_WORKSPACE_ID"),
 		},
 	)
