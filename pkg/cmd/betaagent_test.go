@@ -15,7 +15,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:agents", "create",
-			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
+			"--model", "{id: claude-opus-5, effort: low, inference_geo: inference_geo, speed: standard}",
 			"--name", "My First Agent",
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server", "{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}",
@@ -23,7 +23,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
+			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -37,7 +37,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:agents", "create",
-			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
+			"--model", "{id: claude-opus-5, effort: low, inference_geo: inference_geo, speed: standard}",
 			"--name", "My First Agent",
 			"--description", "A general-purpose starter agent.",
 			"--mcp-server.name", "example-mcp",
@@ -48,7 +48,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--multiagent.type", "coordinator",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
+			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -57,8 +57,9 @@ func TestBetaAgentsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"model:\n" +
-			"  id: claude-opus-4-8\n" +
+			"  id: claude-opus-5\n" +
 			"  effort: low\n" +
+			"  inference_geo: inference_geo\n" +
 			"  speed: standard\n" +
 			"name: My First Agent\n" +
 			"description: A general-purpose starter agent.\n" +
@@ -87,6 +88,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
 			"          type: always_allow\n" +
+			"        type: bash\n" +
 			"    default_config:\n" +
 			"      enabled: true\n" +
 			"      permission_policy:\n" +
@@ -124,12 +126,12 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--description", "updated",
 			"--mcp-server", "[{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}]",
 			"--metadata", "{foo: string}",
-			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
+			"--model", "{id: claude-opus-5, effort: low, inference_geo: inference_geo, speed: standard}",
 			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -150,13 +152,13 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--mcp-server.type", "url",
 			"--mcp-server.url", "https://example-server.modelcontextprotocol.io/sse",
 			"--metadata", "{foo: string}",
-			"--model", "{id: claude-opus-4-8, effort: low, speed: standard}",
+			"--model", "{id: claude-opus-5, effort: low, inference_geo: inference_geo, speed: standard}",
 			"--multiagent.agents", "[agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}]",
 			"--multiagent.type", "coordinator",
 			"--name", "name",
 			"--skill", "[{skill_id: xlsx, type: anthropic, version: '1'}]",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
-			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
+			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
 		)
@@ -173,8 +175,9 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"metadata:\n" +
 			"  foo: string\n" +
 			"model:\n" +
-			"  id: claude-opus-4-8\n" +
+			"  id: claude-opus-5\n" +
 			"  effort: low\n" +
+			"  inference_geo: inference_geo\n" +
 			"  speed: standard\n" +
 			"multiagent:\n" +
 			"  agents:\n" +
@@ -196,6 +199,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"        enabled: true\n" +
 			"        permission_policy:\n" +
 			"          type: always_allow\n" +
+			"        type: bash\n" +
 			"    default_config:\n" +
 			"      enabled: true\n" +
 			"      permission_policy:\n" +

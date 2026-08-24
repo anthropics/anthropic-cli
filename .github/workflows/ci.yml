@@ -96,51 +96,51 @@ jobs:
           SHA: ${{ github.sha }}
         run: ./scripts/utils/upload-artifact.sh
 
-      - name: Upload cdp-darwin-arm64
+      - name: Upload ant-darwin-arm64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-darwin-arm64
-          path: dist/macos_darwin_arm64*/cdp
+          name: ant-darwin-arm64
+          path: dist/macos_darwin_arm64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-darwin-amd64
+      - name: Upload ant-darwin-amd64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-darwin-amd64
-          path: dist/macos_darwin_amd64*/cdp
+          name: ant-darwin-amd64
+          path: dist/macos_darwin_amd64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-linux-amd64
+      - name: Upload ant-linux-amd64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-linux-amd64
-          path: dist/linux_linux_amd64*/cdp
+          name: ant-linux-amd64
+          path: dist/linux_linux_amd64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-linux-arm64
+      - name: Upload ant-linux-arm64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-linux-arm64
-          path: dist/linux_linux_arm64*/cdp
+          name: ant-linux-arm64
+          path: dist/linux_linux_arm64*/ant
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-windows-amd64
+      - name: Upload ant-windows-amd64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-windows-amd64
-          path: dist/windows_windows_amd64*/cdp.exe
+          name: ant-windows-amd64
+          path: dist/windows_windows_amd64*/ant.exe
           retention-days: 90
           if-no-files-found: ignore
 
-      - name: Upload cdp-windows-arm64
+      - name: Upload ant-windows-arm64
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: cdp-windows-arm64
-          path: dist/windows_windows_arm64*/cdp.exe
+          name: ant-windows-arm64
+          path: dist/windows_windows_arm64*/ant.exe
           retention-days: 90
           if-no-files-found: ignore
 

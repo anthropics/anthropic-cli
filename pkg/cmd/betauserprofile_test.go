@@ -14,6 +14,7 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"beta:user-profiles", "create",
+			"--access-type", "application",
 			"--external-id", "user_12345",
 			"--metadata", "{}",
 			"--name", "x",
@@ -25,6 +26,7 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
+			"access_type: application\n" +
 			"external_id: user_12345\n" +
 			"metadata: {}\n" +
 			"name: x\n" +
@@ -57,6 +59,7 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 			"--api-key", "string",
 			"beta:user-profiles", "update",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
+			"--access-type", "application",
 			"--external-id", "user_12345",
 			"--metadata", "{foo: string}",
 			"--name", "x",
@@ -68,6 +71,7 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
+			"access_type: application\n" +
 			"external_id: user_12345\n" +
 			"metadata:\n" +
 			"  foo: string\n" +

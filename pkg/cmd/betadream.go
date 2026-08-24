@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var betaDreamsCreate = cli.Command{
+var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create a Dream",
 	Suggest: true,
@@ -34,6 +34,11 @@ var betaDreamsCreate = cli.Command{
 			Name:     "instructions",
 			BodyPath: "instructions",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "output-behavior",
+			Usage:    "The default destination: the job creates a new output memory store as a clone of the memory_store input and writes the consolidated memories into it. The input store is never mutated.",
+			BodyPath: "output_behavior",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -42,7 +47,46 @@ var betaDreamsCreate = cli.Command{
 	},
 	Action:          handleBetaDreamsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"input": {
+		&requestflag.InnerFlag[string]{
+			Name:       "input.type",
+			Usage:      `Allowed values: "memory_store", "sessions".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "input.memory-store-id",
+			InnerField: "memory_store_id",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "input.session-ids",
+			InnerField: "session_ids",
+		},
+	},
+	"model": {
+		&requestflag.InnerFlag[string]{
+			Name:       "model.id",
+			Usage:      `Model identifier, e.g. "claude-opus-5". 1-256 characters.`,
+			InnerField: "id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "model.speed",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Not all models support `fast`; invalid combinations are rejected at create time.",
+			InnerField: "speed",
+		},
+	},
+	"output-behavior": {
+		&requestflag.InnerFlag[string]{
+			Name:       "output-behavior.type",
+			Usage:      `Allowed values: "create_new", "update_existing".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "output-behavior.memory-store-id",
+			InnerField: "memory_store_id",
+		},
+	},
+})
 
 var betaDreamsRetrieve = cli.Command{
 	Name:    "retrieve",

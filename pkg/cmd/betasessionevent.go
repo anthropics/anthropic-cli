@@ -78,7 +78,7 @@ var betaSessionsEventsList = cli.Command{
 	HideHelpCommand: true,
 }
 
-var betaSessionsEventsSend = cli.Command{
+var betaSessionsEventsSend = requestflag.WithInnerFlags(cli.Command{
 	Name:    "send",
 	Usage:   "Send Events",
 	Suggest: true,
@@ -102,7 +102,63 @@ var betaSessionsEventsSend = cli.Command{
 	},
 	Action:          handleBetaSessionsEventsSend,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"event": {
+		&requestflag.InnerFlag[string]{
+			Name:       "event.type",
+			Usage:      `Allowed values: "user.message", "user.interrupt", "user.tool_confirmation", "user.custom_tool_result", "user.define_outcome", "user.tool_result", "system.message".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "event.content",
+			InnerField: "content",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.custom-tool-use-id",
+			Usage:      "The id of the `agent.custom_tool_use` event this result corresponds to, which can be found in the last `session.status_idle` [event's](https://platform.claude.com/docs/en/api/beta/sessions/events/list#beta_managed_agents_session_requires_action.event_ids) `stop_reason.event_ids` field.",
+			InnerField: "custom_tool_use_id",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "event.deny-message",
+			Usage:      "Optional message providing context for a 'deny' decision. Only allowed when result is 'deny'.",
+			InnerField: "deny_message",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.description",
+			Usage:      "What the agent should produce. This is the task specification.",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[*bool]{
+			Name:       "event.is-error",
+			Usage:      "Whether the tool execution resulted in an error.",
+			InnerField: "is_error",
+		},
+		&requestflag.InnerFlag[*int64]{
+			Name:       "event.max-iterations",
+			Usage:      "Eval→revision cycles before giving up. Default 3, max 20.",
+			InnerField: "max_iterations",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.result",
+			Usage:      "UserToolConfirmationResult enum",
+			InnerField: "result",
+		},
+		&requestflag.InnerFlag[any]{
+			Name:       "event.rubric",
+			InnerField: "rubric",
+		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "event.session-thread-id",
+			Usage:      "If absent, interrupts every non-archived thread in a multiagent session (or the primary alone in a single-agent session). If present, interrupts only the named thread.",
+			InnerField: "session_thread_id",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "event.tool-use-id",
+			Usage:      "The id of the `agent.tool_use` or `agent.mcp_tool_use` event this result corresponds to, which can be found in the last `session.status_idle` [event's](https://platform.claude.com/docs/en/api/beta/sessions/events/list#beta_managed_agents_session_requires_action.event_ids) `stop_reason.event_ids` field.",
+			InnerField: "tool_use_id",
+		},
+	},
+})
 
 var betaSessionsEventsStream = cli.Command{
 	Name:    "stream",

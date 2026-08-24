@@ -1,5 +1,90 @@
 # Changelog
 
+## 1.26.1 (2026-08-19)
+
+Full Changelog: [v1.26.0...v1.26.1](https://github.com/anthropics/anthropic-cli/compare/v1.26.0...v1.26.1)
+
+### Chores
+
+* bump sdk version ([#66](https://github.com/anthropics/anthropic-cli/issues/66)) ([acdc28b](https://github.com/anthropics/anthropic-cli/commit/acdc28b15a9665e35dde952146d62c57bb6a2d82))
+
+## 1.26.0 (2026-08-19)
+
+Full Changelog: [v1.25.0...v1.26.0](https://github.com/anthropics/anthropic-cli/compare/v1.25.0...v1.26.0)
+
+### Features
+
+* **api:** managed agents web search config and self hosted sandbox memory ([8abb4e9](https://github.com/anthropics/anthropic-cli/commit/8abb4e9528d19640935e17a72217ca7e20ab1294))
+
+## 1.25.0 (2026-08-19)
+
+Full Changelog: [v1.24.0...v1.25.0](https://github.com/anthropics/anthropic-cli/compare/v1.24.0...v1.25.0)
+
+### Features
+
+* **api:** Files and Skills APIs are now GA; add computer use and browser use toolsets ([db63120](https://github.com/anthropics/anthropic-cli/commit/db63120f2f9dee76023f2a5d46a419e8436d8b80))
+* **api:** manual updates ([fe7e0a5](https://github.com/anthropics/anthropic-cli/commit/fe7e0a5244d1dc45fdde0bb7b0d71277ee2470d3))
+
+## 1.24.0 (2026-08-18)
+
+Full Changelog: [v1.23.0...v1.24.0](https://github.com/anthropics/anthropic-cli/compare/v1.23.0...v1.24.0)
+
+### Features
+
+* **api:** additions to files and memory stores ([addfe40](https://github.com/anthropics/anthropic-cli/commit/addfe403dc474b5cc859d589c9886fc409714e22))
+* **api:** updates to skill, files, and user profiles ([3ebd6ce](https://github.com/anthropics/anthropic-cli/commit/3ebd6ce2b9ab09d069f154f887a7c26c80ebf17c))
+
+
+### Bug Fixes
+
+* **api:** remove unsupported mid_conv_system content block ([26f42f9](https://github.com/anthropics/anthropic-cli/commit/26f42f9a6b7f980fb81de62a3a65df0f55b48724))
+
+
+### Chores
+
+* **internal:** remove leftover prism references ([1032305](https://github.com/anthropics/anthropic-cli/commit/10323058cbda781f1047bad1c309926d0e990b2f))
+
+## 1.23.0 (2026-08-13)
+
+Full Changelog: [v1.22.1...v1.23.0](https://github.com/anthropics/anthropic-cli/compare/v1.22.1...v1.23.0)
+
+### Features
+
+* **api:** add output_behavior to dream creation (create a new memory store or update the input store in place) ([c9223e4](https://github.com/anthropics/anthropic-cli/commit/c9223e447d68fa37c77599b570618301d1ef3b9f))
+
+
+### Bug Fixes
+
+* **ci:** upload ant binaries instead of nonexistent cdp paths ([99bc95e](https://github.com/anthropics/anthropic-cli/commit/99bc95ef086da0b8b25745ab58df8344fd47dde0))
+
+
+### Chores
+
+* **internal:** codegen related update ([90f3c73](https://github.com/anthropics/anthropic-cli/commit/90f3c7340dcf489df7cf7cb84a00df578c84a7bd))
+* **internal:** codegen related update ([adcaf9f](https://github.com/anthropics/anthropic-cli/commit/adcaf9f6a19c3033289c195bcfa7163ab2a1dee2))
+* **internal:** migrate legacy openapi transforms to core commands ([2dc0ae4](https://github.com/anthropics/anthropic-cli/commit/2dc0ae435accf3935cc108215682cb4e82dd45cb))
+
+
+### Documentation
+
+* **api:** clarify that user profile name is optional for resold profiles ([f0619ca](https://github.com/anthropics/anthropic-cli/commit/f0619ca2956ef227f74fb772d9500b6c7d4f0598))
+
+## 1.22.1 (2026-08-07)
+
+Full Changelog: [v1.22.0...v1.22.1](https://github.com/anthropics/anthropic-cli/compare/v1.22.0...v1.22.1)
+
+### Chores
+
+* bump sdk version ([4afa682](https://github.com/anthropics/anthropic-cli/commit/4afa682626075a34cf080c3ba58cf9fd0505eb74))
+
+## 1.22.0 (2026-08-06)
+
+Full Changelog: [v1.21.0...v1.22.0](https://github.com/anthropics/anthropic-cli/compare/v1.21.0...v1.22.0)
+
+### Features
+
+* **api:** add support for session budgets, advisor tool, pinned inference location and skills auto-loading from GitHub ([8aeb8e7](https://github.com/anthropics/anthropic-cli/commit/8aeb8e73454d4d9c54be1ed412cebd050109ce55))
+
 ## 1.21.0 (2026-07-24)
 
 Full Changelog: [v1.20.0...v1.21.0](https://github.com/anthropics/anthropic-cli/compare/v1.20.0...v1.21.0)

@@ -90,6 +90,11 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 			QueryPath: "page",
 		},
 		&requestflag.Flag[string]{
+			Name:      "service-account-id",
+			Usage:     "Query parameter for service_account_id",
+			QueryPath: "service_account_id",
+		},
+		&requestflag.Flag[string]{
 			Name:      "session-id",
 			Usage:     "Query parameter for session_id",
 			QueryPath: "session_id",
