@@ -127,7 +127,7 @@ func init() {
 					},
 					&cli.StringFlag{
 						Name:  "workspace-id",
-						Usage: "Workspace to bind the access token to (optional). If omitted, Console shows a workspace picker after org selection. Find IDs under Settings → Workspaces in the Console (resolved from --console-url / profile / default).",
+						Usage: "Workspace to bind the access token to (optional). If omitted, Console may show a workspace picker after org selection; login also succeeds with no workspace bound. Find IDs under Settings → Workspaces in the Console (resolved from --console-url / profile / default).",
 					},
 					&cli.BoolFlag{
 						Name:  "debug",
@@ -210,9 +210,10 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	consoleURL := resolveConsoleURL(c.String("console-url"), prev)
 	baseURL := resolveBaseURL(c.String("base-url"), prev)
 	workspaceID := resolveWorkspaceID(c.String("workspace-id"), prev)
-	// workspaceID may be empty here — Console will show a workspace picker
-	// after the org selection step, and the resolved workspace comes back
-	// in the token response (tok.Workspace.ID).
+	// workspaceID may be empty here — Console may show a workspace picker
+	// after the org selection step, in which case the resolved workspace
+	// comes back in the token response (tok.Workspace.ID). A token with no
+	// workspace binding at all is also valid.
 
 	verifier, err := randomURLSafeString(64)
 	if err != nil {
@@ -403,15 +404,12 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	// Effective workspace: prefer what the token is actually bound to (the
 	// authoritative source — backend mints the token against this), fall
 	// back to the flag value when the token response omits it (older
-	// backend that doesn't yet emit the workspace block).
+	// backend that doesn't yet emit the workspace block). Empty is valid —
+	// the profile then carries no workspace_id and requests send no
+	// anthropic-workspace-id header.
 	effectiveWorkspaceID := tok.Workspace.ID
 	if effectiveWorkspaceID == "" {
 		effectiveWorkspaceID = workspaceID
-	}
-	if effectiveWorkspaceID == "" {
-		return fmt.Errorf("no workspace bound to the issued token. " +
-			"Pass --workspace-id, set workspace_id on the profile, " +
-			"or pick a workspace in the Console consent page.")
 	}
 
 	if bootstrapping {
@@ -510,6 +508,16 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	}
 	if tok.Organization.UUID != "" {
 		fmt.Fprintf(os.Stderr, "  organization: %s (%s)\n", tok.Organization.Name, tok.Organization.UUID)
+	}
+	switch {
+	case effectiveWorkspaceID == "":
+		fmt.Fprintf(os.Stderr,
+			"  workspace:    (none) — to target one: ant profile set workspace_id <id> --profile %s, or pass --workspace-id per command\n",
+			profile)
+	case tok.Workspace.Name != "":
+		fmt.Fprintf(os.Stderr, "  workspace:    %q (%s)\n", tok.Workspace.Name, effectiveWorkspaceID)
+	default:
+		fmt.Fprintf(os.Stderr, "  workspace:    %s\n", effectiveWorkspaceID)
 	}
 	if activated {
 		if prevActive == "" {
@@ -839,26 +847,42 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	// The credentials file's workspace_id is what the token is actually
 	// bound to (set at mint time); the profile's workspace_id is user
 	// intent. Show both when they diverge so silent drift is visible.
+	// --workspace-id / ANTHROPIC_WORKSPACE_ID is appended last in
+	// getDefaultRequestOptions, so it wins over both for the header.
 	credsWs := creds.WorkspaceID
 	credsWsName := creds.WorkspaceName
+	wsFromFlag := root.IsSet("workspace-id") && root.String("workspace-id") != ""
+	if wsFromFlag {
+		writeRow(out, true, "--workspace-id / ANTHROPIC_WORKSPACE_ID", root.String("workspace-id"))
+	}
 	switch {
+	case wsFromFlag:
+		if credsWs != "" {
+			credsLabel := credsWs
+			if credsWsName != "" {
+				credsLabel = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
+			}
+			writeRow(out, false, "Active token workspace", credsLabel)
+		} else if profileWs != "" {
+			writeRow(out, false, "Profile workspace_id", profileWs)
+		}
 	case credsWs != "" && profileWs != "" && credsWs == profileWs:
 		label := credsWs
 		if credsWsName != "" {
-			label = fmt.Sprintf("%s (%s)", credsWs, credsWsName)
+			label = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
 		}
 		writeRow(out, true, "Workspace", label)
 	case credsWs != "" && profileWs != "" && credsWs != profileWs:
 		writeRow(out, false, "Profile workspace_id", profileWs)
 		credsLabel := credsWs
 		if credsWsName != "" {
-			credsLabel = fmt.Sprintf("%s (%s)", credsWs, credsWsName)
+			credsLabel = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
 		}
 		writeRow(out, true, "Active token workspace", credsLabel+" — drift, re-login to reconcile")
 	case credsWs != "":
 		credsLabel := credsWs
 		if credsWsName != "" {
-			credsLabel = fmt.Sprintf("%s (%s)", credsWs, credsWsName)
+			credsLabel = fmt.Sprintf("%s (%q)", credsWs, credsWsName)
 		}
 		writeRow(out, true, "Active token workspace", credsLabel)
 	case profileWs != "":
