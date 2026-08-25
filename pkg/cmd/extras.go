@@ -21,10 +21,19 @@ type extraClientFlags struct {
 	WorkspaceID string
 }
 
+// extraClientFlagsFromCmd reads the client-level flags. urfave/cli resolves a
+// flag name leaf-first, so a subcommand that redeclares a name shadows the
+// root flag of the same name.
 func extraClientFlagsFromCmd(cmd *cli.Command) extraClientFlags {
 	return extraClientFlags{
-		BaseURL:     cmd.String("base-url"),
-		WorkspaceID: cmd.String("workspace-id"),
+		// A subcommand's --base-url (e.g. beta:worker) means the same thing as the
+		// root's and is meant to override it, so the leaf-first lookup is right.
+		BaseURL: cmd.String("base-url"),
+		// A subcommand's --workspace-id is a different parameter: on the admin
+		// commands it is the workspace being operated on (`/workspaces/{workspace_id}`
+		// or a body field), not the `anthropic-workspace-id` header that scopes the
+		// credential. Only the root flag / ANTHROPIC_WORKSPACE_ID feeds the header.
+		WorkspaceID: cmd.Root().String("workspace-id"),
 	}
 }
 

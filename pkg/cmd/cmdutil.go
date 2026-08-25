@@ -64,8 +64,12 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 		option.WithHeader("X-Stainless-Runtime", "cli"),
 		option.WithHeader("X-Stainless-CLI-Command", cmd.FullName()),
 	}
+	// Credential flags are global; read them from the root so a generated
+	// subcommand's same-named local flag (e.g. a --service-account-id path
+	// param) can't shadow them under urfave/cli's leaf-first lookup.
+	root := cmd.Root()
 	warnIfCredentialOnCommandLine(os.Stderr)
-	if err := applyStdinCredential(cmd); err != nil {
+	if err := applyStdinCredential(root); err != nil {
 		// TODO: same os.Exit wart as the OAuth resolution failure below.
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -80,23 +84,17 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 	// The explicit/implicit profile split means: a profile you named beats
 	// federation env vars (you asked for it), but federation env vars beat a
 	// profile that just happened to be lying around in active_config.
-	apiKeySet := cmd.IsSet("api-key")
-	authTokenSet := cmd.IsSet("auth-token")
-	cfg, profileExplicit := loadProfileIfUsable(cmd)
-	fed := federation{
-		Assertion:        cmd.String("identity-token"),
-		AssertionFile:    cmd.String("identity-token-file"),
-		Rule:             cmd.String("federation-rule"),
-		OrganizationID:   cmd.String("organization-id"),
-		ServiceAccountID: cmd.String("service-account-id"),
-	}
+	apiKeySet := root.IsSet("api-key")
+	authTokenSet := root.IsSet("auth-token")
+	cfg, profileExplicit := loadProfileIfUsable(root)
+	fed := federationFromRoot(root)
 	fedAnySet := fed.AnySet()
 	apiKeySrc, authTokenSrc := "", ""
 	if apiKeySet {
-		apiKeySrc = credentialSourceLabel(cmd, "api-key")
+		apiKeySrc = credentialSourceLabel(root, "api-key")
 	}
 	if authTokenSet {
-		authTokenSrc = credentialSourceLabel(cmd, "auth-token")
+		authTokenSrc = credentialSourceLabel(root, "auth-token")
 	}
 	warnIfMultipleAuthSources(apiKeySrc, authTokenSrc, cfg != nil && profileExplicit, fedAnySet, cfg != nil && !profileExplicit)
 
@@ -111,15 +109,15 @@ func getDefaultRequestOptions(cmd *cli.Command) []option.RequestOption {
 			opts = append(opts, option.WithHeaderAdd("anthropic-beta", betaUserOAuth))
 		}
 	}
-	if cmd.IsSet("webhook-key") {
-		opts = append(opts, option.WithWebhookKey(cmd.String("webhook-key")))
+	if root.IsSet("webhook-key") {
+		opts = append(opts, option.WithWebhookKey(root.String("webhook-key")))
 	}
 
 	switch {
 	case apiKeySet:
-		opts = append(opts, option.WithAPIKey(cmd.String("api-key")))
+		opts = append(opts, option.WithAPIKey(root.String("api-key")))
 	case authTokenSet:
-		opts = append(opts, option.WithAuthToken(cmd.String("auth-token")))
+		opts = append(opts, option.WithAuthToken(root.String("auth-token")))
 	case cfg != nil && profileExplicit:
 		useProfile()
 	case fedAnySet:
@@ -190,7 +188,7 @@ func warnIfMultipleAuthSources(apiKeySrc, authTokenSrc string, profileExplicit, 
 // with Sources: ANTHROPIC_PROFILE, so IsSet covers both; the LookupEnv branch
 // is a defensive fallback for callers passing a Command not yet Run() (or nil).
 func profileIsExplicit(cmd *cli.Command) bool {
-	if cmd != nil && cmd.IsSet("profile") {
+	if cmd != nil && cmd.Root().IsSet("profile") {
 		return true
 	}
 	_, ok := os.LookupEnv("ANTHROPIC_PROFILE")

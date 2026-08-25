@@ -492,7 +492,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	if data, err := os.ReadFile(config.ActiveConfigPath(dir)); err == nil {
 		prevActive = strings.TrimSpace(string(data))
 	}
-	wantActivate := c.IsSet("profile") || prevActive == ""
+	wantActivate := c.Root().IsSet("profile") || prevActive == ""
 	activated := false
 	if wantActivate && prevActive != profile {
 		if err := config.SetActiveProfile(dir, profile); err != nil {
@@ -935,8 +935,8 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 // that pass a Command not yet Run() (or nil).
 func activeProfileWithSource(c *cli.Command, dir string) (profile, source string) {
 	const explicitSrc = "from --profile / ANTHROPIC_PROFILE"
-	if c != nil && c.IsSet("profile") {
-		return c.String("profile"), explicitSrc
+	if c != nil && c.Root().IsSet("profile") {
+		return c.Root().String("profile"), explicitSrc
 	}
 	if p, ok := os.LookupEnv("ANTHROPIC_PROFILE"); ok {
 		return p, explicitSrc
