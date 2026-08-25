@@ -50,7 +50,7 @@ var skillsVersionsRetrieve = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "version",
-			Usage:     "Identifies the skill version: a version ID, or — where the endpoint accepts it — the literal `latest` for the skill's most recent version.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
+			Usage:     "Identifies the skill version: a version ID, or the literal `latest` for the skill's most recent version.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
 		},
@@ -103,7 +103,7 @@ var skillsVersionsDelete = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "version",
-			Usage:     "Identifies the skill version: a version ID, or — where the endpoint accepts it — the literal `latest` for the skill's most recent version.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
+			Usage:     "Identifies the skill version by its version ID.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
 		},
