@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.27.0 (2026-08-26)
+
+Full Changelog: [v1.26.1...v1.27.0](https://github.com/anthropics/anthropic-cli/compare/v1.26.1...v1.27.0)
+
+### Features
+
+* **api:** add missing anthropic-beta values ([17d560f](https://github.com/anthropics/anthropic-cli/commit/17d560f04e5fc374347456157a2c10c93162bdeb))
+* **api:** add support for Organization API endpoints ([05d89e3](https://github.com/anthropics/anthropic-cli/commit/05d89e37ce1c823aa90225462e628721f3b05afe))
+* **auth:** add --api-key-stdin / --auth-token-stdin and deprecate credential argv flags ([#64](https://github.com/anthropics/anthropic-cli/issues/64)) ([c19647d](https://github.com/anthropics/anthropic-cli/commit/c19647d73fb3fba56b7b5ba113bc50687ab3c1dd))
+
+
+### Bug Fixes
+
+* **auth:** allow login without a workspace id ([cc27104](https://github.com/anthropics/anthropic-cli/commit/cc2710474b52d0df50ed5150007bdb7e5ce390a4))
+* **auth:** read global credential/workspace flags from the root command ([#73](https://github.com/anthropics/anthropic-cli/issues/73)) ([e832332](https://github.com/anthropics/anthropic-cli/commit/e832332f555701569b64f0d37301f007b5683043))
+* **client:** keep typed repeatable flags for nullable query and header arrays ([0bba330](https://github.com/anthropics/anthropic-cli/commit/0bba330886fa461e50554ab3e5b271b8793740b4))
+
+
+### Chores
+
+* **client:** sync Go SDK version ([1088d08](https://github.com/anthropics/anthropic-cli/commit/1088d0882e2b2fd76d5fb0cb53d99c42276f5171))
+* **docs:** clarify skill version `latest` support and memory version retention ([22fb67a](https://github.com/anthropics/anthropic-cli/commit/22fb67a5a4530f22b89806d77e2983b51e6038bf))
+* **internal:** cancel superseded CI runs ([cba857e](https://github.com/anthropics/anthropic-cli/commit/cba857eae253957da40b7a5e61200cb160579848))
+* **internal:** minor workflow reformat ([fad8f52](https://github.com/anthropics/anthropic-cli/commit/fad8f528d0926e6b45e1eb086837f91a603e0376))
+
 ## 1.26.1 (2026-08-19)
 
 Full Changelog: [v1.26.0...v1.26.1](https://github.com/anthropics/anthropic-cli/compare/v1.26.0...v1.26.1)
