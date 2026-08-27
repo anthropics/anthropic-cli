@@ -26,7 +26,7 @@ var betaOrganizationRateLimitsList = cli.Command{
 		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Maximum number of items to return per page. Ranges from `1` to `1000`.\n\nAccepted for request-shape compatibility and currently ignored: every entry is returned in a single page.",
+			Usage:     "Maximum number of items to return per page. Ranges from `1` to `1000`.\n\nWhen omitted, every remaining entry is returned in a single page and `next_page` is `null`.",
 			QueryPath: "limit",
 		},
 		&requestflag.Flag[string]{
