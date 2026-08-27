@@ -17,7 +17,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills", "create",
 			"--file", mocktest.TestFile(t, "Example data"),
-			"--display-title", "display_title",
+			"--display-name", "display_name",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -28,7 +28,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 		pipeDataStr := "" +
 			"files:\n" +
 			"  - Example data\n" +
-			"display_title: display_title\n"
+			"display_name: display_name\n"
 		pipeDataStr = strings.ReplaceAll(pipeDataStr, "Example data", testFile)
 		pipeData := []byte(pipeDataStr)
 		mocktest.TestRunMockTestWithPipeAndFlags(
@@ -59,7 +59,7 @@ func TestBetaSkillsList(t *testing.T) {
 			"--api-key", "string",
 			"beta:skills", "list",
 			"--max-items", "10",
-			"--limit", "0",
+			"--limit", "1",
 			"--page", "page",
 			"--source", "source",
 			"--beta", "message-batches-2024-09-24",

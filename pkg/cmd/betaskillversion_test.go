@@ -61,7 +61,7 @@ func TestBetaSkillsVersionsList(t *testing.T) {
 			"beta:skills:versions", "list",
 			"--max-items", "10",
 			"--skill-id", "skill_id",
-			"--limit", "0",
+			"--limit", "1",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
 		)

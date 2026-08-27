@@ -20,21 +20,21 @@ var betaFilesList = cli.Command{
 	Usage:   "List Files",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[string]{
-			Name:      "after-id",
-			Usage:     "ID of the object to use as a cursor for pagination. When provided, returns the page of results immediately after this object.",
-			QueryPath: "after_id",
-		},
-		&requestflag.Flag[string]{
-			Name:      "before-id",
-			Usage:     "ID of the object to use as a cursor for pagination. When provided, returns the page of results immediately before this object.",
-			QueryPath: "before_id",
+		&requestflag.Flag[[]string]{
+			Name:      "id",
+			Usage:     "Restrict the result set to Files whose `id` is in this list. At most 100 entries (after de-duplication). Mutually exclusive with `page` and `limit`. When supplied, the response is always a single page (`next_page` is null). IDs that do not resolve to a visible File — including deleted Files — are silently omitted.",
+			QueryPath: "ids",
 		},
 		&requestflag.Flag[int64]{
 			Name:      "limit",
 			Usage:     "Number of items to return per page.\n\nDefaults to `20`. Ranges from `1` to `1000`.",
 			Default:   20,
 			QueryPath: "limit",
+		},
+		&requestflag.Flag[string]{
+			Name:      "page",
+			Usage:     "Opaque page cursor returned in a prior list response's `next_page`. Prefixed `page_`.",
+			QueryPath: "page",
 		},
 		&requestflag.Flag[string]{
 			Name:      "scope-id",
@@ -135,6 +135,11 @@ var betaFilesUpload = cli.Command{
 			BodyPath:  "file",
 			FileInput: true,
 		},
+		&requestflag.Flag[int64]{
+			Name:     "expires-in-seconds",
+			Usage:    "Seconds from upload until the file expires and its bytes become permanently unavailable. Must be between 3600 (one hour) and 7776000 (ninety days).",
+			BodyPath: "expires_in_seconds",
+		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
@@ -192,9 +197,6 @@ func handleBetaFilesList(ctx context.Context, cmd *cli.Command) error {
 		maxItems := int64(-1)
 		if cmd.IsSet("max-items") {
 			maxItems = cmd.Value("max-items").(int64)
-		} else if cmd.IsSet("limit") {
-			// notably, `limit` is still sent, so results are truncated server side, but this will stop further auto-iteration
-			maxItems = cmd.Value("limit").(int64)
 		}
 		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
 			ExplicitFormat: explicitFormat,
