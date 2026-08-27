@@ -27,9 +27,9 @@ var betaSkillsCreate = cli.Command{
 			FileInput: true,
 		},
 		&requestflag.Flag[*string]{
-			Name:     "display-title",
-			Usage:    "Display title for the skill.\n\nThis is a human-readable label that is not included in the prompt sent to the model.",
-			BodyPath: "display_title",
+			Name:     "display-name",
+			Usage:    "Human-readable, single-line label for the Skill. Maximum 255 characters.\nAlways set: derived from the SKILL.md frontmatter `name` when omitted at\ncreation. Not unique.",
+			BodyPath: "display_name",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -69,7 +69,7 @@ var betaSkillsList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[int64]{
 			Name:      "limit",
-			Usage:     "Number of results to return per page.\n\nMaximum value is 100. Defaults to 20.",
+			Usage:     "Number of results to return per page.\n\nRanges from `1` to `1000`. Defaults to `20`.",
 			Default:   20,
 			QueryPath: "limit",
 		},
