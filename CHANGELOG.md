@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.28.0 (2026-08-27)
+
+Full Changelog: [v1.27.0...v1.28.0](https://github.com/anthropics/anthropic-cli/compare/v1.27.0...v1.28.0)
+
+### Features
+
+* **api:** beta files/skills namespaces use GA shapes; drop dated beta header pins ([a7666a4](https://github.com/anthropics/anthropic-cli/commit/a7666a4455c153456d9bf38ec526bd89c91c33ff))
+
+
+### Chores
+
+* **internal:** codegen related update ([81209db](https://github.com/anthropics/anthropic-cli/commit/81209dbce25786dc84c4591ab85d9b7f212cff75))
+* **internal:** codegen related update ([bf6cc85](https://github.com/anthropics/anthropic-cli/commit/bf6cc857337b83cad96ca0b8d8453daaa73e865c))
+
+
+### Documentation
+
+* **api:** clarify pagination on the organization rate-limit list endpoints ([32714ce](https://github.com/anthropics/anthropic-cli/commit/32714ce9787dd226faf80b3ca5565b0db0c6fdf0))
+
 ## 1.27.0 (2026-08-26)
 
 Full Changelog: [v1.26.1...v1.27.0](https://github.com/anthropics/anthropic-cli/compare/v1.26.1...v1.27.0)
