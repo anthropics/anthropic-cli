@@ -16,9 +16,9 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 			"beta:user-profiles", "create",
 			"--access-type", "application",
 			"--external-id", "user_12345",
+			"--external-user-onboarded-at", "'2024-11-02T08:15:00Z'",
 			"--metadata", "{}",
 			"--name", "x",
-			"--relationship", "external",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -28,9 +28,9 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"access_type: application\n" +
 			"external_id: user_12345\n" +
+			"external_user_onboarded_at: '2024-11-02T08:15:00Z'\n" +
 			"metadata: {}\n" +
-			"name: x\n" +
-			"relationship: external\n")
+			"name: x\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -61,9 +61,9 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
 			"--access-type", "application",
 			"--external-id", "user_12345",
+			"--external-user-onboarded-at", "'2019-12-27T18:11:19.117Z'",
 			"--metadata", "{foo: string}",
 			"--name", "x",
-			"--relationship", "external",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -73,10 +73,10 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 		pipeData := []byte("" +
 			"access_type: application\n" +
 			"external_id: user_12345\n" +
+			"external_user_onboarded_at: '2019-12-27T18:11:19.117Z'\n" +
 			"metadata:\n" +
 			"  foo: string\n" +
-			"name: x\n" +
-			"relationship: external\n")
+			"name: x\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",

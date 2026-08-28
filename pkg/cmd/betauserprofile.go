@@ -29,6 +29,11 @@ var betaUserProfilesCreate = cli.Command{
 			Usage:    "Platform's own identifier for this user. Not enforced unique. Maximum 255 characters.",
 			BodyPath: "external_id",
 		},
+		&requestflag.Flag[any]{
+			Name:     "external-user-onboarded-at",
+			Usage:    "A timestamp in RFC 3339 format",
+			BodyPath: "external_user_onboarded_at",
+		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Free-form key-value data to attach to this user profile. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters. Values must be non-empty strings.",
@@ -36,13 +41,8 @@ var betaUserProfilesCreate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "name",
-			Usage:    "Optional for all profiles. Real-world name of the entity this profile represents (company or individual); for a resold-to company (`relationship` `resold` / `access_type` `passthrough`), that company's name where known. Maximum 255 characters.",
+			Usage:    "Optional for all profiles. Real-world name of the entity this profile represents (company or individual); for a company the platform resells Claude access to (`access_type` `passthrough`), that company's name where known. Maximum 255 characters.",
 			BodyPath: "name",
-		},
-		&requestflag.Flag[string]{
-			Name:     "relationship",
-			Usage:    "How the entity behind a user profile relates to the platform that owns the API key. `external`: an individual end-user of the platform. `resold`: a company the platform resells Claude access to. `internal`: the platform's own usage.",
-			BodyPath: "relationship",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -94,6 +94,11 @@ var betaUserProfilesUpdate = cli.Command{
 			Usage:    "If present, replaces the stored external_id. Omit to leave unchanged. Maximum 255 characters.",
 			BodyPath: "external_id",
 		},
+		&requestflag.Flag[any]{
+			Name:     "external-user-onboarded-at",
+			Usage:    "A timestamp in RFC 3339 format",
+			BodyPath: "external_user_onboarded_at",
+		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
 			Usage:    "Key-value pairs to merge into the stored metadata. Keys provided overwrite existing values. To remove a key, set its value to an empty string. Keys not provided are left unchanged. Maximum 16 keys, with keys up to 64 characters and values up to 512 characters.",
@@ -103,11 +108,6 @@ var betaUserProfilesUpdate = cli.Command{
 			Name:     "name",
 			Usage:    "If present, replaces the stored name. Omit to leave unchanged. Maximum 255 characters.",
 			BodyPath: "name",
-		},
-		&requestflag.Flag[*string]{
-			Name:     "relationship",
-			Usage:    "How the entity behind a user profile relates to the platform that owns the API key. `external`: an individual end-user of the platform. `resold`: a company the platform resells Claude access to. `internal`: the platform's own usage.",
-			BodyPath: "relationship",
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
