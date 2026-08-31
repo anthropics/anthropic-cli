@@ -40,7 +40,7 @@ jobs:
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link "github.com/anthropics/anthropic-sdk-go-private@${REF_NAME}" || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -68,7 +68,7 @@ jobs:
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link "github.com/anthropics/anthropic-sdk-go-private@${REF_NAME}" || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
@@ -165,7 +165,7 @@ jobs:
         env:
           REF_NAME: ${{ github.ref_name }}
         run: |
-          ./scripts/link 'github.com/anthropics/anthropic-sdk-go-private@${{ github.ref_name }}' || true
+          ./scripts/link "github.com/anthropics/anthropic-sdk-go-private@${REF_NAME}" || true
 
       - name: Bootstrap
         run: ./scripts/bootstrap
