@@ -88,7 +88,7 @@ var betaSessionsResourcesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque cursor from a previous response's next_page field.",
+			Usage:     "Opaque cursor from a previous response's `next_page` field.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{

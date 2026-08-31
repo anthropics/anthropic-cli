@@ -96,6 +96,7 @@ func TestBetaUserProfilesList(t *testing.T) {
 			"--max-items", "10",
 			"--limit", "0",
 			"--order", "asc",
+			"--order-by", "created_at",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
 		)

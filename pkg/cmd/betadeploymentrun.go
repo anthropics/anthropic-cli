@@ -61,12 +61,12 @@ var betaDeploymentRunsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "deployment-id",
-			Usage:     "Filter to a specific deployment. Omit to list across all deployments in the workspace. Filtering by a non-existent deployment_id returns 200 with empty data.",
+			Usage:     "Filter to a specific deployment. Omit to list across all deployments in the workspace. Filtering by a non-existent `deployment_id` returns 200 with empty data.",
 			QueryPath: "deployment_id",
 		},
 		&requestflag.Flag[bool]{
 			Name:      "has-error",
-			Usage:     "Filter: true for runs with non-null error, false for runs with non-null session_id. Omit for all.",
+			Usage:     "Filter: true for runs with non-null `error`, false for runs with non-null `session_id`. Omit for all.",
 			QueryPath: "has_error",
 		},
 		&requestflag.Flag[int64]{
@@ -76,7 +76,7 @@ var betaDeploymentRunsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination cursor. Pass next_page from the previous response. Invalid or expired cursors return 400.",
+			Usage:     "Opaque pagination cursor. Pass `next_page` from the previous response. Invalid or expired cursors return 400.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[string]{
