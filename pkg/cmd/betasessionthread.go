@@ -56,7 +56,7 @@ var betaSessionsThreadsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination cursor from a previous response's next_page. Forward-only.",
+			Usage:     "Opaque pagination cursor from a previous response's `next_page`. Forward-only.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{

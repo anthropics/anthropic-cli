@@ -630,6 +630,15 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:compliance-settings",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationComplianceSettingsRetrieve,
+					&betaOrganizationComplianceSettingsUpdate,
+				},
+			},
+			{
 				Name:            "@manpages",
 				Usage:           "Generate documentation for 'man'",
 				UsageText:       "ant @manpages [-o ant.1] [--gzip]",

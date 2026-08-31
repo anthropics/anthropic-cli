@@ -135,6 +135,11 @@ var betaUserProfilesList = cli.Command{
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
+			Name:      "order-by",
+			Usage:     "Query parameter for order_by",
+			QueryPath: "order_by",
+		},
+		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Query parameter for page",
 			QueryPath: "page",

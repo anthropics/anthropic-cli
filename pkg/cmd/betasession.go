@@ -296,7 +296,7 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[int64]{
 			Name:      "agent-version",
-			Usage:     "Filter by agent version. Only applies when agent_id is also set.",
+			Usage:     "Filter by agent version. Only applies when `agent_id` is also set.",
 			QueryPath: "agent_version",
 		},
 		&requestflag.Flag[any]{
@@ -336,12 +336,12 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "memory-store-id",
-			Usage:     "Filter sessions whose resources contain a memory_store with this memory store ID.",
+			Usage:     "Filter sessions whose resources contain a `memory_store` with this memory store ID.",
 			QueryPath: "memory_store_id",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by created_at. Defaults to desc (newest first).",
+			Usage:     "Sort direction for results, ordered by `created_at`. Defaults to `desc` (newest first).",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{

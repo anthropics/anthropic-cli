@@ -51,12 +51,12 @@ var betaSessionsEventsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by the event's `processed_at`. Defaults to asc (chronological).",
+			Usage:     "Sort direction for results, ordered by the event's `processed_at`. Defaults to `asc` (chronological).",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
 			Name:      "page",
-			Usage:     "Opaque pagination cursor from a previous response's next_page.",
+			Usage:     "Opaque pagination cursor from a previous response's `next_page`.",
 			QueryPath: "page",
 		},
 		&requestflag.Flag[[]string]{
