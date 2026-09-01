@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.29.0 (2026-09-01)
+
+Full Changelog: [v1.28.0...v1.29.0](https://github.com/anthropics/anthropic-cli/compare/v1.28.0...v1.29.0)
+
+### Features
+
+* **api:** beta user profiles: add external_user_onboarded_at, remove relationship in favor of access_type ([b37e2bd](https://github.com/anthropics/anthropic-cli/commit/b37e2bdee6af31d8bf4f47d5f48ea0a2a0b69cd0))
+* **api:** manual updates ([f615a64](https://github.com/anthropics/anthropic-cli/commit/f615a64ec3fa42a28fe044f256e95913a23ec9fe))
+* **api:** organization compliance settings, user-profile order_by, memory-store and toolset schema updates ([e9f08fe](https://github.com/anthropics/anthropic-cli/commit/e9f08fe262388e185a1d3d94008f988466b2d30f))
+
+
+### Bug Fixes
+
+* **ci:** update link step to use env var ([3adb1ee](https://github.com/anthropics/anthropic-cli/commit/3adb1eef74a53d5dfa0d171d8d84f3bd8a5f3b30))
+
+
+### Chores
+
+* bump go dep ([#84](https://github.com/anthropics/anthropic-cli/issues/84)) ([f5bd036](https://github.com/anthropics/anthropic-cli/commit/f5bd0368c559d2c04ed9ae8a5eb78e135a53d306))
+* **internal:** bump go dep ([#81](https://github.com/anthropics/anthropic-cli/issues/81)) ([87f2b9c](https://github.com/anthropics/anthropic-cli/commit/87f2b9c70ef0ba5f5bd6d2d3a919c17836102956))
+
 ## 1.28.0 (2026-08-27)
 
 Full Changelog: [v1.27.0...v1.28.0](https://github.com/anthropics/anthropic-cli/compare/v1.27.0...v1.28.0)
