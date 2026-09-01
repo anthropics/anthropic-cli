@@ -57,7 +57,7 @@ var betaOrganizationExternalKeysCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "provider-config.kms-arn",
-			Usage:      "Full ARN of the AWS KMS key.",
+			Usage:      "Full ARN of the AWS KMS key. On Claude Platform on AWS the key must be a single-Region key in your organization's own AWS account; cross-account keys, multi-Region keys, and alias ARNs are rejected.",
 			InnerField: "kms_arn",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -67,7 +67,7 @@ var betaOrganizationExternalKeysCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "provider-config.role-arn",
-			Usage:      "IAM role ARN. Deprecated — Anthropic reaches the KMS key via a managed intermediate role; this field is ignored.",
+			Usage:      "IAM role ARN. Deprecated — Anthropic reaches the KMS key through its own intermediate role (or, on Claude Platform on AWS, with credentials AWS issues for the Workspace); this field is ignored.",
 			InnerField: "role_arn",
 		},
 		&requestflag.InnerFlag[string]{
@@ -147,7 +147,7 @@ var betaOrganizationExternalKeysUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "provider-config.kms-arn",
-			Usage:      "Full ARN of the AWS KMS key.",
+			Usage:      "Full ARN of the AWS KMS key. On Claude Platform on AWS the key must be a single-Region key in your organization's own AWS account; cross-account keys, multi-Region keys, and alias ARNs are rejected.",
 			InnerField: "kms_arn",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -157,7 +157,7 @@ var betaOrganizationExternalKeysUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "provider-config.role-arn",
-			Usage:      "IAM role ARN. Deprecated — Anthropic reaches the KMS key via a managed intermediate role; this field is ignored.",
+			Usage:      "IAM role ARN. Deprecated — Anthropic reaches the KMS key through its own intermediate role (or, on Claude Platform on AWS, with credentials AWS issues for the Workspace); this field is ignored.",
 			InnerField: "role_arn",
 		},
 		&requestflag.InnerFlag[string]{
