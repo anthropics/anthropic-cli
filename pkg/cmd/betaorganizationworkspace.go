@@ -36,7 +36,7 @@ var betaOrganizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "external-key-id",
-			Usage:    "ID of the customer-managed encryption key (CMEK) configuration to use for this\nWorkspace. Setting this field requires CMEK to be enabled for your\norganization. When set, data stored for this Workspace is encrypted with the\nreferenced key. Create key configurations with the External Keys API. This\nfield is write-once: once a key is attached to a Workspace it cannot be\ndetached or replaced. To rotate key material, rotate the underlying key on\nyour cloud KMS; the `external_key_id` stays the same.",
+			Usage:    "ID of the customer-managed encryption key (CMEK) configuration to use for this\nWorkspace. Setting this field requires CMEK to be enabled for your\norganization. When set, data stored for this Workspace is encrypted with the\nreferenced key. Create key configurations with the External Keys API. On\nClaude Platform on AWS the value is the AWS KMS key ARN, and the key must be a\nsingle-Region key in the same AWS account and Region as the Workspace. On that\nplatform the key is validated against this Workspace when it is attached, so a\nkey-policy problem is reported as an error on this request. This field is write-once:\nonce a key is attached to a Workspace it cannot be detached or replaced. To\nrotate key material, rotate the underlying key on your cloud KMS; the\n`external_key_id` stays the same.",
 			BodyPath: "external_key_id",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -109,7 +109,7 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "external-key-id",
-			Usage:    "ID of the customer-managed encryption key (CMEK) configuration to use for this\nWorkspace. Setting this field requires CMEK to be enabled for your\norganization. When set, data stored for this Workspace is encrypted with the\nreferenced key. Create key configurations with the External Keys API. This\nfield is write-once: once a key is attached to a Workspace it cannot be\ndetached or replaced. To rotate key material, rotate the underlying key on\nyour cloud KMS; the `external_key_id` stays the same.",
+			Usage:    "ID of the customer-managed encryption key (CMEK) configuration to use for this\nWorkspace. Setting this field requires CMEK to be enabled for your\norganization. When set, data stored for this Workspace is encrypted with the\nreferenced key. Create key configurations with the External Keys API. On\nClaude Platform on AWS the value is the AWS KMS key ARN, and the key must be a\nsingle-Region key in the same AWS account and Region as the Workspace. On that\nplatform the key is validated against this Workspace when it is attached, so a\nkey-policy problem is reported as an error on this request. This field is write-once:\nonce a key is attached to a Workspace it cannot be detached or replaced. To\nrotate key material, rotate the underlying key on your cloud KMS; the\n`external_key_id` stays the same.",
 			BodyPath: "external_key_id",
 		},
 		&requestflag.Flag[string]{

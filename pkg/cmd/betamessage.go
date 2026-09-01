@@ -170,6 +170,16 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      `Allowed values: "user", "assistant", "system".`,
 			InnerField: "role",
 		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "message.clear-at",
+			Usage:      "How long this system message's text stays in front of the model. `\"never\"` (the default) renders it on every request that includes it. `\"next_user_message\"` renders it only for the user turn it follows: once a later `role: \"user\"` message exists in `messages` the message stays in the array (send it unchanged) but is no longer shown to the model. Only permitted on `role: \"system\"` messages.",
+			InnerField: "clear_at",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "message.output-config",
+			Usage:      "Per-message output configuration on a role:\"system\" input message.\n\nFields here apply per-turn; ``format`` remains top-level only. An\nempty ``{}`` is accepted on a message that carries content; a message\nwith neither content nor output_config fields is rejected.",
+			InnerField: "output_config",
+		},
 	},
 	"cache-control": {
 		&requestflag.InnerFlag[string]{
@@ -283,6 +293,11 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "thinking.type",
 			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
 			InnerField: "type",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "thinking.block-binding",
+			Usage:      "Controls for block binding: what happens when a thinking block this\nrequest sends back fails the conversation check. Every field is optional;\nan empty object means every default.",
+			InnerField: "block_binding",
 		},
 		&requestflag.InnerFlag[int64]{
 			Name:       "thinking.budget-tokens",
@@ -538,6 +553,16 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Usage:      `Allowed values: "user", "assistant", "system".`,
 			InnerField: "role",
 		},
+		&requestflag.InnerFlag[*string]{
+			Name:       "message.clear-at",
+			Usage:      "How long this system message's text stays in front of the model. `\"never\"` (the default) renders it on every request that includes it. `\"next_user_message\"` renders it only for the user turn it follows: once a later `role: \"user\"` message exists in `messages` the message stays in the array (send it unchanged) but is no longer shown to the model. Only permitted on `role: \"system\"` messages.",
+			InnerField: "clear_at",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "message.output-config",
+			Usage:      "Per-message output configuration on a role:\"system\" input message.\n\nFields here apply per-turn; ``format`` remains top-level only. An\nempty ``{}`` is accepted on a message that carries content; a message\nwith neither content nor output_config fields is rejected.",
+			InnerField: "output_config",
+		},
 	},
 	"cache-control": {
 		&requestflag.InnerFlag[string]{
@@ -614,6 +639,11 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:       "thinking.type",
 			Usage:      `Allowed values: "enabled", "disabled", "adaptive".`,
 			InnerField: "type",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "thinking.block-binding",
+			Usage:      "Controls for block binding: what happens when a thinking block this\nrequest sends back fails the conversation check. Every field is optional;\nan empty object means every default.",
+			InnerField: "block_binding",
 		},
 		&requestflag.InnerFlag[int64]{
 			Name:       "thinking.budget-tokens",
