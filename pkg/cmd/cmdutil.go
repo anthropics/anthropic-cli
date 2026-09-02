@@ -343,6 +343,19 @@ func streamOutput(label string, generateOutput func(w *os.File) error) error {
 	return streamOutputOSSpecific(label, generateOutput)
 }
 
+func getPagerArgs() ([]string, error) {
+	pager := os.Getenv("PAGER")
+	if pager == "" {
+		pager = "less"
+	}
+
+	args := strings.Fields(pager)
+	if len(args) == 0 {
+		return nil, fmt.Errorf("PAGER must contain a command")
+	}
+	return args, nil
+}
+
 func streamToPagerWithPipe(label string, generateOutput func(w *os.File) error) error {
 	r, w, err := os.Pipe()
 	if err != nil {
@@ -351,16 +364,16 @@ func streamToPagerWithPipe(label string, generateOutput func(w *os.File) error) 
 	defer r.Close()
 	defer w.Close()
 
-	pagerProgram := os.Getenv("PAGER")
-	if pagerProgram == "" {
-		pagerProgram = "less"
-	}
-
-	if _, err := exec.LookPath(pagerProgram); err != nil {
+	pagerArgs, err := getPagerArgs()
+	if err != nil {
 		return err
 	}
 
-	cmd := exec.Command(pagerProgram)
+	if _, err := exec.LookPath(pagerArgs[0]); err != nil {
+		return err
+	}
+
+	cmd := exec.Command(pagerArgs[0], pagerArgs[1:]...)
 	cmd.Stdin = r
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
