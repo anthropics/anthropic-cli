@@ -178,7 +178,7 @@ func (tv *TableView) loadMoreData(raw bool) tea.Cmd {
 		if len(tv.columns) > 1 && result.IsObject() {
 			newRow = make(table.Row, len(tv.columns))
 			for i, col := range tv.columns {
-				newRow[i] = formatValue(result.Get(col.Title), raw)
+				newRow[i] = formatValue(result.Get(gjson.Escape(col.Title)), raw)
 			}
 		}
 
@@ -617,7 +617,7 @@ func newArrayOfObjectsTableView(path string, data gjson.Result, array []gjson.Re
 	for _, item := range array {
 		row := make(table.Row, len(columns))
 		for i, col := range columns {
-			row[i] = formatValue(item.Get(col.Title), raw)
+			row[i] = formatValue(item.Get(gjson.Escape(col.Title)), raw)
 		}
 		rows = append(rows, row)
 		rowData = append(rowData, item)
@@ -641,7 +641,7 @@ func newObjectTableView(path string, data gjson.Result, raw bool) *TableView {
 	rowData := make([]gjson.Result, 0, len(keys))
 
 	for _, key := range keys {
-		value := data.Get(key.Str)
+		value := data.Get(gjson.Escape(key.Str))
 		title := key.Str
 		rows = append(rows, table.Row{title, formatValue(value, raw)})
 		rowData = append(rowData, value)
@@ -711,7 +711,7 @@ func formatObject(value gjson.Result) string {
 	keyStrs := make([]string, len(keys))
 
 	for i, key := range keys {
-		val := value.Get(key.Str)
+		val := value.Get(gjson.Escape(key.Str))
 		keyStrs[i] = formatObjectKey(key.Str, val)
 	}
 
