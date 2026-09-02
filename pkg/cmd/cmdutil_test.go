@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -385,4 +386,55 @@ func captureShowJSONIterator[T any](t *testing.T, iter jsonview.Iterator[T], for
 	var buf bytes.Buffer
 	_, _ = buf.ReadFrom(r)
 	return buf.String()
+}
+
+type countingSliceIterator[T any] struct {
+	sliceIterator[T]
+	calls int
+}
+
+func (c *countingSliceIterator[T]) Next() bool {
+	c.calls++
+	return c.sliceIterator.Next()
+}
+
+// TestShowJSONIteratorPagerItemBudget verifies the pager loop in
+// ShowJSONIterator does not consume more items from the iterator than
+// itemsToDisplay. The second loop used to call Next() once past the budget
+// before noticing itemsToDisplay reached zero.
+func TestShowJSONIteratorPagerItemBudget(t *testing.T) {
+	// Point os.Stdout at a non-terminal pipe so term.GetSize errors and the
+	// geometry defaults to 100x40, making the pager threshold deterministic
+	// regardless of the CI terminal size.
+	oldStdout := os.Stdout
+	t.Cleanup(func() {
+		os.Stdout = oldStdout
+	})
+	pr, pw, err := os.Pipe()
+	require.NoError(t, err)
+	defer pr.Close()
+	os.Stdout = pw
+
+	// A single long line wraps to ~40 terminal lines at width 100, crossing
+	// the terminalHeight-3 threshold after the first item so the pager path
+	// runs.
+	long := strings.Repeat("y", 4000)
+	iter := &countingSliceIterator[map[string]any]{
+		sliceIterator: sliceIterator[map[string]any]{
+			items: []map[string]any{
+				{"id": long},
+				{"id": long},
+				{"id": long},
+			},
+		},
+	}
+
+	err = ShowJSONIterator(iter, 2, ShowJSONOpts{
+		Format: "raw",
+		Stderr: io.Discard,
+		Stdout: pw,
+		Title:  "test",
+	})
+	require.NoError(t, err)
+	require.Equal(t, 2, iter.calls, "pager loop consumed more items than the budget")
 }
