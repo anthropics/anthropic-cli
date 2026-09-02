@@ -19,6 +19,7 @@ func TestBetaVaultsCredentialsCreate(t *testing.T) {
 			"--display-name", "Example credential",
 			"--metadata", "{environment: production}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -38,6 +39,7 @@ func TestBetaVaultsCredentialsCreate(t *testing.T) {
 			"beta:vaults:credentials", "create",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -51,6 +53,7 @@ func TestBetaVaultsCredentialsRetrieve(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -67,6 +70,7 @@ func TestBetaVaultsCredentialsUpdate(t *testing.T) {
 			"--display-name", "Example credential",
 			"--metadata", "{environment: production}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -93,6 +97,7 @@ func TestBetaVaultsCredentialsUpdate(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -110,6 +115,7 @@ func TestBetaVaultsCredentialsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -123,6 +129,7 @@ func TestBetaVaultsCredentialsDelete(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -136,6 +143,7 @@ func TestBetaVaultsCredentialsArchive(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -150,6 +158,7 @@ func TestBetaVaultsCredentialsMCPOAuthValidate(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYOQfSkw",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

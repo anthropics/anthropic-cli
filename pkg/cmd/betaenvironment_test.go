@@ -20,6 +20,7 @@ func TestBetaEnvironmentsCreate(t *testing.T) {
 			"--metadata", "{foo: string}",
 			"--scope", "organization",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -59,6 +60,7 @@ func TestBetaEnvironmentsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:environments", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -71,6 +73,7 @@ func TestBetaEnvironmentsRetrieve(t *testing.T) {
 			"beta:environments", "retrieve",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -88,6 +91,7 @@ func TestBetaEnvironmentsUpdate(t *testing.T) {
 			"--name", "x",
 			"--scope", "organization",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -128,6 +132,7 @@ func TestBetaEnvironmentsUpdate(t *testing.T) {
 			"beta:environments", "update",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -143,6 +148,7 @@ func TestBetaEnvironmentsList(t *testing.T) {
 			"--limit", "1",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -155,6 +161,7 @@ func TestBetaEnvironmentsDelete(t *testing.T) {
 			"beta:environments", "delete",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -167,6 +174,7 @@ func TestBetaEnvironmentsArchive(t *testing.T) {
 			"beta:environments", "archive",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

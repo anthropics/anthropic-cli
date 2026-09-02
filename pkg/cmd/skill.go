@@ -31,6 +31,10 @@ var skillsCreate = cli.Command{
 			Usage:    "Human-readable, single-line label for the Skill. Maximum 255 characters.\nAlways set: derived from the SKILL.md frontmatter `name` when omitted at\ncreation. Not unique.",
 			BodyPath: "display_name",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleSkillsCreate,
 	HideHelpCommand: true,
@@ -46,6 +50,10 @@ var skillsRetrieve = cli.Command{
 			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
 			Required:  true,
 			PathParam: "skill_id",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleSkillsRetrieve,
@@ -73,6 +81,10 @@ var skillsList = cli.Command{
 			Usage:     "Filter skills by source.\n\nIf provided, only skills from the specified source will be returned:\n* `\"custom\"`: only return user-created skills\n* `\"anthropic\"`: only return Anthropic-created skills",
 			QueryPath: "source",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -92,6 +104,10 @@ var skillsDelete = cli.Command{
 			Usage:     "Unique identifier for the skill.\n\nThe format and length of IDs may change over time.",
 			Required:  true,
 			PathParam: "skill_id",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleSkillsDelete,
@@ -161,9 +177,16 @@ func handleSkillsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.SkillGetParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Skills.Get(ctx, cmd.Value("skill-id").(string), options...)
+	_, err = client.Skills.Get(
+		ctx,
+		cmd.Value("skill-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -264,9 +287,16 @@ func handleSkillsDelete(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.SkillDeleteParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Skills.Delete(ctx, cmd.Value("skill-id").(string), options...)
+	_, err = client.Skills.Delete(
+		ctx,
+		cmd.Value("skill-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}

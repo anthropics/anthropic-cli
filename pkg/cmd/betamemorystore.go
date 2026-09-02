@@ -40,6 +40,10 @@ var betaMemoryStoresCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaMemoryStoresCreate,
 	HideHelpCommand: true,
@@ -59,6 +63,10 @@ var betaMemoryStoresRetrieve = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaMemoryStoresRetrieve,
@@ -95,6 +103,10 @@ var betaMemoryStoresUpdate = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaMemoryStoresUpdate,
@@ -136,6 +148,10 @@ var betaMemoryStoresList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -160,6 +176,10 @@ var betaMemoryStoresDelete = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaMemoryStoresDelete,
 	HideHelpCommand: true,
@@ -179,6 +199,10 @@ var betaMemoryStoresArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaMemoryStoresArchive,

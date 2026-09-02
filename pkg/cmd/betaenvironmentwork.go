@@ -34,6 +34,10 @@ var betaEnvironmentsWorkRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaEnvironmentsWorkRetrieve,
 	HideHelpCommand: true,
@@ -64,6 +68,10 @@ var betaEnvironmentsWorkUpdate = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaEnvironmentsWorkUpdate,
@@ -215,6 +223,10 @@ var betaEnvironmentsWorkStats = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaEnvironmentsWorkStats,
 	HideHelpCommand: true,
@@ -245,6 +257,10 @@ var betaEnvironmentsWorkStop = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaEnvironmentsWorkStop,

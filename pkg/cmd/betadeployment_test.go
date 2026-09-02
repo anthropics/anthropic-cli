@@ -26,6 +26,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -52,6 +53,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--schedule.type", "cron",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -89,6 +91,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:deployments", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -102,6 +105,7 @@ func TestBetaDeploymentsRetrieve(t *testing.T) {
 			"beta:deployments", "retrieve",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -124,6 +128,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "[string]",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -151,6 +156,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--schedule.type", "cron",
 			"--vault-id", "[string]",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -189,6 +195,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -209,6 +216,7 @@ func TestBetaDeploymentsList(t *testing.T) {
 			"--page", "page",
 			"--status", "active",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -221,6 +229,7 @@ func TestBetaDeploymentsArchive(t *testing.T) {
 			"beta:deployments", "archive",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -233,6 +242,7 @@ func TestBetaDeploymentsPause(t *testing.T) {
 			"beta:deployments", "pause",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -245,6 +255,7 @@ func TestBetaDeploymentsRun(t *testing.T) {
 			"beta:deployments", "run",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -257,6 +268,7 @@ func TestBetaDeploymentsUnpause(t *testing.T) {
 			"beta:deployments", "unpause",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

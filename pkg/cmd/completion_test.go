@@ -26,6 +26,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"--top-k", "5",
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -49,6 +50,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"--top-k", "5",
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -77,6 +79,7 @@ func TestCompletionsCreate(t *testing.T) {
 			"completions", "create",
 			"--max-items", "10",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

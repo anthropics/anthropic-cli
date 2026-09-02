@@ -35,6 +35,10 @@ var betaVaultsCreate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaVaultsCreate,
 	HideHelpCommand: true,
@@ -54,6 +58,10 @@ var betaVaultsRetrieve = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaVaultsRetrieve,
@@ -86,6 +94,10 @@ var betaVaultsUpdate = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaVaultsUpdate,
 	HideHelpCommand: true,
@@ -116,6 +128,10 @@ var betaVaultsList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -140,6 +156,10 @@ var betaVaultsDelete = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaVaultsDelete,
 	HideHelpCommand: true,
@@ -159,6 +179,10 @@ var betaVaultsArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaVaultsArchive,

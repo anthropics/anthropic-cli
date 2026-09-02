@@ -21,6 +21,7 @@ func TestBetaSessionsThreadsEventsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -36,6 +37,7 @@ func TestBetaSessionsThreadsEventsStream(t *testing.T) {
 			"--thread-id", "sthr_011CZkZVWa6oIjw0rgXZpnBt",
 			"--event-delta", "agent.message",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

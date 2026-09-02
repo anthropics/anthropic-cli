@@ -26,6 +26,7 @@ func TestBetaSessionsEventsList(t *testing.T) {
 			"--page", "page",
 			"--type", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -39,6 +40,7 @@ func TestBetaSessionsEventsSend(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -56,6 +58,7 @@ func TestBetaSessionsEventsSend(t *testing.T) {
 			"beta:sessions:events", "send",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -70,6 +73,7 @@ func TestBetaSessionsEventsStream(t *testing.T) {
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--event-delta", "agent.message",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

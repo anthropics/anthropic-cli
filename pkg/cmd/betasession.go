@@ -66,6 +66,10 @@ var betaSessionsCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsCreate,
 	HideHelpCommand: true,
@@ -208,6 +212,10 @@ var betaSessionsRetrieve = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsRetrieve,
 	HideHelpCommand: true,
@@ -253,6 +261,10 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSessionsUpdate,
@@ -359,6 +371,10 @@ var betaSessionsList = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -383,6 +399,10 @@ var betaSessionsDelete = cli.Command{
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleBetaSessionsDelete,
 	HideHelpCommand: true,
@@ -402,6 +422,10 @@ var betaSessionsArchive = cli.Command{
 			Name:       "beta",
 			Usage:      "Optional header to specify the beta version(s) you want to use.",
 			HeaderPath: "anthropic-beta",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleBetaSessionsArchive,

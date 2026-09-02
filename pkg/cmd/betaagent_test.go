@@ -25,6 +25,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -50,6 +51,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -98,6 +100,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:agents", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -112,6 +115,7 @@ func TestBetaAgentsRetrieve(t *testing.T) {
 			"--agent-id", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--version", "0",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -134,6 +138,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -161,6 +166,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"--tool", "[{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}]",
 			"--version", "1",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -211,6 +217,7 @@ func TestBetaAgentsUpdate(t *testing.T) {
 			"beta:agents", "update",
 			"--agent-id", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -229,6 +236,7 @@ func TestBetaAgentsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -241,6 +249,7 @@ func TestBetaAgentsArchive(t *testing.T) {
 			"beta:agents", "archive",
 			"--agent-id", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

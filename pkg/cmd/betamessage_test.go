@@ -43,6 +43,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -94,6 +95,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--top-p", "0.7",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -231,6 +233,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--max-items", "10",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -255,6 +258,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -292,6 +296,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -407,6 +412,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"beta:messages", "count-tokens",
 			"--beta", "message-batches-2024-09-24",
 			"--user-profile-id", "anthropic-user-profile-id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

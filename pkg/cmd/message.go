@@ -114,6 +114,10 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Usage:      "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization. Requires the `user-profiles` beta header.",
 			HeaderPath: "anthropic-user-profile-id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -352,6 +356,10 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:       "user-profile-id",
 			Usage:      "The user profile ID to attribute this request to. Use when acting on behalf of a party other than your organization. Requires the `user-profiles` beta header.",
 			HeaderPath: "anthropic-user-profile-id",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleMessagesCountTokens,

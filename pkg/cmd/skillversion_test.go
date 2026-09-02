@@ -17,6 +17,7 @@ func TestSkillsVersionsCreate(t *testing.T) {
 			"skills:versions", "create",
 			"--skill-id", "skill_id",
 			"--file", mocktest.TestFile(t, "Example data"),
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -33,6 +34,7 @@ func TestSkillsVersionsCreate(t *testing.T) {
 			"--api-key", "string",
 			"skills:versions", "create",
 			"--skill-id", "skill_id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -45,6 +47,7 @@ func TestSkillsVersionsRetrieve(t *testing.T) {
 			"skills:versions", "retrieve",
 			"--skill-id", "skill_id",
 			"--version", "version",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -59,6 +62,7 @@ func TestSkillsVersionsList(t *testing.T) {
 			"--skill-id", "skill_id",
 			"--limit", "1",
 			"--page", "page",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -71,6 +75,7 @@ func TestSkillsVersionsDelete(t *testing.T) {
 			"skills:versions", "delete",
 			"--skill-id", "skill_id",
 			"--version", "version",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

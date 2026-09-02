@@ -16,6 +16,7 @@ func TestBetaTunnelsCreate(t *testing.T) {
 			"beta:tunnels", "create",
 			"--display-name", "x",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -27,6 +28,7 @@ func TestBetaTunnelsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:tunnels", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -40,6 +42,7 @@ func TestBetaTunnelsRetrieve(t *testing.T) {
 			"beta:tunnels", "retrieve",
 			"--tunnel-id", "tunnel_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -56,6 +59,7 @@ func TestBetaTunnelsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -68,6 +72,7 @@ func TestBetaTunnelsArchive(t *testing.T) {
 			"beta:tunnels", "archive",
 			"--tunnel-id", "tunnel_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -80,6 +85,7 @@ func TestBetaTunnelsRevealToken(t *testing.T) {
 			"beta:tunnels", "reveal-token",
 			"--tunnel-id", "tunnel_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -93,6 +99,7 @@ func TestBetaTunnelsRotateToken(t *testing.T) {
 			"--tunnel-id", "tunnel_id",
 			"--reason", "reason",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -105,6 +112,7 @@ func TestBetaTunnelsRotateToken(t *testing.T) {
 			"beta:tunnels", "rotate-token",
 			"--tunnel-id", "tunnel_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

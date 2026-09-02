@@ -32,6 +32,10 @@ var skillsVersionsCreate = cli.Command{
 			BodyPath:  "files",
 			FileInput: true,
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleSkillsVersionsCreate,
 	HideHelpCommand: true,
@@ -53,6 +57,10 @@ var skillsVersionsRetrieve = cli.Command{
 			Usage:     "Identifies the skill version: a version ID, or the literal `latest` for the skill's most recent version.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleSkillsVersionsRetrieve,
@@ -81,6 +89,10 @@ var skillsVersionsList = cli.Command{
 			Usage:     "Optionally set to the `next_page` token from the previous response.",
 			QueryPath: "page",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -106,6 +118,10 @@ var skillsVersionsDelete = cli.Command{
 			Usage:     "Identifies the skill version by its version ID.\n\nRequests carrying the `skills-2025-10-02` beta header address versions by their Unix epoch timestamp instead (e.g., \"1759178010641129\").",
 			Required:  true,
 			PathParam: "version",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleSkillsVersionsDelete,

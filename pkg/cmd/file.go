@@ -36,6 +36,10 @@ var filesList = cli.Command{
 			Usage:     "Opaque page cursor returned in a prior list response's `next_page`. Prefixed `page_`.",
 			QueryPath: "page",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -56,6 +60,10 @@ var filesDelete = cli.Command{
 			Required:  true,
 			PathParam: "file_id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleFilesDelete,
 	HideHelpCommand: true,
@@ -71,6 +79,10 @@ var filesDownload = cli.Command{
 			Usage:     "ID of the File.",
 			Required:  true,
 			PathParam: "file_id",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 		&requestflag.Flag[string]{
 			Name:    "output",
@@ -93,6 +105,10 @@ var filesRetrieveMetadata = cli.Command{
 			Required:  true,
 			PathParam: "file_id",
 		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
+		},
 	},
 	Action:          handleFilesRetrieveMetadata,
 	HideHelpCommand: true,
@@ -114,6 +130,10 @@ var filesUpload = cli.Command{
 			Name:     "expires-in-seconds",
 			Usage:    "Seconds from upload until the file expires and its bytes become permanently unavailable. Must be between 3600 (one hour) and 7776000 (ninety days).",
 			BodyPath: "expires_in_seconds",
+		},
+		&requestflag.Flag[string]{
+			Name:       "workspace-id",
+			HeaderPath: "anthropic-workspace-id",
 		},
 	},
 	Action:          handleFilesUpload,
@@ -200,9 +220,16 @@ func handleFilesDelete(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.FileDeleteParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Files.Delete(ctx, cmd.Value("file-id").(string), options...)
+	_, err = client.Files.Delete(
+		ctx,
+		cmd.Value("file-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -242,7 +269,14 @@ func handleFilesDownload(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	response, err := client.Files.Download(ctx, cmd.Value("file-id").(string), options...)
+	params := anthropic.FileDownloadParams{}
+
+	response, err := client.Files.Download(
+		ctx,
+		cmd.Value("file-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -275,9 +309,16 @@ func handleFilesRetrieveMetadata(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := anthropic.FileGetMetadataParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Files.GetMetadata(ctx, cmd.Value("file-id").(string), options...)
+	_, err = client.Files.GetMetadata(
+		ctx,
+		cmd.Value("file-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}

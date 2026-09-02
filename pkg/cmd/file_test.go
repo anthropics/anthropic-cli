@@ -19,6 +19,7 @@ func TestFilesList(t *testing.T) {
 			"--id", "string",
 			"--limit", "1",
 			"--page", "page",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -30,6 +31,7 @@ func TestFilesDelete(t *testing.T) {
 			"--api-key", "string",
 			"files", "delete",
 			"--file-id", "file_id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -41,6 +43,7 @@ func TestFilesDownload(t *testing.T) {
 			"--api-key", "string",
 			"files", "download",
 			"--file-id", "file_id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 			"--output", "/dev/null",
 		)
 	})
@@ -53,6 +56,7 @@ func TestFilesRetrieveMetadata(t *testing.T) {
 			"--api-key", "string",
 			"files", "retrieve-metadata",
 			"--file-id", "file_id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -65,6 +69,7 @@ func TestFilesUpload(t *testing.T) {
 			"files", "upload",
 			"--file", mocktest.TestFile(t, "Example data"),
 			"--expires-in-seconds", "3600",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -80,6 +85,7 @@ func TestFilesUpload(t *testing.T) {
 			t, pipeData,
 			"--api-key", "string",
 			"files", "upload",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

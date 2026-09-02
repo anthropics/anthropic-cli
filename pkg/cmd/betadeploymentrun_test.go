@@ -17,6 +17,7 @@ func TestBetaDeploymentRunsRetrieve(t *testing.T) {
 			"beta:deployment-runs", "retrieve",
 			"--deployment-run-id", "deployment_run_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -39,6 +40,7 @@ func TestBetaDeploymentRunsList(t *testing.T) {
 			"--page", "page",
 			"--trigger-type", "schedule",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

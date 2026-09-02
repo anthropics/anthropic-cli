@@ -17,6 +17,7 @@ func TestSkillsCreate(t *testing.T) {
 			"skills", "create",
 			"--file", mocktest.TestFile(t, "Example data"),
 			"--display-name", "display_name",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -33,6 +34,7 @@ func TestSkillsCreate(t *testing.T) {
 			t, pipeData,
 			"--api-key", "string",
 			"skills", "create",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -44,6 +46,7 @@ func TestSkillsRetrieve(t *testing.T) {
 			"--api-key", "string",
 			"skills", "retrieve",
 			"--skill-id", "skill_id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -58,6 +61,7 @@ func TestSkillsList(t *testing.T) {
 			"--limit", "1",
 			"--page", "page",
 			"--source", "source",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -69,6 +73,7 @@ func TestSkillsDelete(t *testing.T) {
 			"--api-key", "string",
 			"skills", "delete",
 			"--skill-id", "skill_id",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

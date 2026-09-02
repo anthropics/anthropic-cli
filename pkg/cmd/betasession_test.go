@@ -24,6 +24,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -46,6 +47,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -78,6 +80,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:sessions", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -90,6 +93,7 @@ func TestBetaSessionsRetrieve(t *testing.T) {
 			"beta:sessions", "retrieve",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -107,6 +111,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -128,6 +133,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -167,6 +173,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -193,6 +200,7 @@ func TestBetaSessionsList(t *testing.T) {
 			"--page", "page",
 			"--status", "rescheduling",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -205,6 +213,7 @@ func TestBetaSessionsDelete(t *testing.T) {
 			"beta:sessions", "delete",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -217,6 +226,7 @@ func TestBetaSessionsArchive(t *testing.T) {
 			"beta:sessions", "archive",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }

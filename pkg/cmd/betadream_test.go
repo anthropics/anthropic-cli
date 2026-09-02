@@ -19,6 +19,7 @@ func TestBetaDreamsCreate(t *testing.T) {
 			"--instructions", "x",
 			"--output-behavior", "{type: create_new}",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 
@@ -37,6 +38,7 @@ func TestBetaDreamsCreate(t *testing.T) {
 			"--api-key", "string",
 			"beta:dreams", "create",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -49,6 +51,7 @@ func TestBetaDreamsRetrieve(t *testing.T) {
 			"beta:dreams", "retrieve",
 			"--dream-id", "dream_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -67,6 +70,7 @@ func TestBetaDreamsList(t *testing.T) {
 			"--page", "page",
 			"--status", "pending",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -79,6 +83,7 @@ func TestBetaDreamsArchive(t *testing.T) {
 			"beta:dreams", "archive",
 			"--dream-id", "dream_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
@@ -91,6 +96,7 @@ func TestBetaDreamsCancel(t *testing.T) {
 			"beta:dreams", "cancel",
 			"--dream-id", "dream_id",
 			"--beta", "message-batches-2024-09-24",
+			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
 }
