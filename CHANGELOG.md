@@ -56,6 +56,15 @@ Full Changelog: [v1.27.0...v1.28.0](https://github.com/anthropics/anthropic-cli/
 
 * **api:** beta files/skills namespaces use GA shapes; drop dated beta header pins ([a7666a4](https://github.com/anthropics/anthropic-cli/commit/a7666a4455c153456d9bf38ec526bd89c91c33ff))
 
+  The `ant beta:files`, `ant beta:skills`, and `ant beta:skills:versions` commands take the same flags and print the same JSON as `ant files` / `ant skills`. The dated `files-api-2025-04-14` / `skills-2025-10-02` headers come from the Go SDK, and this release still builds against anthropic-sdk-go 1.67.0, which sends them, so these commands keep receiving the beta shapes until the CLI picks up anthropic-sdk-go 1.68.0. After that, pass `--beta files-api-2025-04-14` / `--beta skills-2025-10-02` to request the beta shapes explicitly.
+
+  Changes in the beta commands:
+  - `ant beta:skills delete` now deletes a Skill together with all of its versions (previously refused while any version existed).
+  - `ant beta:files list` paginates with `--page` / `--id` (was `--after-id` / `--before-id`); with `--format raw` the page envelope is `{data, next_page}` (was `{data, has_more, first_id, last_id}`). `--max-items` still controls auto-pagination. `ant beta:files upload` gains `--expires-in-seconds`.
+  - `ant beta:skills create` takes `--display-name` (was `--display-title`); Skill JSON uses `display_name` and `latest_version_id` (was `display_title` and `latest_version`), and `ant beta:skills:versions retrieve` / `delete` / `download` take a `skver_…` version id in `--version` (`retrieve` also accepts `latest`) instead of a Unix timestamp.
+
+  Migration guides: [Migrate from `files-api-2025-04-14`](https://platform.claude.com/docs/en/build-with-claude/files#migrate-from-files-api-2025-04-14) · [Migrate from `skills-2025-10-02`](https://platform.claude.com/docs/en/build-with-claude/skills-guide#migrate-from-skills-2025-10-02)
+
 
 ### Chores
 
