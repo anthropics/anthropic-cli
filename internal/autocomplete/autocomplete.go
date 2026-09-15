@@ -20,59 +20,132 @@ const (
 	CompletionStyleFish       CompletionStyle = "fish"
 )
 
-type renderCompletion func(cmd *cli.Command, appName string) (string, error)
+//go:embed shellscripts
+var autoCompleteFS embed.FS
 
-var (
-	//go:embed shellscripts
-	autoCompleteFS embed.FS
+// shellScriptFiles maps each supported shell to its embedded script template.
+// Templates contain the literal token `__APPNAME__`, replaced at render time.
+var shellScriptFiles = map[CompletionStyle]string{
+	CompletionStyleBash:       "shellscripts/bash_autocomplete.bash",
+	CompletionStyleZsh:        "shellscripts/zsh_autocomplete.zsh",
+	CompletionStyleFish:       "shellscripts/fish_autocomplete.fish",
+	CompletionStylePowershell: "shellscripts/pwsh_autocomplete.ps1",
+}
 
-	shellCompletions = map[CompletionStyle]renderCompletion{
-		"bash": func(c *cli.Command, appName string) (string, error) {
-			b, err := autoCompleteFS.ReadFile("shellscripts/bash_autocomplete.bash")
-			return strings.ReplaceAll(string(b), "__APPNAME__", appName), err
-		},
-		"fish": func(c *cli.Command, appName string) (string, error) {
-			b, err := autoCompleteFS.ReadFile("shellscripts/fish_autocomplete.fish")
-			return strings.ReplaceAll(string(b), "__APPNAME__", appName), err
-		},
-		"pwsh": func(c *cli.Command, appName string) (string, error) {
-			b, err := autoCompleteFS.ReadFile("shellscripts/pwsh_autocomplete.ps1")
-			return strings.ReplaceAll(string(b), "__APPNAME__", appName), err
-		},
-		"zsh": func(c *cli.Command, appName string) (string, error) {
-			b, err := autoCompleteFS.ReadFile("shellscripts/zsh_autocomplete.zsh")
-			return strings.ReplaceAll(string(b), "__APPNAME__", appName), err
-		},
+// SupportedShells returns the set of shells for which a completion script can
+// be rendered, in a deterministic order suitable for help text and errors.
+func SupportedShells() []CompletionStyle {
+	return []CompletionStyle{
+		CompletionStyleBash,
+		CompletionStyleZsh,
+		CompletionStyleFish,
+		CompletionStylePowershell,
 	}
-)
+}
 
-func OutputCompletionScript(ctx context.Context, cmd *cli.Command) error {
-	shells := make([]CompletionStyle, 0, len(shellCompletions))
-	for k := range shellCompletions {
-		shells = append(shells, k)
-	}
-
-	if cmd.Args().Len() == 0 {
-		return cli.Exit(fmt.Sprintf("no shell provided for completion command. available shells are %+v", shells), 1)
-	}
-	s := CompletionStyle(cmd.Args().First())
-
-	renderCompletion, ok := shellCompletions[s]
+// RenderCompletionScript returns the shell completion script for the given
+// shell, with the template's __APPNAME__ token replaced by appName. Returns
+// an error for unsupported shells or embed read failures (the latter would
+// indicate a build problem, not user error).
+func RenderCompletionScript(shell CompletionStyle, appName string) (string, error) {
+	path, ok := shellScriptFiles[shell]
 	if !ok {
-		return cli.Exit(fmt.Sprintf("unknown shell %s, available shells are %+v", s, shells), 1)
+		return "", unsupportedShellErr(string(shell))
 	}
-
-	completionScript, err := renderCompletion(cmd, cmd.Root().Name)
+	b, err := autoCompleteFS.ReadFile(path)
 	if err != nil {
-		return cli.Exit(err, 1)
+		return "", err
 	}
+	return strings.ReplaceAll(string(b), "__APPNAME__", appName), nil
+}
 
-	_, err = cmd.Writer.Write([]byte(completionScript))
-	if err != nil {
-		return cli.Exit(err, 1)
+// BuildCompletionCommand returns a `completion <shell>` cli.Command tree for
+// attachment under any urfave/cli root. Leaves are generated for every shell
+// in SupportedShells; the parent's Action handles `<app> completion` (no
+// shell) and `<app> completion <unknown>` with a unified usage error.
+//
+// appName is interpolated into the install-hints rendered in the parent's
+// Description.
+func BuildCompletionCommand(appName string) *cli.Command {
+	shells := SupportedShells()
+	leaves := make([]*cli.Command, 0, len(shells))
+	for _, shell := range shells {
+		leaves = append(leaves, &cli.Command{
+			Name:            string(shell),
+			Usage:           fmt.Sprintf("Output a %s completion script for %s", shell, appName),
+			HideHelpCommand: true,
+			Action:          renderShellAction(shell),
+		})
 	}
+	return &cli.Command{
+		Name:            "completion",
+		Usage:           "Generate shell completion scripts",
+		Description:     completionDescription(appName, shells),
+		Suggest:         true,
+		HideHelpCommand: true,
+		Commands:        leaves,
+		Action: func(ctx context.Context, c *cli.Command) error {
+			return cli.Exit(usageError(appName, c.Args().First()), 1)
+		},
+	}
+}
 
-	return nil
+func renderShellAction(shell CompletionStyle) cli.ActionFunc {
+	return func(ctx context.Context, c *cli.Command) error {
+		script, err := RenderCompletionScript(shell, c.Root().Name)
+		if err != nil {
+			return cli.Exit(err, 1)
+		}
+		if _, err := c.Writer.Write([]byte(script)); err != nil {
+			return cli.Exit(err, 1)
+		}
+		return nil
+	}
+}
+
+func shellList(shells []CompletionStyle) string {
+	parts := make([]string, len(shells))
+	for i, s := range shells {
+		parts[i] = string(s)
+	}
+	return strings.Join(parts, ", ")
+}
+
+func unsupportedShellErr(shell string) error {
+	return fmt.Errorf("unsupported shell %q (supported: %s)", shell, shellList(SupportedShells()))
+}
+
+// usageError returns the message for `<app> completion` invoked with no shell
+// or with an unrecognized one. The two branches share the canonical shell
+// list so the wording cannot drift.
+func usageError(appName, shell string) string {
+	if shell == "" {
+		return fmt.Sprintf("%s completion <shell> — specify one of: %s", appName, shellList(SupportedShells()))
+	}
+	return unsupportedShellErr(shell).Error()
+}
+
+func completionDescription(appName string, shells []CompletionStyle) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "Print a shell completion script for %s to stdout.\n\n", appName)
+	b.WriteString("Install it by writing the output to the location your shell loads completions\nfrom:\n\n")
+	for _, s := range shells {
+		switch s {
+		case CompletionStyleBash:
+			fmt.Fprintf(&b, "  # bash (Linux)\n  %s completion bash > ~/.local/share/bash-completion/completions/%s\n\n", appName, appName)
+			fmt.Fprintf(&b, "  # bash (macOS, with Homebrew bash-completion@2)\n  %s completion bash > \"$(brew --prefix)/etc/bash_completion.d/%s\"\n\n", appName, appName)
+		case CompletionStyleZsh:
+			fmt.Fprintf(&b, "  # zsh — pick any directory that's already on $fpath\n  %s completion zsh > \"${fpath[1]}/_%s\"\n\n", appName, appName)
+		case CompletionStyleFish:
+			fmt.Fprintf(&b, "  # fish\n  %s completion fish > ~/.config/fish/completions/%s.fish\n\n", appName, appName)
+		case CompletionStylePowershell:
+			fmt.Fprintf(&b, "  # PowerShell\n  %s completion pwsh >> \"$PROFILE.CurrentUserAllHosts\"\n\n", appName)
+		}
+	}
+	b.WriteString("Or source it directly in your shell rc for a one-shot install:\n\n")
+	fmt.Fprintf(&b, "  echo 'source <(%s completion bash)' >> ~/.bashrc\n", appName)
+	fmt.Fprintf(&b, "  echo 'source <(%s completion zsh)'  >> ~/.zshrc", appName)
+	return b.String()
 }
 
 type ShellCompletion struct {
