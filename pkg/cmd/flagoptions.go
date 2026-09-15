@@ -417,7 +417,7 @@ func flagOptions(
 	// Determine stdin availability for FileInput params that use "-".
 	var stdinReader onceStdinReader
 	if ignoreStdin {
-		stdinReader = onceStdinReader{failureReason: "stdin is already being used for the request body"}
+		stdinReader = onceStdinReader{stdinReader: os.Stdin}
 	} else if stdinConsumedByPipe {
 		stdinReader = onceStdinReader{failureReason: "stdin was already consumed by piped YAML/JSON input"}
 	} else if stdinConsumedByCredential != "" {
