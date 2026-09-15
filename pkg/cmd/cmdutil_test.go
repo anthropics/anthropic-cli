@@ -220,6 +220,25 @@ func TestFormatJSON(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, `{"a":1}`+"\n", string(formatted))
 	})
+
+	t.Run("YAMLReturnsBytes", func(t *testing.T) {
+		t.Parallel()
+
+		r, w, err := os.Pipe()
+		require.NoError(t, err)
+		defer r.Close()
+
+		res := gjson.Parse(`{"foo":128,"bar":null,"baz":false}`)
+		formatted, err := formatJSON(res, ShowJSONOpts{Format: "yaml", Stdout: w})
+		require.NoError(t, err)
+
+		require.NoError(t, w.Close())
+		var buf bytes.Buffer
+		_, _ = buf.ReadFrom(r)
+
+		assert.Empty(t, buf.String())
+		assert.Equal(t, "foo: 128\nbar: null\nbaz: false\n", string(formatted))
+	})
 }
 
 func TestShowJSONIterator(t *testing.T) {
@@ -257,6 +276,17 @@ func TestShowJSONIterator(t *testing.T) {
 		}}
 		captured := captureShowJSONIterator(t, iter, "raw", "", 2)
 		assert.Equal(t, `{"id":"abc"}`+"\n"+`{"id":"def"}`+"\n", captured)
+	})
+
+	t.Run("YAMLCapturesMultipleItems", func(t *testing.T) {
+		t.Parallel()
+
+		iter := &sliceIterator[map[string]any]{items: []map[string]any{
+			{"id": "abc"},
+			{"id": "def"},
+		}}
+		captured := captureShowJSONIterator(t, iter, "yaml", "", -1)
+		assert.Equal(t, "id: abc\nid: def\n", captured)
 	})
 }
 
