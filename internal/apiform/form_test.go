@@ -28,6 +28,15 @@ var tests = map[string]struct {
 		value:    3.14,
 		expected: "--xxx\r\nContent-Disposition: form-data; name=\"foo\"\r\n\r\n3.14\r\n--xxx--\r\n",
 	},
+	"float32": {
+		value:    float32(0.1),
+		expected: "--xxx\r\nContent-Disposition: form-data; name=\"foo\"\r\n\r\n0.1\r\n--xxx--\r\n",
+	},
+	"float32 comma slice": {
+		value:    []float32{0.1},
+		format:   FormatComma,
+		expected: "--xxx\r\nContent-Disposition: form-data; name=\"foo\"\r\n\r\n0.1\r\n--xxx--\r\n",
+	},
 	"bool": {
 		value:    true,
 		expected: "--xxx\r\nContent-Disposition: form-data; name=\"foo\"\r\n\r\ntrue\r\n--xxx--\r\n",
