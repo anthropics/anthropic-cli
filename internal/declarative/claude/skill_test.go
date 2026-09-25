@@ -3,6 +3,7 @@ package claude
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,6 +92,26 @@ func TestSkillManifestProblemsAreNamedBeforeAnyUpload(t *testing.T) {
 		require.ErrorContains(t, err, want)
 		assert.ErrorContains(t, err, "SKILL.md", "the message names the file")
 	}
+}
+
+func TestSkillNameCannotBeAPath(t *testing.T) {
+	for _, name := range []string{"../../other", "/other", `..\other`, "foo/bar", "..", "foo..bar"} {
+		root := writeTree(t, map[string]string{
+			"s/SKILL.md": "---\nname: " + strconv.Quote(name) + "\n---\nbody\n",
+		})
+		_, _, err := loadSkillDir(filepath.Join(root, "s"))
+		require.ErrorContains(t, err, "cannot contain")
+		assert.ErrorContains(t, err, "SKILL.md")
+	}
+
+	root := writeTree(t, map[string]string{
+		"s/SKILL.md": "---\nname: pr-writer\n---\nbody\n",
+	})
+	_, payload, err := loadSkillDir(filepath.Join(root, "s"))
+	require.NoError(t, err)
+	bundle := payload.(*skillBundle)
+	assert.Equal(t, "pr-writer", bundle.UploadDir)
+	assert.Equal(t, "pr-writer/SKILL.md", bundle.Files[0].UploadName(bundle.UploadDir))
 }
 
 func TestSkillBodyCarriesTheDeclaredName(t *testing.T) {

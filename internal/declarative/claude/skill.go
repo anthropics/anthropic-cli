@@ -47,6 +47,9 @@ func loadSkillDir(dir string) (map[string]any, core.Payload, error) {
 	// (display_title, title) are still accepted, and a skill with none is
 	// shown under its `name`, or failing that its directory.
 	name := firstString(fields, "name")
+	if err := checkSkillName(name); err != nil {
+		return nil, nil, fmt.Errorf("%s: %w", skillMD, err)
+	}
 	displayName := cmp.Or(firstString(fields, "display_name", "display_title", "title"), name, filepath.Base(dir))
 	uploadDir := cmp.Or(name, filepath.Base(dir))
 
@@ -110,6 +113,19 @@ func skillFrontmatter(content []byte) ([]byte, error) {
 	// YAML is what lies between the opening fence's newline and it.
 	yaml := doc[4 : end+3]
 	return []byte(strings.NewReplacer("\r\n", "\n", "\r", "\n").Replace(yaml)), nil
+}
+
+// checkSkillName refuses a manifest name that is not one path segment. The
+// name is the directory the skill is uploaded under, and path.Join would
+// otherwise turn "../../other" into a multipart filename outside that folder.
+func checkSkillName(name string) error {
+	if name == "" {
+		return nil
+	}
+	if strings.Contains(name, "/") || strings.Contains(name, `\`) || strings.Contains(name, "..") {
+		return fmt.Errorf("name %q cannot contain '/', '\\', or '..'; it is the directory the skill is uploaded under", name)
+	}
+	return nil
 }
 
 // firstString returns the first of keys whose value is a non-blank string, trimmed.
