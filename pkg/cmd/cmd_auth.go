@@ -30,6 +30,12 @@ const (
 	oauthClientIDProd = "41077d10-94b8-4194-be48-d251e9eb21b4"
 	defaultConsoleURL = "https://platform.claude.com"
 	defaultBaseURL    = "https://api.anthropic.com"
+)
+
+// oauthHTTPClient is the client used for OAuth token POSTs. Tests replace it.
+var oauthHTTPClient = &http.Client{Timeout: 30 * time.Second}
+
+const (
 	oauthScope        = "user:profile user:inference user:developer"
 
 	// betaUserOAuth is the anthropic-beta header value for user_oauth
@@ -209,6 +215,10 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 	clientID := resolveClientID(c.String("client-id"), prev)
 	consoleURL := resolveConsoleURL(c.String("console-url"), prev)
 	baseURL := resolveBaseURL(c.String("base-url"), prev)
+	tokenBase, err := oauthTokenBase(consoleURL, baseURL)
+	if err != nil {
+		return err
+	}
 	workspaceID := resolveWorkspaceID(c.String("workspace-id"), prev)
 	// workspaceID may be empty here — Console may show a workspace picker
 	// after the org selection step, in which case the resolved workspace
@@ -383,7 +393,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 		code, redirectURI = r.code, r.redirectURI
 	}
 
-	tok, err := exchangeCode(ctx, baseURL, clientID, code, verifier, redirectURI, state, debug)
+	tok, err := exchangeCode(ctx, tokenBase, clientID, code, verifier, redirectURI, state, debug)
 	if err != nil {
 		return fmt.Errorf("exchange code for token: %w", err)
 	}
@@ -1039,8 +1049,15 @@ func authPrintCredentials(ctx context.Context, c *cli.Command) error {
 				profile, expiry)
 		default:
 			baseURL := resolveBaseURL("", cfg)
+			tokenBase, terr := oauthTokenBase(defaultConsoleURL, baseURL)
+			if terr != nil {
+				fmt.Fprintf(os.Stderr,
+					"warning: token for profile %q %s and refresh was not sent: %v\n",
+					profile, expiry, terr)
+				break
+			}
 			clientID := resolveClientID("", cfg)
-			tok, err := refreshAccessToken(ctx, baseURL, clientID, creds.RefreshToken)
+			tok, err := refreshAccessToken(ctx, tokenBase, clientID, creds.RefreshToken)
 			if err != nil {
 				// Warn-and-proceed rather than error: the on-disk token may
 				// still have a few seconds of validity (we refresh at the 120s
@@ -1127,8 +1144,7 @@ func refreshAccessToken(ctx context.Context, baseURL, clientID, refreshToken str
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("anthropic-beta", betaUserOAuth)
 
-	client := &http.Client{Timeout: 30 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := oauthHTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -1243,8 +1259,7 @@ func exchangeCode(ctx context.Context, baseURL, clientID, code, verifier, redire
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	client := &http.Client{Timeout: 30 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := oauthHTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -1364,6 +1379,37 @@ func resolveConsoleURL(flag string, prev *config.Config) string {
 		return strings.TrimRight(prev.AuthenticationInfo.UserOAuth.ConsoleURL, "/")
 	}
 	return defaultConsoleURL
+}
+
+// oauthTokenBase is the host that may receive an authorization code or a
+// refresh token. Signing in at the public console only exchanges tokens with
+// the public API. A different console URL may name its own token host, which
+// must be https, or http on loopback.
+func oauthTokenBase(consoleURL, requested string) (string, error) {
+	consoleURL = strings.TrimRight(consoleURL, "/")
+	if consoleURL == "" {
+		consoleURL = defaultConsoleURL
+	}
+	requested = strings.TrimRight(requested, "/")
+	if requested == "" {
+		requested = defaultBaseURL
+	}
+	if consoleURL == defaultConsoleURL {
+		if requested != defaultBaseURL {
+			return "", fmt.Errorf("refusing to send OAuth credentials to %s while signing in at %s", requested, consoleURL)
+		}
+		return defaultBaseURL, nil
+	}
+	u, err := url.Parse(requested)
+	if err != nil || u.Host == "" || u.User != nil {
+		return "", fmt.Errorf("invalid OAuth token URL %q", requested)
+	}
+	host := u.Hostname()
+	loopback := host == "localhost" || host == "127.0.0.1" || host == "::1"
+	if u.Scheme == "https" || (u.Scheme == "http" && loopback) {
+		return requested, nil
+	}
+	return "", fmt.Errorf("OAuth token URL must be https, or http on loopback, got %q", requested)
 }
 
 // resolveBaseURL decides which API base URL the /v1/oauth/token exchange
