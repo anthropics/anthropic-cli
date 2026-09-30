@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -351,6 +352,22 @@ func TestResolveConsoleURL(t *testing.T) {
 			assert.Equal(t, tc.want, resolveConsoleURL(tc.flag, tc.prev))
 		})
 	}
+}
+
+type hostSwap struct {
+	dest string
+	next http.RoundTripper
+}
+
+func (h hostSwap) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.URL.Host != "api.anthropic.com" {
+		return nil, fmt.Errorf("OAuth token post went to %s, want api.anthropic.com", req.URL.Host)
+	}
+	clone := req.Clone(req.Context())
+	clone.URL.Scheme = "http"
+	clone.URL.Host = h.dest
+	clone.Host = h.dest
+	return h.next.RoundTrip(clone)
 }
 
 func TestResolveBaseURL(t *testing.T) {
@@ -785,7 +802,7 @@ func driveLoginWithArgsRoot(t *testing.T, rootFlags []cli.Flag, args []string) (
 func driveLoginErr(t *testing.T, tokenSrvURL string, extraArgs ...string) (*url.URL, string, error) {
 	t.Helper()
 	args := append([]string{"auth", "login", "--no-browser", "--callback-port", "0",
-		"--base-url", tokenSrvURL, "--workspace-id", "wrkspc_test"}, extraArgs...)
+		"--base-url", tokenSrvURL, "--console-url", "https://console.test", "--workspace-id", "wrkspc_test"}, extraArgs...)
 	// If a later --workspace-id was passed in extraArgs it wins (urfave/cli
 	// takes the last value for a repeated StringFlag), so compute the expected
 	// query value from args rather than hardcoding.
@@ -1165,7 +1182,7 @@ func TestAuthLoginOrganizationIDFlagOverridesProfile(t *testing.T) {
 
 	rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
 	args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
-		"--base-url", srv.URL, "--profile", "pinned", "--organization-id", "org-NEW"}
+		"--base-url", srv.URL, "--console-url", "https://console.test", "--profile", "pinned", "--organization-id", "org-NEW"}
 	u, _, err := driveLoginWithArgsRoot(t, rootFlags, args)
 	require.NoError(t, err)
 	assert.Equal(t, "org-NEW", u.Query().Get("orgUUID"),
@@ -1215,7 +1232,7 @@ func TestAuthLoginNotesStoredOrgSource(t *testing.T) {
 		})
 		rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
 		args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
-			"--base-url", srv.URL, "--workspace-id", "wrkspc_test", "--profile", "pinned",
+			"--base-url", srv.URL, "--console-url", "https://console.test", "--workspace-id", "wrkspc_test", "--profile", "pinned",
 			"--organization-id", "org-NEW"}
 		_, stderr, err := driveLoginWithArgsRoot(t, rootFlags, args)
 		require.NoError(t, err)
@@ -1248,7 +1265,7 @@ func TestAuthLoginOrgHintFromEnv(t *testing.T) {
 
 	rootFlags := []cli.Flag{&cli.StringFlag{Name: "organization-id", Sources: cli.EnvVars("ANTHROPIC_ORGANIZATION_ID")}}
 	args := []string{"auth", "login", "--no-browser", "--callback-port", "0",
-		"--base-url", srv.URL, "--profile", "pinned"}
+		"--base-url", srv.URL, "--console-url", "https://console.test", "--profile", "pinned"}
 	u, _, err := driveLoginWithArgsRoot(t, rootFlags, args)
 	require.NoError(t, err)
 	assert.Equal(t, "org-ENV", u.Query().Get("orgUUID"),
@@ -1376,11 +1393,14 @@ func TestAuthPrintCredentials_RefreshesExpired(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
+	prevClient := oauthHTTPClient
+	oauthHTTPClient = &http.Client{Timeout: 30 * time.Second, Transport: hostSwap{dest: srv.Listener.Addr().String(), next: http.DefaultTransport}}
+	t.Cleanup(func() { oauthHTTPClient = prevClient })
+
 	require.NoError(t, config.SaveProfile(dir, "default", &config.Config{
 		AuthenticationInfo: &config.AuthenticationInfo{
 			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{ClientID: "cli-client"},
 		},
-		BaseURL: srv.URL,
 	}))
 	require.NoError(t, config.SetActiveProfile(dir, "default"))
 	past := time.Now().Add(-time.Hour)
@@ -1415,12 +1435,14 @@ func TestAuthPrintCredentials_RefreshFailureWarnsAndPrintsStale(t *testing.T) {
 		http.Error(w, `{"error":"server_error"}`, http.StatusBadGateway)
 	}))
 	t.Cleanup(srv.Close)
+	prevClient := oauthHTTPClient
+	oauthHTTPClient = &http.Client{Timeout: 30 * time.Second, Transport: hostSwap{dest: srv.Listener.Addr().String(), next: http.DefaultTransport}}
+	t.Cleanup(func() { oauthHTTPClient = prevClient })
 
 	require.NoError(t, config.SaveProfile(dir, "default", &config.Config{
 		AuthenticationInfo: &config.AuthenticationInfo{
 			Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{ClientID: "c"},
 		},
-		BaseURL: srv.URL,
 	}))
 	require.NoError(t, config.SetActiveProfile(dir, "default"))
 	soon := time.Now().Add(30 * time.Second)
@@ -1500,7 +1522,7 @@ func TestAuthLoginBootstrapOnly(t *testing.T) {
 		before := mustRead(t, config.ProfilePath(dir, "preserve"))
 
 		u, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
-			"--callback-port", "0", "--base-url", srv.URL, "--profile", "preserve"})
+			"--callback-port", "0", "--base-url", srv.URL, "--console-url", "https://console.test", "--profile", "preserve"})
 		require.NoError(t, err)
 		assert.Equal(t, "wrkspc_alpha", u.Query().Get("workspace_id"),
 			"no --workspace-id flag → stored profile value is sent on /oauth/authorize")
@@ -1525,7 +1547,7 @@ func TestAuthLoginBootstrapOnly(t *testing.T) {
 			Workspace:    tokenWorkspace{ID: "wrkspc_hint", Name: "Hint Workspace"},
 		})
 		_, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
-			"--callback-port", "0", "--base-url", wsSrv.URL, "--profile", "nows"})
+			"--callback-port", "0", "--base-url", wsSrv.URL, "--console-url", "https://console.test", "--profile", "nows"})
 		require.NoError(t, err)
 
 		assert.Contains(t, out, "→ Token bound to workspace \"Hint Workspace\" (wrkspc_hint)")
@@ -1575,7 +1597,7 @@ func TestAuthLoginAcceptsWorkspaceFromTokenResponse(t *testing.T) {
 	})
 
 	u, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
-		"--callback-port", "0", "--base-url", srv.URL, "--profile", "fresh"})
+		"--callback-port", "0", "--base-url", srv.URL, "--console-url", "https://console.test", "--profile", "fresh"})
 	require.NoError(t, err)
 	assert.Empty(t, u.Query().Get("workspace_id"),
 		"workspace_id must be omitted so Console renders the picker")
@@ -1611,7 +1633,7 @@ func TestAuthLoginSucceedsWithoutWorkspace(t *testing.T) {
 	})
 
 	u, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
-		"--callback-port", "0", "--base-url", srv.URL, "--profile", "fresh"})
+		"--callback-port", "0", "--base-url", srv.URL, "--console-url", "https://console.test", "--profile", "fresh"})
 	require.NoError(t, err, "login must not require a workspace binding")
 	assert.Empty(t, u.Query().Get("workspace_id"),
 		"workspace_id must be omitted from /oauth/authorize when none is resolved")
@@ -1636,7 +1658,7 @@ func TestAuthLoginSucceedsWithoutWorkspace(t *testing.T) {
 	t.Run("re-login on the unbound profile stays quiet", func(t *testing.T) {
 		before := mustRead(t, config.ProfilePath(dir, "fresh"))
 		_, out, err := driveLoginWithArgs(t, []string{"auth", "login", "--no-browser",
-			"--callback-port", "0", "--base-url", srv.URL, "--profile", "fresh"})
+			"--callback-port", "0", "--base-url", srv.URL, "--console-url", "https://console.test", "--profile", "fresh"})
 		require.NoError(t, err)
 		assert.NotContains(t, out, "Token bound to workspace",
 			"no drift messaging when neither the profile nor the token has a workspace")
