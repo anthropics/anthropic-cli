@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 )
 
 // Applier executes a Plan. It persists state after every individual success,
@@ -240,6 +241,10 @@ func (a *Applier) record(change *Change, id, version, hash string, obj map[strin
 		ID:      id,
 		Version: version,
 		Hash:    hash,
+	}
+	if previous := change.Entry; previous != nil && previous.ID == id && previous.Kind == change.Kind {
+		// Updating known fields must not strip state written by a newer CLI.
+		entry.unknown = maps.Clone(previous.unknown)
 	}
 	if change.Source != nil {
 		entry.Revision = change.Source.Pin.Revision
