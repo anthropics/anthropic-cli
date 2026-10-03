@@ -1,7 +1,10 @@
 package core
 
 import (
+	"context"
 	"encoding/json"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -279,4 +282,93 @@ tagged: !!map {4: four}
 		"2020-01-01": "a date", "nested": {"2": "two"},
 		"listed": [{"3": "three"}], "tagged": {"4": "four"}
 	}`, string(canonical))
+}
+
+func TestExactJSONNumbersRemainDistinctInFingerprints(t *testing.T) {
+	pairs := [][2]string{
+		{"18446744073709551614", "18446744073709551615"},
+		{"-9223372036854775809", "-9223372036854775810"},
+		{"1.000000000000000001", "1.000000000000000002"},
+		{"1e-400", "2e-400"},
+		{"1e-999999999", "0"},
+	}
+	for _, pair := range pairs {
+		t.Run(pair[0], func(t *testing.T) {
+			bodies := make([]map[string]any, 2)
+			for i, number := range pair {
+				decoder := json.NewDecoder(strings.NewReader(`{"nested":{"values":[` + number + `]}}`))
+				decoder.UseNumber()
+				require.NoError(t, decoder.Decode(&bodies[i]))
+			}
+			before, err := json.Marshal(bodies)
+			require.NoError(t, err)
+			first, err := hashBody(bodies[0])
+			require.NoError(t, err)
+			second, err := hashBody(bodies[1])
+			require.NoError(t, err)
+			assert.NotEqual(t, first, second, "a real numeric edit must change its fingerprint")
+			after, err := json.Marshal(bodies)
+			require.NoError(t, err)
+			assert.Equal(t, before, after, "canonicalization must not mutate its inputs")
+		})
+	}
+}
+
+func TestExactNumberNormalizationKeepsRepresentableAliases(t *testing.T) {
+	groups := [][]any{
+		{4, int64(4), float64(4), json.Number("4"), json.Number("4.0"), json.Number("4e0")},
+		{0, float64(0), json.Number("-0.0"), json.Number("0e-999999999")},
+		{0.1, json.Number("0.1000"), json.Number("1e-1")},
+		{float64(1e20), json.Number("100000000000000000000"), json.Number("1e20")},
+	}
+	for _, group := range groups {
+		expected, err := hashBody(map[string]any{"value": group[0]})
+		require.NoError(t, err)
+		for _, value := range group[1:] {
+			actual, err := hashBody(map[string]any{"value": value})
+			require.NoError(t, err)
+			assert.Equal(t, expected, actual, "equivalent numeric forms: %v", value)
+		}
+	}
+}
+
+func TestExactRemoteNumberEditIsDetectedAsDrift(t *testing.T) {
+	registry := testRegistry()
+	root := writeTree(t, map[string]string{"widgets/value.json": `{"name":"value","amount":1}`})
+	path := filepath.Join(root, "widgets/value.json")
+	loader := NewLoader(registry, root, nil)
+	require.NoError(t, loader.Add(context.Background(), []string{path}))
+	source := loader.Sources()["./widgets/value.json"]
+	require.NotNil(t, source)
+	decode := func(value string) map[string]any {
+		decoder := json.NewDecoder(strings.NewReader(`{"name":"value","amount":` + value + `}`))
+		decoder.UseNumber()
+		var remote map[string]any
+		require.NoError(t, decoder.Decode(&remote))
+		return remote
+	}
+	oldRemote := decode("1.000000000000000001")
+	oldHash, err := hashBody(source.Body)
+	require.NoError(t, err)
+	remoteHash, err := hashBody(oldRemote)
+	require.NoError(t, err)
+	lock := newLockfile(filepath.Join(root, testLockfileName))
+	lock.Resources[source.Key] = &LockEntry{Kind: "widget", ID: "wdgt_1", Hash: oldHash, RemoteHash: remoteHash}
+	require.NoError(t, lock.Save())
+	restored, err := LoadLockfile(registry, lock.Path)
+	require.NoError(t, err)
+	planner := Planner{Registry: registry, Lock: restored}
+	builder := bodyBuilder{registry: registry, slots: loader.slots}
+	before, err := planner.planOne(builder, source, map[string]Target{}, remoteResult{Object: oldRemote})
+	require.NoError(t, err)
+	assert.Equal(t, ActionNoop, before.Action)
+	updatedRemote := decode("1.000000000000000002")
+	change, err := planner.planOne(builder, source, map[string]Target{}, remoteResult{Object: updatedRemote})
+	require.NoError(t, err)
+	assert.Equal(t, ActionUpdate, change.Action)
+	assert.True(t, change.Drift)
+	assert.ErrorContains(t, change.Blocked, "changed outside this config")
+	require.NotNil(t, change.Diff)
+	require.Contains(t, change.Diff.Fields, "amount")
+	assert.Equal(t, json.Number("1.000000000000000002"), change.Remote["amount"])
 }

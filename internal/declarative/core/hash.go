@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
+	"strings"
 )
 
 // hashLength is how much of the digest lands in the lockfile. 128 bits is far
@@ -52,7 +54,26 @@ func canonicalize(v any) any {
 			return json.Number(strconv.FormatInt(i, 10))
 		}
 		if f, err := t.Float64(); err == nil {
-			return canonicalize(f)
+			candidate := canonicalize(f).(json.Number)
+			if candidate == t {
+				return t
+			}
+			if f == 0 {
+				// Avoid constructing enormous powers of ten for an underflowed
+				// value. Only an all-zero significand is equivalent to zero.
+				mantissa := strings.FieldsFunc(t.String(), func(r rune) bool { return r == 'e' || r == 'E' })[0]
+				if strings.Trim(mantissa, "-0.") == "" {
+					return candidate
+				}
+				return t
+			}
+			original, originalOK := new(big.Rat).SetString(t.String())
+			rendered, renderedOK := new(big.Rat).SetString(candidate.String())
+			// Keep float normalization only when it preserves the exact decimal
+			// value. Rounding here can hide a real edit from change detection.
+			if originalOK && renderedOK && original.Cmp(rendered) == 0 {
+				return candidate
+			}
 		}
 		return t
 	case int, int64, uint64:
