@@ -204,7 +204,7 @@ func (l *Loader) couldBe(path string, allowed []Kind) bool {
 		// letting the glob quietly drop it.
 		return true
 	}
-	return kind != ""
+	return slices.Contains(allowed, kind)
 }
 
 // loadURL materializes a URL-referenced resource as a Source keyed by the URL.
