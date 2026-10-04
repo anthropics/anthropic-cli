@@ -95,8 +95,8 @@ func skillFrontmatter(content []byte) ([]byte, error) {
 		return nil, errors.New(`has no frontmatter: it must open with a line of exactly "---"`)
 	}
 	end := strings.Index(doc[3:], "\n---\n")
-	if end < 0 {
-		end = strings.Index(doc[3:], "\n---\r\n")
+	if crlfEnd := strings.Index(doc[3:], "\n---\r\n"); crlfEnd >= 0 && (end < 0 || crlfEnd < end) {
+		end = crlfEnd
 	}
 	switch {
 	case end < 0:
