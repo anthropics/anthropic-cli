@@ -280,3 +280,28 @@ tagged: !!map {4: four}
 		"listed": [{"3": "three"}], "tagged": {"4": "four"}
 	}`, string(canonical))
 }
+
+func TestParseYAMLMapRejectsAdditionalDocuments(t *testing.T) {
+	for _, extra := range []string{"name: second\n", "[]\n", "null\n", ""} {
+		t.Run(extra, func(t *testing.T) {
+			_, err := ParseYAMLMap([]byte("name: first\n---\n"+extra), "declaration")
+			require.ErrorContains(t, err, "multiple YAML documents")
+			assert.Contains(t, err.Error(), "declaration")
+		})
+	}
+}
+
+func TestParseYAMLMapAllowsSingleDocumentMarkers(t *testing.T) {
+	for _, input := range []string{"name: first\n", "---\nname: first\n...\n# comment\n"} {
+		actual, err := ParseYAMLMap([]byte(input), "declaration")
+		require.NoError(t, err)
+		assert.Equal(t, map[string]any{"name": "first"}, actual)
+	}
+}
+
+func TestParseYAMLMapKeepsAnchorAndNumericDecoding(t *testing.T) {
+	actual, err := ParseYAMLMap([]byte("base: &item {count: 18446744073709551615, enabled: true}\ncopy: *item\n"), "declaration")
+	require.NoError(t, err)
+	value := map[string]any{"count": uint64(18446744073709551615), "enabled": true}
+	assert.Equal(t, map[string]any{"base": value, "copy": value}, actual)
+}

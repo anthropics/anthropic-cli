@@ -2,12 +2,14 @@ package core
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/goccy/go-yaml"
+	"github.com/goccy/go-yaml/parser"
 )
 
 // Source is one resource as declared on disk, or fetched from a URL.
@@ -223,8 +225,8 @@ func ParseYAMLMap(data []byte, what string) (map[string]any, error) {
 	if len(bytes.TrimSpace(data)) == 0 {
 		return map[string]any{}, nil
 	}
-	var raw any
-	if err := yaml.Unmarshal(data, &raw); err != nil {
+	raw, err := decodeSingleYAMLDocument(data)
+	if err != nil {
 		return nil, fmt.Errorf("parsing %s: %w", what, err)
 	}
 	m, ok := raw.(map[string]any)
@@ -232,4 +234,23 @@ func ParseYAMLMap(data []byte, what string) (map[string]any, error) {
 		return nil, fmt.Errorf("parsing %s: expected a mapping, got %T", what, raw)
 	}
 	return m, nil
+}
+
+// Decode the entire input: yaml.Unmarshal otherwise ignores later documents.
+func decodeSingleYAMLDocument(data []byte) (any, error) {
+	file, err := parser.ParseBytes(data, 0)
+	if err != nil {
+		return nil, err
+	}
+	if len(file.Docs) > 1 {
+		return nil, errors.New("multiple YAML documents are not supported; combine entries in one document")
+	}
+	if len(file.Docs) == 0 || file.Docs[0].Body == nil {
+		return nil, nil
+	}
+	var value any
+	if err := yaml.NodeToValue(file.Docs[0].Body, &value); err != nil {
+		return nil, err
+	}
+	return value, nil
 }

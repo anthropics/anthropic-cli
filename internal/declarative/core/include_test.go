@@ -150,3 +150,27 @@ func TestIncludeErrorsNameTheFieldEntryAndFile(t *testing.T) {
 		})
 	}
 }
+
+func TestIncludeRejectsAdditionalYAMLDocuments(t *testing.T) {
+	for _, extra := range []string{"name: second\n", "- name: second\n", "null\n", ""} {
+		t.Run(extra, func(t *testing.T) {
+			_, err := loadGadget(t, map[string]string{
+				"gadgets/g.md":            "---\nparts: [./data/parts.yaml]\n---\nbody\n",
+				"gadgets/data/parts.yaml": "name: first\n---\n" + extra,
+			})
+			require.Error(t, err, "later documents must not be silently discarded")
+			assert.Contains(t, err.Error(), "parts.yaml")
+			assert.Contains(t, err.Error(), "multiple YAML documents")
+			assert.Contains(t, err.Error(), "`parts`[0]")
+		})
+	}
+}
+
+func TestIncludedSingleDocumentMarkersAndScalarFences(t *testing.T) {
+	body, err := loadGadget(t, map[string]string{
+		"gadgets/g.md":            "---\nparts: [./data/parts.yaml]\n---\nbody\n",
+		"gadgets/data/parts.yaml": "---\n- name: first\n  text: |\n    before\n    ---\n    after\n...\n# trailing comment\n",
+	})
+	require.NoError(t, err)
+	assert.Equal(t, []any{map[string]any{"name": "first", "text": "before\n---\nafter\n"}}, body["parts"])
+}

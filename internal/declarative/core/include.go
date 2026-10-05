@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-
-	"github.com/goccy/go-yaml"
 )
 
 // expandIncludes splices data files into the list fields that allow it. An
@@ -147,8 +145,8 @@ func readIncluded(path string) ([]any, error) {
 	if len(bytes.TrimSpace(data)) == 0 {
 		return nil, nil
 	}
-	var doc any
-	if err := yaml.Unmarshal(data, &doc); err != nil {
+	doc, err := decodeSingleYAMLDocument(data)
+	if err != nil {
 		return nil, fmt.Errorf("parsing: %w", err)
 	}
 	items, ok := doc.([]any)
