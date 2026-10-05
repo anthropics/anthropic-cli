@@ -376,3 +376,13 @@ func TestProseFieldAndBodyTogetherAreRefusedByName(t *testing.T) {
 	err := l.Add(context.Background(), []string{filepath.Join(root, "deployments/d.md")})
 	require.ErrorContains(t, err, "also sets `initial_events`")
 }
+
+func TestAgentFrontmatterScalarFenceKeepsPlannedFields(t *testing.T) {
+	root := writeTree(t, map[string]string{
+		"agents/example.md": "---\ndescription: |\n  first rule\n  ---\n  last rule\nmodel: chosen-model\n---\nTask body\n",
+	})
+	loader := core.NewLoader(Registry(), root, nil)
+	require.NoError(t, loader.Add(context.Background(), []string{filepath.Join(root, "agents/example.md")}))
+	assert.Equal(t, "chosen-model", plannedField(t, loader, "./agents/example.md", "model"))
+	assert.Equal(t, "first rule\n---\nlast rule\n", plannedField(t, loader, "./agents/example.md", "description"))
+}
