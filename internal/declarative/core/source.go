@@ -204,7 +204,7 @@ func splitFrontmatter(content []byte) (front, body []byte, err error) {
 	// keeps its newline, so the body starts on the line after the fence.
 	offset := 0
 	for line := range strings.Lines(rest) {
-		if strings.TrimSpace(line) == frontmatterFence {
+		if strings.TrimRight(line, " \t\r\n") == frontmatterFence {
 			return []byte(rest[:offset]), []byte(rest[offset+len(line):]), nil
 		}
 		offset += len(line)

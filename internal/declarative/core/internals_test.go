@@ -2,6 +2,8 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -279,4 +281,39 @@ tagged: !!map {4: four}
 		"2020-01-01": "a date", "nested": {"2": "two"},
 		"listed": [{"3": "three"}], "tagged": {"4": "four"}
 	}`, string(canonical))
+}
+
+func TestFrontmatterKeepsIndentedFenceInScalar(t *testing.T) {
+	for _, newline := range []string{"\n", "\r\n"} {
+		for _, scalar := range []string{"|", ">", "|2-"} {
+			t.Run(fmt.Sprintf("%q/%s", newline, scalar), func(t *testing.T) {
+				front := "description: " + scalar + "\n  first\n  ---\n  last\nmodel: chosen-model\n"
+				body := "Task body\n---\nMore body\n"
+				if newline == "\r\n" {
+					front = strings.ReplaceAll(front, "\n", newline)
+					body = strings.ReplaceAll(body, "\n", newline)
+				}
+				gotFront, gotBody, err := splitFrontmatter([]byte("---" + newline + front + "---" + newline + body))
+				require.NoError(t, err)
+				assert.Equal(t, front, string(gotFront))
+				assert.Equal(t, body, string(gotBody))
+				fields, err := ParseYAMLMap(gotFront, "frontmatter")
+				require.NoError(t, err)
+				assert.Equal(t, "chosen-model", fields["model"])
+				assert.Contains(t, fields["description"], "---")
+			})
+		}
+	}
+}
+
+func TestIndentedFenceDoesNotCloseUnterminatedFrontmatter(t *testing.T) {
+	_, _, err := splitFrontmatter([]byte("---\ndescription: |\n  first\n  ---\n  last\n"))
+	require.ErrorContains(t, err, "never closed")
+}
+
+func TestFrontmatterClosingFenceStillAcceptsTrailingWhitespace(t *testing.T) {
+	front, body, err := splitFrontmatter([]byte("---\nname: example\n--- \t\r\nbody"))
+	require.NoError(t, err)
+	assert.Equal(t, "name: example\n", string(front))
+	assert.Equal(t, "body", string(body))
 }
