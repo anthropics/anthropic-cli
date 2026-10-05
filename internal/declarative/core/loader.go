@@ -165,7 +165,18 @@ func expandArg(arg string) ([]string, error) {
 
 // loadPath loads a path the user named: a file, a resource directory, or a
 // directory to walk.
-func (l *Loader) loadPath(ctx context.Context, abs string) error {
+func (l *Loader) loadPath(ctx context.Context, abs string) (err error) {
+	// A child visited before a failure may point back to an unresolved ancestor.
+	// Restore the whole dependency closure while retaining earlier loaded paths.
+	sources, slots := maps.Clone(l.sources), maps.Clone(l.slots)
+	defer func() {
+		if err != nil {
+			clear(l.sources)
+			maps.Copy(l.sources, sources)
+			clear(l.slots)
+			maps.Copy(l.slots, slots)
+		}
+	}()
 	info, err := os.Stat(abs)
 	if err != nil {
 		return err
