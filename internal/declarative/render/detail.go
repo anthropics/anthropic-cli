@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/charmbracelet/x/ansi"
+
 	"github.com/anthropics/anthropic-cli/internal/declarative/core"
 )
 
@@ -286,10 +288,11 @@ func quote(s string) string {
 // elide keeps the head and tail of a long value: an ID's prefix and its last
 // characters are both worth seeing.
 func elide(s string, width int) string {
-	if len(s) <= width {
+	length := ansi.StringWidth(s)
+	if length <= width {
 		return s
 	}
 	head := (width - 1) * 2 / 3
 	tail := width - 1 - head
-	return s[:head] + "…" + s[len(s)-tail:]
+	return ansi.Truncate(s, head, "") + "…" + ansi.TruncateLeft(s, length-tail, "")
 }
