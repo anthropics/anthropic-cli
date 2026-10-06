@@ -7,6 +7,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -289,4 +290,49 @@ func TestFetchRefusesAPathSeparatorInTheOwner(t *testing.T) {
 	g := &GitHubFetcher{CacheDir: t.TempDir(), cache: map[string]*FetchedURL{}}
 	_, err := g.Fetch(context.Background(), "https://github.com/..%5C..%5Cx/r/tree/main/skill", URLPin{Revision: strings.Repeat("a", 40), Subpath: "skill"})
 	require.ErrorContains(t, err, "contains a path separator")
+}
+
+func TestFetchPreservesReservedCharactersInGitRefs(t *testing.T) {
+	for _, ref := range []string{"main", "feature/nested", "release#blue", "release%blue", "feature/percent%25", "release+blue"} {
+		t.Run(ref, func(t *testing.T) {
+			sha := strings.Repeat("a", 40)
+			decoy := strings.Repeat("b", 40)
+			cache := t.TempDir()
+			for _, revision := range []string{sha, decoy} {
+				writeTreeAt(t, filepath.Join(cache, "o%2Fr", revision, "o-r-"+revision[:12]), map[string]string{"skill/SKILL.md": revision})
+			}
+			var asked []string
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+				assert.Empty(t, req.URL.RawQuery)
+				candidate := strings.TrimPrefix(req.URL.Path, "/repos/o/r/commits/")
+				asked = append(asked, candidate)
+				if candidate == ref {
+					_, _ = w.Write([]byte(`{"sha":"` + sha + `"}`))
+				} else if candidate == "release" {
+					_, _ = w.Write([]byte(`{"sha":"` + decoy + `"}`))
+				} else {
+					w.WriteHeader(http.StatusNotFound)
+				}
+			}))
+			defer server.Close()
+			fetcher := NewGitHubFetcher(cache)
+			fetcher.HTTPClient = server.Client()
+			fetcher.apiBase = server.URL
+			fetcher.Token = ""
+			raw := (&url.URL{Scheme: "https", Host: "github.com", Path: "/o/r/tree/" + ref + "/skill"}).String()
+			got, err := fetcher.Fetch(context.Background(), raw, URLPin{})
+			require.NoError(t, err)
+			assert.Equal(t, URLPin{Revision: sha, Subpath: "skill"}, got.URLPin)
+			data, err := os.ReadFile(filepath.Join(got.Dir, "SKILL.md"))
+			require.NoError(t, err)
+			assert.Equal(t, sha, string(data), "must read the requested ref, not a fragment-truncated ref")
+			require.NotEmpty(t, asked)
+			assert.Equal(t, ref, asked[len(asked)-1])
+			count := len(asked)
+			pinned, err := fetcher.Fetch(context.Background(), raw, got.URLPin)
+			require.NoError(t, err)
+			assert.Equal(t, got, pinned)
+			assert.Len(t, asked, count, "a pinned cache hit must not resolve the ref again")
+		})
+	}
 }
