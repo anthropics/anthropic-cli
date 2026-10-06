@@ -275,7 +275,7 @@ func (g *GitHubFetcher) request(ctx context.Context, endpoint, accept string) (*
 }
 
 func (g *GitHubFetcher) resolveCommit(ctx context.Context, ref githubRef, gitRef string) (string, error) {
-	resp, err := g.request(ctx, g.repoEndpoint(ref, "commits/"+gitRef), "application/vnd.github+json")
+	resp, err := g.request(ctx, g.repoEndpoint(ref, "commits/"+url.PathEscape(gitRef)), "application/vnd.github+json")
 	if err != nil {
 		return "", err
 	}
