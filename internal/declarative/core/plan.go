@@ -450,6 +450,10 @@ func (p *Planner) planDestroys(present []string) []*Change {
 
 	var changes []*Change
 	for _, key := range orphans {
+		if keyEscapesRoot(p.Lock.Root(), key) {
+			p.warnf("%s resolves outside the lockfile directory; refusing to prune it", key)
+			continue
+		}
 		entry := p.Lock.Resources[key]
 		change := &Change{
 			spec:   p.Registry.specOrZero(entry.Kind),
