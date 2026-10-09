@@ -59,7 +59,7 @@ func (a *Applier) Apply(ctx context.Context, plan *Plan) (*Result, error) {
 			outcome := "failed"
 			if errors.Is(err, context.Canceled) {
 				// The write may or may not have landed; the next plan will say.
-				outcome, err = "interrupted", fmt.Errorf("interrupted")
+				outcome, err = "interrupted", fmt.Errorf("interrupted: %w", err)
 			}
 			id := ""
 			if change.Entry != nil {
