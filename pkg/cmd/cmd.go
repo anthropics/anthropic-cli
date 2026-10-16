@@ -1073,12 +1073,6 @@ func init() {
 				HideHelpCommand: true,
 				Action:          autocomplete.ExecuteShellCompletion,
 			},
-			{
-				Name:            "@completion",
-				Hidden:          true,
-				HideHelpCommand: true,
-				Action:          autocomplete.OutputCompletionScript,
-			},
 		},
 		HideHelpCommand: true,
 	}

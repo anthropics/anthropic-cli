@@ -4,9 +4,9 @@ version: 2
 before:
   hooks:
     - mkdir -p completions
-    - sh -c "go run ./cmd/ant/main.go @completion bash > completions/ant.bash"
-    - sh -c "go run ./cmd/ant/main.go @completion zsh > completions/ant.zsh"
-    - sh -c "go run ./cmd/ant/main.go @completion fish > completions/ant.fish"
+    - sh -c "go run ./cmd/ant/main.go completion bash > completions/ant.bash"
+    - sh -c "go run ./cmd/ant/main.go completion zsh > completions/ant.zsh"
+    - sh -c "go run ./cmd/ant/main.go completion fish > completions/ant.fish"
     - sh -c "go run ./cmd/ant/main.go @manpages -o man"
 
 builds:
