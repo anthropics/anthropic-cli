@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+	"unicode/utf8"
+
+	"github.com/charmbracelet/x/ansi"
 
 	"github.com/anthropics/anthropic-cli/internal/declarative/core"
 	"github.com/stretchr/testify/assert"
@@ -55,4 +58,55 @@ func TestLongTextShowsTheEditInContext(t *testing.T) {
 		"system": {Kind: core.DiffText, Before: before, After: after},
 	}}, "")
 	assert.NotContains(t, buf.String(), "words…", "verbose keeps the whole text")
+}
+
+func TestElidePreservesUnicodeGraphemesAndCellWidth(t *testing.T) {
+	for _, tc := range []struct {
+		name, unit string
+		cells      int
+	}{
+		{"ASCII", "a", 1}, {"accented", "é", 1}, {"combining", "e\u0301", 1},
+		{"CJK", "界", 2}, {"joined emoji", "👩‍💻", 2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.Repeat(tc.unit, 12)
+			want := strings.Repeat(tc.unit, 4/tc.cells) + "…" + strings.Repeat(tc.unit, 2/tc.cells)
+			got := elide(input, 7)
+			assert.True(t, utf8.ValidString(got), "invalid UTF-8: %q", got)
+			assert.Equal(t, want, got)
+			assert.LessOrEqual(t, ansi.StringWidth(got), 7)
+			fitting := strings.Repeat(tc.unit, 3)
+			assert.Equal(t, fitting, elide(fitting, 7))
+		})
+	}
+}
+
+func TestElidedPlanDetailsKeepValidUnicode(t *testing.T) {
+	for _, text := range []string{strings.Repeat("é", 160), strings.Repeat("界", 90), strings.Repeat("👩‍💻", 90)} {
+		for _, verbose := range []bool{false, true} {
+			t.Run(string([]rune(text)[:1])+map[bool]string{false: " compact", true: " verbose"}[verbose], func(t *testing.T) {
+				var buf bytes.Buffer
+				renderer := &Renderer{Out: &buf, Verbose: verbose}
+				renderer.renderDiff(&core.Diff{Kind: core.DiffObject, Fields: map[string]*core.Diff{
+					"instructions": {Kind: core.DiffAdded, After: text},
+					"metadata":     {Kind: core.DiffAdded, After: map[string]any{"description": text}},
+				}}, "")
+				output := buf.String()
+				assert.True(t, utf8.ValidString(output), "plan contains invalid UTF-8")
+				assert.NotContains(t, output, "�")
+				if verbose {
+					assert.Contains(t, output, text)
+				} else {
+					assert.Contains(t, output, "…")
+				}
+			})
+		}
+	}
+}
+
+func TestElideKeepsASCIIBoundaries(t *testing.T) {
+	assert.Equal(t, "abcd…ij", elide("abcdefghij", 7))
+	assert.Equal(t, "abcdefg", elide("abcdefg", 7))
+	assert.Equal(t, "", elide("", 7))
+	assert.Equal(t, "…", elide("abcdefg", 1))
 }
