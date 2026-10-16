@@ -215,6 +215,9 @@ func LoadLockfile(r *Registry, path string) (*Lockfile, error) {
 		if err := checkLockEntry(r, key, entry); err != nil {
 			return nil, fmt.Errorf("%s: entry %q: %w", path, key, err)
 		}
+		if keyEscapesRoot(filepath.Dir(abs), key) {
+			return nil, fmt.Errorf("%s: entry %q: key resolves outside the lockfile directory", path, key)
+		}
 		lf.Resources[key] = entry
 	}
 	return lf, nil
@@ -238,6 +241,21 @@ func checkLockEntry(r *Registry, key string, e *LockEntry) error {
 
 func isResourceKey(key string) bool {
 	return strings.HasPrefix(key, "./") || strings.HasPrefix(key, "../") || isURL(key)
+}
+
+// keyEscapesRoot reports whether a relative lockfile key, joined to the
+// lockfile's directory, leaves that directory. URL keys are not paths.
+func keyEscapesRoot(root, key string) bool {
+	if isURL(key) {
+		return false
+	}
+	root = filepath.Clean(root)
+	cleaned := filepath.Clean(filepath.Join(root, filepath.FromSlash(strings.TrimPrefix(key, "./"))))
+	rel, err := filepath.Rel(root, cleaned)
+	if err != nil {
+		return true
+	}
+	return rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator))
 }
 
 // Save writes the lockfile atomically. encoding/json sorts map keys and emits
