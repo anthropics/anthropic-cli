@@ -64,3 +64,38 @@ func TestMarshalItemsToJSONArray_WithoutHasRawJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.JSONEq(t, `[{"id":1,"name":"alice"},{"id":2,"name":"bob"}]`, string(got))
 }
+
+func TestNewArrayOfObjectsTableView_DottedKeys(t *testing.T) {
+	t.Parallel()
+
+	// Keys containing "." or "\" are treated as gjson paths when looked up,
+	// so column values must be looked up with the key escaped.
+	array := gjson.Parse(`[{"a.b":"dotted","a\\b":"backslash","plain":"x"}]`).Array()
+	view := newArrayOfObjectsTableView("", gjson.Parse(`[{"a.b":"dotted","a\\b":"backslash","plain":"x"}]`), array, false)
+
+	row := view.table.Rows()[0]
+	require.Len(t, row, 3)
+	require.Equal(t, "dotted", row[0])
+	require.Equal(t, "backslash", row[1])
+	require.Equal(t, "x", row[2])
+}
+
+func TestNewObjectTableView_DottedKey(t *testing.T) {
+	t.Parallel()
+
+	data := gjson.Parse(`{"a.b":1,"plain":2}`)
+	view := newObjectTableView("", data, false)
+
+	require.Len(t, view.rowData, 2)
+	require.Equal(t, "1", view.rowData[0].Raw)
+	require.Equal(t, "2", view.rowData[1].Raw)
+	require.Equal(t, "1", view.table.Rows()[0][1])
+	require.Equal(t, "2", view.table.Rows()[1][1])
+}
+
+func TestFormatObject_DottedKey(t *testing.T) {
+	t.Parallel()
+
+	obj := gjson.Parse(`{"a.b":"v","plain":"w"}`)
+	require.Equal(t, `{a.b:"v", plain:"w"}`, formatObject(obj))
+}
