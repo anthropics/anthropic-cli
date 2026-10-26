@@ -689,6 +689,7 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	gcSet := gc.AnySet()
 	aw := awsFromRoot(root)
 	fd := foundryFromRoot(root)
+	bd := bedrockFromRoot(root)
 
 	// Credential tier mirrors getDefaultRequestOptions exactly. Note that
 	// partial federation config (fed.AnySet() but not fedReady) does NOT
@@ -711,13 +712,15 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		credWinner = 6
 	case fd.AnySet():
 		credWinner = 7
-	case profileTokenPresent:
+	case bd.AnySet():
 		credWinner = 8
+	case profileTokenPresent:
+		credWinner = 9
 	}
 
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Credentials")
-	if credWinner == 3 || credWinner == 8 {
+	if credWinner == 3 || credWinner == 9 {
 		if who := loggedInSummary(creds.OrganizationName, creds.AccountEmail); who != "" {
 			fmt.Fprintf(out, "  Logged in %s\n", who)
 		}
@@ -751,7 +754,7 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		} else {
 			profileLabel += " [via active_config]"
 		}
-		writeRow(out, credWinner == 3 || credWinner == 8, profileLabel, formatSecret(creds.AccessToken, true))
+		writeRow(out, credWinner == 3 || credWinner == 9, profileLabel, formatSecret(creds.AccessToken, true))
 		exp := time.Unix(creds.ExpiresAt, 0)
 		writeDetail(out, "expires", fmt.Sprintf("%s (%s)", exp.Format(time.RFC3339), formatRemaining(time.Until(exp))))
 		// Prefer the credentials file's scope (what the live token was granted)
@@ -816,6 +819,14 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		}
 		writeDetail(out, "resource", cmp.Or(fd.Resource, "(not set)"))
 	}
+	if bd.AnySet() {
+		if bd.APIKey != "" {
+			writeRow(out, credWinner == 8, "Bedrock (API key, "+credentialSourceLabel(root, "bedrock-api-key")+")", formatOpaqueSecret(bd.APIKey))
+		} else {
+			writeRow(out, credWinner == 8, "Bedrock", "AWS credential chain (request signing)")
+		}
+		writeDetail(out, "region", cmp.Or(bd.Region, "(from AWS_REGION or AWS_DEFAULT_REGION)"))
+	}
 
 	// Surface the surprising-override case: the user ran `ant auth login` but
 	// has a credential env var set that silently beats the profile on every
@@ -865,6 +876,8 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		baseWinner = 6
 	case credWinner == 7:
 		baseWinner = 7
+	case credWinner == 8:
+		baseWinner = 8
 	case flagBaseURL != "":
 		baseWinner = 1
 	case envBaseURL != "":
@@ -904,6 +917,13 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 			label = "--foundry-base-url / ANTHROPIC_FOUNDRY_BASE_URL"
 		}
 		writeRow(out, true, label, cmp.Or(fd.host(), "(set --foundry-resource)"))
+	}
+	if baseWinner == 8 {
+		label := "Bedrock endpoint"
+		if bd.BaseURL != "" {
+			label = "--bedrock-base-url / ANTHROPIC_BEDROCK_MANTLE_BASE_URL"
+		}
+		writeRow(out, true, label, cmp.Or(bd.host(), "(set --bedrock-region)"))
 	}
 
 	fmt.Fprintln(out)
