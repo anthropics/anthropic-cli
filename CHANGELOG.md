@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.1](https://github.com/anthropics/anthropic-cli/compare/v2.4.0...v2.4.1) (2026-10-28)
+
+### Chores
+
+* **deps:** build with Go 1.26.10
+
 ## [2.4.0](https://github.com/anthropics/anthropic-cli/compare/v2.3.0...v2.4.0) (2026-10-26)
 
 ### Features

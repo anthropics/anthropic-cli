@@ -1,6 +1,6 @@
 module github.com/anthropics/anthropic-cli/v2
 
-go 1.25
+go 1.26.10
 
 require (
 	github.com/anthropics/anthropic-sdk-go/v2 v2.4.0
