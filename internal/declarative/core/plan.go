@@ -188,7 +188,7 @@ func (p *Planner) Plan(ctx context.Context, loader *Loader) (*Plan, error) {
 		resolved[key] = targetAfter(change)
 	}
 
-	plan.Changes = append(plan.Changes, p.planDestroys(order)...)
+	plan.Changes = append(plan.Changes, p.planDestroys(ctx, order)...)
 	plan.Warnings = append([]string{}, p.warnings...)
 	return plan, nil
 }
@@ -423,7 +423,7 @@ func targetAfter(change *Change) Target {
 // The files are gone, so there is no reference graph to follow. Destroys run
 // in reverse kind order instead, so a kind that can reference another is
 // removed before the kind it points at. Within a kind the order is by key.
-func (p *Planner) planDestroys(present []string) []*Change {
+func (p *Planner) planDestroys(ctx context.Context, present []string) []*Change {
 	var orphans []string
 	for _, key := range p.Lock.Keys() {
 		if slices.Contains(present, key) {
@@ -458,9 +458,37 @@ func (p *Planner) planDestroys(present []string) []*Change {
 			Action: ActionDestroy,
 			Entry:  entry,
 		}
+		if err := p.confirmPruneTarget(ctx, change); err != nil {
+			change.Blocked = err
+		}
 		changes = append(changes, change)
 	}
 	return changes
+}
+
+// confirmPruneTarget refuses to destroy an id that is not the object the last
+// apply recorded. A lockfile edit can swap the id; the stored remote hash
+// cannot be swapped onto a different object without also matching that object.
+func (p *Planner) confirmPruneTarget(ctx context.Context, change *Change) error {
+	entry := change.Entry
+	if entry == nil || entry.RemoteHash == "" || p.Client == nil {
+		return nil
+	}
+	obj, err := p.Client.Get(ctx, entry.Kind, entry.ID)
+	if errors.Is(err, ErrNotFound) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	current, err := hashBody(normalizeRemote(change.spec, obj))
+	if err != nil {
+		return err
+	}
+	if current != entry.RemoteHash {
+		return fmt.Errorf("refusing to prune %s: id %s is not the resource the last apply recorded", change.Key, entry.ID)
+	}
+	return nil
 }
 
 func (p *Planner) warnf(format string, args ...any) {
