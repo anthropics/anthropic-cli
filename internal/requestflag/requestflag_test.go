@@ -325,31 +325,33 @@ func TestRequestParams(t *testing.T) {
 func TestFlagSet(t *testing.T) {
 	t.Parallel()
 
-	strFlag := &Flag[string]{
-		Name:    "string-flag",
-		Default: "default-string",
+	// Each subtest makes its own flag, because the subtests run in parallel
+	// and a Flag is not safe to use from several goroutines at once.
+	newStrFlag := func() *Flag[string] {
+		return &Flag[string]{
+			Name:    "string-flag",
+			Default: "default-string",
+		}
 	}
 
-	superstitiousIntFlag := &Flag[int64]{
-		Name:    "int-flag",
-		Default: 42,
-		Validator: func(val int64) error {
-			if val == 13 {
-				return fmt.Errorf("Unlucky number!")
-			}
-			return nil
-		},
-	}
-
-	boolFlag := &Flag[bool]{
-		Name:    "bool-flag",
-		Default: false,
+	newSuperstitiousIntFlag := func() *Flag[int64] {
+		return &Flag[int64]{
+			Name:    "int-flag",
+			Default: 42,
+			Validator: func(val int64) error {
+				if val == 13 {
+					return fmt.Errorf("Unlucky number!")
+				}
+				return nil
+			},
+		}
 	}
 
 	// Test initialization and setting
 	t.Run("PreParse initialization", func(t *testing.T) {
 		t.Parallel()
 
+		strFlag := newStrFlag()
 		assert.NoError(t, strFlag.PreParse())
 		assert.True(t, strFlag.applied)
 		assert.Equal(t, "default-string", strFlag.Get())
@@ -358,6 +360,7 @@ func TestFlagSet(t *testing.T) {
 	t.Run("Set string flag", func(t *testing.T) {
 		t.Parallel()
 
+		strFlag := newStrFlag()
 		assert.NoError(t, strFlag.Set("string-flag", "new-value"))
 		assert.Equal(t, "new-value", strFlag.Get())
 		assert.True(t, strFlag.IsSet())
@@ -366,6 +369,7 @@ func TestFlagSet(t *testing.T) {
 	t.Run("Set int flag with valid value", func(t *testing.T) {
 		t.Parallel()
 
+		superstitiousIntFlag := newSuperstitiousIntFlag()
 		assert.NoError(t, superstitiousIntFlag.Set("int-flag", "100"))
 		assert.Equal(t, int64(100), superstitiousIntFlag.Get())
 		assert.True(t, superstitiousIntFlag.IsSet())
@@ -374,18 +378,24 @@ func TestFlagSet(t *testing.T) {
 	t.Run("Set int flag with invalid value", func(t *testing.T) {
 		t.Parallel()
 
+		superstitiousIntFlag := newSuperstitiousIntFlag()
 		assert.Error(t, superstitiousIntFlag.Set("int-flag", "not-an-int"))
 	})
 
 	t.Run("Set int flag with validator failing", func(t *testing.T) {
 		t.Parallel()
 
+		superstitiousIntFlag := newSuperstitiousIntFlag()
 		assert.Error(t, superstitiousIntFlag.Set("int-flag", "13"))
 	})
 
 	t.Run("Set bool flag", func(t *testing.T) {
 		t.Parallel()
 
+		boolFlag := &Flag[bool]{
+			Name:    "bool-flag",
+			Default: false,
+		}
 		assert.NoError(t, boolFlag.Set("bool-flag", "true"))
 		assert.Equal(t, true, boolFlag.Get())
 		assert.True(t, boolFlag.IsSet())
