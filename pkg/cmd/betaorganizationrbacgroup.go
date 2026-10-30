@@ -34,10 +34,11 @@ var betaOrganizationRBACGroupsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "rbac-group-id",
-			Usage:     "ID of the RBAC Group.",
-			Required:  true,
-			PathParam: "rbac_group_id",
+			Name:        "rbac-group-id",
+			Usage:       "ID of the RBAC Group.",
+			Required:    true,
+			PathParam:   "rbac_group_id",
+			DataAliases: []string{"id"},
 		},
 	},
 	Action:          handleBetaOrganizationRBACGroupsRetrieve,
@@ -50,10 +51,11 @@ var betaOrganizationRBACGroupsUpdate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "rbac-group-id",
-			Usage:     "ID of the RBAC Group.",
-			Required:  true,
-			PathParam: "rbac_group_id",
+			Name:        "rbac-group-id",
+			Usage:       "ID of the RBAC Group.",
+			Required:    true,
+			PathParam:   "rbac_group_id",
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[*string]{
 			Name:     "name",
@@ -96,10 +98,11 @@ var betaOrganizationRBACGroupsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "rbac-group-id",
-			Usage:     "ID of the RBAC Group.",
-			Required:  true,
-			PathParam: "rbac_group_id",
+			Name:        "rbac-group-id",
+			Usage:       "ID of the RBAC Group.",
+			Required:    true,
+			PathParam:   "rbac_group_id",
+			DataAliases: []string{"id"},
 		},
 	},
 	Action:          handleBetaOrganizationRBACGroupsDelete,

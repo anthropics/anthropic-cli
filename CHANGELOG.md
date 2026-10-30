@@ -1,6 +1,11 @@
 # Changelog
 
-## [2.4.1](https://github.com/anthropics/anthropic-cli/compare/v2.4.0...v2.4.1) (2026-10-29)
+## [2.5.0](https://github.com/anthropics/anthropic-cli/compare/v2.4.0...v2.5.0) (2026-10-30)
+
+### Features
+
+* **api:** fill RBAC and spend limit request IDs from piped output
+
 
 ### Chores
 

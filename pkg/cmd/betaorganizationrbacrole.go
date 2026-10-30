@@ -18,10 +18,11 @@ var betaOrganizationRBACRolesRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "rbac-role-id",
-			Usage:     "ID of the RBAC Role.",
-			Required:  true,
-			PathParam: "rbac_role_id",
+			Name:        "rbac-role-id",
+			Usage:       "ID of the RBAC Role.",
+			Required:    true,
+			PathParam:   "rbac_role_id",
+			DataAliases: []string{"id"},
 		},
 	},
 	Action:          handleBetaOrganizationRBACRolesRetrieve,

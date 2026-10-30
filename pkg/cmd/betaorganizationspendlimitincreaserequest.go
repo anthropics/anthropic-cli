@@ -18,10 +18,11 @@ var betaOrganizationSpendLimitsIncreaseRequestsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "spend-limit-increase-request-id",
-			Usage:     "ID of the spend limit increase request.",
-			Required:  true,
-			PathParam: "spend_limit_increase_request_id",
+			Name:        "spend-limit-increase-request-id",
+			Usage:       "ID of the spend limit increase request.",
+			Required:    true,
+			PathParam:   "spend_limit_increase_request_id",
+			DataAliases: []string{"id"},
 		},
 	},
 	Action:          handleBetaOrganizationSpendLimitsIncreaseRequestsRetrieve,
@@ -68,10 +69,11 @@ var betaOrganizationSpendLimitsIncreaseRequestsApprove = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "spend-limit-increase-request-id",
-			Usage:     "ID of the spend limit increase request.",
-			Required:  true,
-			PathParam: "spend_limit_increase_request_id",
+			Name:        "spend-limit-increase-request-id",
+			Usage:       "ID of the spend limit increase request.",
+			Required:    true,
+			PathParam:   "spend_limit_increase_request_id",
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[string]{
 			Name:     "amount",
@@ -99,10 +101,11 @@ var betaOrganizationSpendLimitsIncreaseRequestsDeny = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "spend-limit-increase-request-id",
-			Usage:     "ID of the spend limit increase request.",
-			Required:  true,
-			PathParam: "spend_limit_increase_request_id",
+			Name:        "spend-limit-increase-request-id",
+			Usage:       "ID of the spend limit increase request.",
+			Required:    true,
+			PathParam:   "spend_limit_increase_request_id",
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[bool]{
 			Name:     "suppress-notification",
