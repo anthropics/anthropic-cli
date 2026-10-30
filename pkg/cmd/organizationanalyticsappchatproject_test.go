@@ -1,0 +1,27 @@
+package cmd
+
+import (
+	"testing"
+
+	"github.com/anthropics/anthropic-cli/v2/internal/mocktest"
+)
+
+func TestOrganizationAnalyticsAppsChatProjectsList(t *testing.T) {
+	t.Setenv("ANTHROPIC_API_KEY", "string")
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"organization:analytics:apps:chat:projects", "list",
+			"--max-items", "10",
+			"--date", "'2019-12-27'",
+			"--ending-date", "'2019-12-27'",
+			"--filter", "string",
+			"--group-by", "rbac_group_id",
+			"--limit", "1",
+			"--order", "asc",
+			"--order-by", "order_by",
+			"--page", "page",
+			"--starting-date", "'2019-12-27'",
+		)
+	})
+}

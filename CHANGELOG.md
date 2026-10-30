@@ -4,6 +4,7 @@
 
 ### Features
 
+* **api:** add GA methods for analytics, spend limits and RBAC
 * **api:** fill RBAC and spend limit request IDs from piped output
 
 
