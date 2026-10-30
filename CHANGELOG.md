@@ -16,6 +16,7 @@
 ### Chores
 
 * **deps:** build with Go 1.26.10
+* **internal:** add a section for each repository's own review rules
 * **tests:** fix flaky flag tests that shared state
 
 ## [2.4.0](https://github.com/anthropics/anthropic-cli/compare/v2.3.0...v2.4.0) (2026-10-26)
