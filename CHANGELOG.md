@@ -16,6 +16,7 @@
 ### Chores
 
 * **deps:** build with Go 1.26.10
+* **docs:** link Dreams model fields to the supported models section
 * **internal:** add a section for each repository's own review rules
 * **tests:** fix flaky flag tests that shared state
 
