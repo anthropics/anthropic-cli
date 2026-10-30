@@ -7,6 +7,11 @@
 * **api:** fill RBAC and spend limit request IDs from piped output
 
 
+### Bug Fixes
+
+* **cli:** preload the explorer by terminal height, not width
+
+
 ### Chores
 
 * **deps:** build with Go 1.26.10
