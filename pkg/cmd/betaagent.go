@@ -101,7 +101,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "model.speed",
-			Usage:      "Inference speed mode. Defaults to `standard`.",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Defaults to `standard`. Not all models support `fast`; invalid combinations are rejected at create time.",
 			InnerField: "speed",
 		},
 	},
@@ -377,7 +377,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "model.speed",
-			Usage:      "Inference speed mode. Defaults to `standard`.",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Defaults to `standard`. Not all models support `fast`; invalid combinations are rejected at create time.",
 			InnerField: "speed",
 		},
 	},
