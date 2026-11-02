@@ -85,7 +85,7 @@ func TestUserProfilesUpdate(t *testing.T) {
 			"user-profiles", "update",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
 			"--access-type", "application",
-			"--external-user-details", "{account_status: suspended, country: country, email_hash: x, entity_type: individual, name_hash: x, onboarded_at: '2019-12-27T18:11:19.117Z', reference_id: x}",
+			"--external-user-details", "{account_status: suspended, country: SE, email_hash: x, entity_type: individual, name_hash: x, onboarded_at: '2019-12-27T18:11:19.117Z', reference_id: x}",
 			"--metadata", "{foo: string}",
 			"--name", "x",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
@@ -103,7 +103,7 @@ func TestUserProfilesUpdate(t *testing.T) {
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
 			"--access-type", "application",
 			"--external-user-details.account-status", "suspended",
-			"--external-user-details.country", "country",
+			"--external-user-details.country", "SE",
 			"--external-user-details.email-hash", "x",
 			"--external-user-details.entity-type", "individual",
 			"--external-user-details.name-hash", "x",
@@ -121,7 +121,7 @@ func TestUserProfilesUpdate(t *testing.T) {
 			"access_type: application\n" +
 			"external_user_details:\n" +
 			"  account_status: suspended\n" +
-			"  country: country\n" +
+			"  country: SE\n" +
 			"  email_hash: x\n" +
 			"  entity_type: individual\n" +
 			"  name_hash: x\n" +

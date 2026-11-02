@@ -16,7 +16,7 @@ func TestBetaMemoryStoresMemoriesCreate(t *testing.T) {
 			"beta:memory-stores:memories", "create",
 			"--memory-store-id", "memory_store_id",
 			"--content", "content",
-			"--path", "xx",
+			"--path", "/P",
 			"--view", "basic",
 			"--beta", "message-batches-2024-09-24",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
@@ -27,7 +27,7 @@ func TestBetaMemoryStoresMemoriesCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"content: content\n" +
-			"path: xx\n")
+			"path: /P\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
@@ -67,8 +67,8 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--view", "basic",
 			"--content", "content",
-			"--path", "xx",
-			"--precondition", "{type: content_sha256, content_sha256: content_sha256}",
+			"--path", "/P",
+			"--precondition", "{type: content_sha256, content_sha256: 210b9798eb53baa4e69d31c1071cf03d212b8ad0ca30cf321e0ea82e120aac26}",
 			"--beta", "message-batches-2024-09-24",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -87,9 +87,9 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--memory-id", "memory_id",
 			"--view", "basic",
 			"--content", "content",
-			"--path", "xx",
+			"--path", "/P",
 			"--precondition.type", "content_sha256",
-			"--precondition.content-sha256", "content_sha256",
+			"--precondition.content-sha256", "210b9798eb53baa4e69d31c1071cf03d212b8ad0ca30cf321e0ea82e120aac26",
 			"--beta", "message-batches-2024-09-24",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -99,10 +99,10 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"content: content\n" +
-			"path: xx\n" +
+			"path: /P\n" +
 			"precondition:\n" +
 			"  type: content_sha256\n" +
-			"  content_sha256: content_sha256\n")
+			"  content_sha256: 210b9798eb53baa4e69d31c1071cf03d212b8ad0ca30cf321e0ea82e120aac26\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
