@@ -339,6 +339,120 @@ func init() {
 				},
 			},
 			{
+				Name:     "organization:analytics:summaries",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsSummariesList,
+				},
+			},
+			{
+				Name:     "organization:analytics:users",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsUsersList,
+				},
+			},
+			{
+				Name:     "organization:analytics:apps:chat:projects",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsAppsChatProjectsList,
+				},
+			},
+			{
+				Name:     "organization:analytics:connectors",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsConnectorsList,
+				},
+			},
+			{
+				Name:     "organization:analytics:plugins",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsPluginsList,
+				},
+			},
+			{
+				Name:     "organization:analytics:skills",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsSkillsList,
+				},
+			},
+			{
+				Name:     "organization:analytics:artifacts",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationAnalyticsArtifactsList,
+				},
+			},
+			{
+				Name:     "organization:spend-limits:effective",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationSpendLimitsEffectiveList,
+				},
+			},
+			{
+				Name:     "organization:spend-limits:increase-requests",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationSpendLimitsIncreaseRequestsRetrieve,
+					&organizationSpendLimitsIncreaseRequestsList,
+					&organizationSpendLimitsIncreaseRequestsApprove,
+					&organizationSpendLimitsIncreaseRequestsDeny,
+				},
+			},
+			{
+				Name:     "organization:rbac-groups",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationRBACGroupsCreate,
+					&organizationRBACGroupsRetrieve,
+					&organizationRBACGroupsUpdate,
+					&organizationRBACGroupsList,
+					&organizationRBACGroupsDelete,
+				},
+			},
+			{
+				Name:     "organization:rbac-groups:members",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationRBACGroupsMembersList,
+					&organizationRBACGroupsMembersAdd,
+					&organizationRBACGroupsMembersRemove,
+				},
+			},
+			{
+				Name:     "organization:rbac-roles",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationRBACRolesRetrieve,
+					&organizationRBACRolesList,
+				},
+			},
+			{
+				Name:     "organization:rbac-roles:permissions",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&organizationRBACRolesPermissionsList,
+				},
+			},
+			{
 				Name:     "beta:models",
 				Category: "API RESOURCE",
 				Suggest:  true,

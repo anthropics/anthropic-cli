@@ -123,7 +123,7 @@ func handleWorkerPoll(ctx context.Context, cmd *cli.Command) error {
 		return worker.Run(ctx)
 	}
 
-	// With an --on-work script, use the control-plane-only WorkPoller and exec
+	// With an --on-work script, use the WorkPoller and exec
 	// the script for each claimed item; the script (typically launching a
 	// container that runs `ant beta:worker run`) is responsible for servicing
 	// the session and heartbeating the lease.

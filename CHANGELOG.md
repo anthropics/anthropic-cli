@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.5.0](https://github.com/anthropics/anthropic-cli/compare/v2.4.0...v2.5.0) (2026-11-02)
+
+### Features
+
+* **api:** add GA methods for analytics, spend limits and RBAC
+* **api:** fill RBAC and spend limit request IDs from piped output
+
+
+### Bug Fixes
+
+* **cli:** preload the explorer by terminal height, not width
+
+
+### Chores
+
+* bump go sdk to v2.5.0
+* **deps:** build with Go 1.26.10
+* **docs:** link Dreams model fields to the supported models section
+* **internal:** add a section for each repository's own review rules
+* **internal:** plainer wording in worker comments
+* **tests:** fix flaky flag tests that shared state
+
+
+### Documentation
+
+* **api:** show each field's own description for `speed`
+
 ## [2.4.0](https://github.com/anthropics/anthropic-cli/compare/v2.3.0...v2.4.0) (2026-10-26)
 
 ### Features

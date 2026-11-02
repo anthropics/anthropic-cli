@@ -25,7 +25,7 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[any]{
 			Name:     "model",
-			Usage:    "The model that runs a dream, given as a model ID or as an object with `id` and `speed`.\n\nIn the object form, `speed` can only be `standard`.\n\nThe [limits table in the Dreams guide](https://platform.claude.com/docs/en/managed-agents/dreams#limits) lists the supported models.",
+			Usage:    "The model that runs a dream, given as a model ID or as an object with `id` and `speed`.\n\nIn the object form, `speed` can only be `standard`.\n\nThe [Availability section of the Dreams guide](https://platform.claude.com/docs/en/managed-agents/dreams#feature-availability) lists the supported models.",
 			Required: true,
 			BodyPath: "model",
 		},
@@ -66,14 +66,14 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[[]string]{
 			Name:       "input.session-ids",
-			Usage:      "The IDs of the sessions whose transcripts the dream reads (`sesn_...`).\n\nGive 1 to 100 IDs, with no duplicates. Each session must be in the same workspace as the dream. Responses list the IDs in sorted order.\n\nThe [limits table in the Dreams guide](https://platform.claude.com/docs/en/managed-agents/dreams#limits) lists all the limits on a dream.",
+			Usage:      "The IDs of the sessions whose transcripts the dream reads (`sesn_...`).\n\nGive 1 to 100 IDs, with no duplicates. Each session must be in the same workspace as the dream. Responses list the IDs in sorted order.",
 			InnerField: "session_ids",
 		},
 	},
 	"model": {
 		&requestflag.InnerFlag[string]{
 			Name:       "model.id",
-			Usage:      "The ID of the model to run the dream with.\n\nThe ID can be 1 to 256 characters long.\n\nThe [limits table in the Dreams guide](https://platform.claude.com/docs/en/managed-agents/dreams#limits) lists the supported models.",
+			Usage:      "The ID of the model to run the dream with.\n\nThe ID can be 1 to 256 characters long.\n\nThe [Availability section of the Dreams guide](https://platform.claude.com/docs/en/managed-agents/dreams#feature-availability) lists the supported models.",
 			InnerField: "id",
 		},
 		&requestflag.InnerFlag[*string]{

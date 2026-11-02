@@ -36,7 +36,7 @@ type toolResult struct {
 	text    string
 }
 
-// workerRunSession is a fake control plane for one session with memory
+// workerRunSession is a fake API server for one session with memory
 // stores attached: the session lookup, the stores' listings, the lease
 // heartbeat and stop, and an event stream that emits calls one at a time,
 // each after the previous result was posted, then terminates the session.
