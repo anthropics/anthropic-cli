@@ -15,6 +15,7 @@
 
 ### Chores
 
+* bump go sdk to v2.5.0
 * **deps:** build with Go 1.26.10
 * **docs:** link Dreams model fields to the supported models section
 * **internal:** add a section for each repository's own review rules
