@@ -2,6 +2,11 @@
 
 ## [2.5.1](https://github.com/anthropics/anthropic-cli/compare/v2.5.0...v2.5.1) (2026-11-02)
 
+### Bug Fixes
+
+* **apply:** let only its owner read the cache in the user cache directory, and use a private cache for each run when that directory is missing or unusable
+
+
 ### Chores
 
 * **api:** update example values for pattern-constrained string fields

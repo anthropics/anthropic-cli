@@ -126,10 +126,11 @@ func handleApply(ctx context.Context, cmd *cli.Command) (err error) {
 		lock.Origin = &origin
 	}
 
-	cacheDir, err := remoteCacheDir()
+	cacheDir, removeCacheDir, err := remoteCacheDir()
 	if err != nil {
 		return err
 	}
+	defer removeCacheDir()
 	fetcher := core.NewGitHubFetcher(cacheDir)
 
 	loader := core.NewLoader(registry, root, fetcher)
@@ -482,19 +483,23 @@ func profileFor(cmd *cli.Command, lock *core.Lockfile) string {
 	return match
 }
 
-// remoteCacheDir is where URL-sourced skills are unpacked. It sits under the
-// user cache directory rather than the repository so a fetched skill is never
-// mistaken for a local one during a directory walk.
-func remoteCacheDir() (string, error) {
-	base, err := os.UserCacheDir()
+// remoteCacheDir is where URL-sourced skills are unpacked: an owner-only
+// directory in the user cache, kept between runs, or failing that a new one in
+// the temp directory, which the returned function removes.
+func remoteCacheDir() (string, func(), error) {
+	if base, err := os.UserCacheDir(); err == nil {
+		dir := filepath.Join(base, "anthropic", "apply-remote")
+		// MkdirAll keeps the mode of a directory that already exists.
+		if os.MkdirAll(dir, 0o700) == nil && os.Chmod(dir, 0o700) == nil {
+			return dir, func() {}, nil
+		}
+	}
+	// A directory walk skips names that start with a dot.
+	dir, err := os.MkdirTemp("", ".anthropic-apply-remote-")
 	if err != nil {
-		base = os.TempDir()
+		return "", nil, err
 	}
-	dir := filepath.Join(base, "anthropic", "apply-remote")
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", err
-	}
-	return dir, nil
+	return dir, func() { os.RemoveAll(dir) }, nil
 }
 
 // offerUntracked lists resources under the lockfile root that nothing tracks

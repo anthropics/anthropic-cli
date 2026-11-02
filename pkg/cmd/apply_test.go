@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/anthropics/anthropic-cli/v2/internal/declarative/acctest"
@@ -151,4 +152,109 @@ func TestHandleApplyEscapesItsError(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), `a\x1b[2J.json`)
 	assert.NotContains(t, err.Error(), "\x1b")
+}
+
+func setUserCacheDir(t *testing.T) string {
+	t.Helper()
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("XDG_CACHE_HOME", filepath.Join(home, "cache"))
+	t.Setenv("LocalAppData", home)
+	base, err := os.UserCacheDir()
+	require.NoError(t, err)
+	return base
+}
+
+func unsetUserCacheDir(t *testing.T) {
+	t.Helper()
+	for _, name := range []string{"HOME", "XDG_CACHE_HOME", "LocalAppData"} {
+		t.Setenv(name, "")
+	}
+	if _, err := os.UserCacheDir(); err == nil {
+		t.Skip("this platform finds a user cache directory without HOME")
+	}
+}
+
+func setTempDir(t *testing.T) string {
+	t.Helper()
+	tmp := t.TempDir()
+	for _, name := range []string{"TMPDIR", "TMP", "TEMP"} {
+		t.Setenv(name, tmp)
+	}
+	return tmp
+}
+
+// Without a user cache directory, another user on the machine must not be able
+// to predict the cache's path, create it first, or read what is fetched into it.
+func TestRemoteCacheDirWithoutAUserCacheDirIsPrivateToThisRun(t *testing.T) {
+	unsetUserCacheDir(t)
+	tmp := setTempDir(t)
+
+	first, removeFirst, err := remoteCacheDir()
+	require.NoError(t, err)
+	second, removeSecond, err := remoteCacheDir()
+	require.NoError(t, err)
+	defer removeSecond()
+
+	assert.Equal(t, tmp, filepath.Dir(first))
+	assert.Equal(t, tmp, filepath.Dir(second))
+	assert.NotEqual(t, first, second)
+	assert.Equal(t, byte('.'), filepath.Base(first)[0], "a directory walk skips it")
+	if runtime.GOOS != "windows" {
+		for _, dir := range []string{first, second} {
+			st, err := os.Stat(dir)
+			require.NoError(t, err)
+			assert.Equal(t, os.FileMode(0o700), st.Mode().Perm(), dir)
+		}
+	}
+
+	removeFirst()
+	assert.NoDirExists(t, first)
+}
+
+func TestRemoteCacheDirKeepsTheUserCacheBetweenRuns(t *testing.T) {
+	base := setUserCacheDir(t)
+
+	dir, remove, err := remoteCacheDir()
+	require.NoError(t, err)
+	remove()
+
+	assert.Equal(t, filepath.Join(base, "anthropic", "apply-remote"), dir)
+	assert.DirExists(t, dir)
+}
+
+func TestRemoteCacheDirInTheUserCacheIsPrivate(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("no permission bits")
+	}
+	base := setUserCacheDir(t)
+	mode := func(dir string) os.FileMode {
+		st, err := os.Stat(dir)
+		require.NoError(t, err)
+		return st.Mode().Perm()
+	}
+
+	dir, _, err := remoteCacheDir()
+	require.NoError(t, err)
+	require.Equal(t, filepath.Join(base, "anthropic", "apply-remote"), dir)
+	assert.Equal(t, os.FileMode(0o700), mode(dir))
+
+	require.NoError(t, os.Chmod(dir, 0o755))
+	_, _, err = remoteCacheDir()
+	require.NoError(t, err)
+	assert.Equal(t, os.FileMode(0o700), mode(dir), "a cache an earlier version created is tightened")
+}
+
+func TestRemoteCacheDirIsPrivateToThisRunWhenTheUserCacheIsUnusable(t *testing.T) {
+	base := setUserCacheDir(t)
+	tmp := setTempDir(t)
+	require.NoError(t, os.MkdirAll(base, 0o700))
+	require.NoError(t, os.WriteFile(filepath.Join(base, "anthropic"), nil, 0o600))
+
+	dir, remove, err := remoteCacheDir()
+	require.NoError(t, err)
+	assert.Equal(t, tmp, filepath.Dir(dir))
+
+	remove()
+	assert.NoDirExists(t, dir)
 }
