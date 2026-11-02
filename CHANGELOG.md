@@ -11,6 +11,7 @@
 
 * **api:** update example values for pattern-constrained string fields
 * **docs:** clarify some API field descriptions
+* **docs:** update the telemetry destination headers description
 
 ## [2.5.0](https://github.com/anthropics/anthropic-cli/compare/v2.4.0...v2.5.0) (2026-11-02)
 
