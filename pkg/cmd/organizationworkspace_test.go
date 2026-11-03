@@ -138,6 +138,7 @@ func TestOrganizationWorkspacesList(t *testing.T) {
 			"--max-items", "10",
 			"--after-id", "after_id",
 			"--before-id", "before_id",
+			"--id", "string",
 			"--include-archived=true",
 			"--include-default=true",
 			"--limit", "1",
