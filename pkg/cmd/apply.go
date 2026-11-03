@@ -288,14 +288,17 @@ func identifyOrigin(ctx context.Context, cmd *cli.Command, sdk anthropic.Client,
 }
 
 // currentBaseURL resolves the API host by the client's own precedence: the
-// Google Cloud or AWS tier's own host when that tier is in use, else flag,
-// then environment, then the profile in use, then the SDK default.
+// Google Cloud, AWS or Foundry tier's own host when that tier is in use, else
+// flag, then environment, then the profile in use, then the SDK default.
 func currentBaseURL(cmd *cli.Command) string {
 	if googleCloudInUse(cmd) {
 		return googleCloudFromRoot(cmd.Root()).host()
 	}
 	if awsInUse(cmd) {
 		return awsFromRoot(cmd.Root()).host()
+	}
+	if foundryInUse(cmd) {
+		return foundryFromRoot(cmd.Root()).host()
 	}
 	if flag := cmd.String("base-url"); flag != "" {
 		return flag
@@ -311,8 +314,8 @@ func currentBaseURL(cmd *cli.Command) string {
 
 // profileInUse returns the active profile's config only when that profile is
 // what requests will authenticate with — by the client's own precedence, an
-// API key, auth token, complete federation config, or Google Cloud or AWS
-// settings from flags or the environment win over an implicit profile.
+// API key, auth token, complete federation config, or Google Cloud, AWS or
+// Foundry settings from flags or the environment win over an implicit profile.
 func profileInUse(cmd *cli.Command) *config.Config {
 	cfg, explicit := loadProfileIfUsable(cmd)
 	root := cmd.Root()
@@ -326,7 +329,7 @@ func profileInUse(cmd *cli.Command) *config.Config {
 		return cfg
 	case fed.AnySet() && len(fed.Missing()) == 0:
 		return nil
-	case googleCloudFromRoot(root).AnySet(), awsFromRoot(root).AnySet():
+	case googleCloudFromRoot(root).AnySet(), awsFromRoot(root).AnySet(), foundryFromRoot(root).AnySet():
 		return nil
 	}
 	return cfg
@@ -354,6 +357,21 @@ func awsInUse(cmd *cli.Command) bool {
 	_, apiKeySet := directCredential("api-key")
 	_, authTokenSet := directCredential("auth-token")
 	if apiKeySet || authTokenSet || !awsFromRoot(root).AnySet() || googleCloudFromRoot(root).AnySet() {
+		return false
+	}
+	if cfg, explicit := loadProfileIfUsable(cmd); cfg != nil && explicit {
+		return false
+	}
+	return !federationFromRoot(root).AnySet()
+}
+
+// foundryInUse reports whether requests will authenticate through the Foundry
+// tier, by the client's own precedence.
+func foundryInUse(cmd *cli.Command) bool {
+	root := cmd.Root()
+	_, apiKeySet := directCredential("api-key")
+	_, authTokenSet := directCredential("auth-token")
+	if apiKeySet || authTokenSet || !foundryFromRoot(root).AnySet() || googleCloudFromRoot(root).AnySet() || awsFromRoot(root).AnySet() {
 		return false
 	}
 	if cfg, explicit := loadProfileIfUsable(cmd); cfg != nil && explicit {
@@ -403,6 +421,10 @@ func describeOrigin(cmd *cli.Command, o core.Origin) render.OriginSummary {
 		c.Credentials = "AWS (API key)"
 	case awsInUse(cmd):
 		c.Credentials = "AWS (AWS credential chain)"
+	case foundryInUse(cmd) && foundryFromRoot(root).usesAuthToken():
+		c.Credentials = "Foundry (Entra ID token)"
+	case foundryInUse(cmd):
+		c.Credentials = "Foundry (API key)"
 	default:
 		c.Credentials = "workload identity federation"
 	}

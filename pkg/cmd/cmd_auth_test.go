@@ -395,11 +395,15 @@ func resetWarnOnce(t *testing.T) {
 	clientIDDefaultedOnce = sync.Once{}
 	googleCloudBaseURLNoticeOnce = sync.Once{}
 	awsBaseURLNoticeOnce = sync.Once{}
+	foundryBaseURLNoticeOnce = sync.Once{}
+	foundryAPIKeyNoticeOnce = sync.Once{}
 	t.Cleanup(func() {
 		multiAuthWarnOnce = sync.Once{}
 		clientIDDefaultedOnce = sync.Once{}
 		googleCloudBaseURLNoticeOnce = sync.Once{}
 		awsBaseURLNoticeOnce = sync.Once{}
+		foundryBaseURLNoticeOnce = sync.Once{}
+		foundryAPIKeyNoticeOnce = sync.Once{}
 	})
 }
 
@@ -411,7 +415,9 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("api-key and explicit profile", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources("ANTHROPIC_API_KEY", "", true, false, false, false, false, "", "") })
+		out := captureStderr(t, func() {
+			warnIfMultipleAuthSources("ANTHROPIC_API_KEY", "", true, false, false, false, false, false, "", "")
+		})
 		assert.Contains(t, out, "multiple auth sources configured")
 		assert.Contains(t, out, "profile from --profile / ANTHROPIC_PROFILE")
 		assert.Contains(t, out, "using ANTHROPIC_API_KEY per precedence")
@@ -420,7 +426,7 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("federation beats implicit profile", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", false, true, false, false, true, "", "") })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", false, true, false, false, false, true, "", "") })
 		assert.Contains(t, out, "federation env")
 		assert.Contains(t, out, "active profile (active_config)")
 		assert.Contains(t, out, "using federation env per precedence")
@@ -428,20 +434,26 @@ func TestMultiAuthWarning(t *testing.T) {
 
 	t.Run("explicit profile beats federation", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", true, true, false, false, false, "", "") })
+		out := captureStderr(t, func() { warnIfMultipleAuthSources("", "", true, true, false, false, false, false, "", "") })
 		assert.Contains(t, out, "using profile from --profile / ANTHROPIC_PROFILE per precedence")
 	})
 
 	t.Run("single source is silent", func(t *testing.T) {
 		reset()
-		out := captureStderr(t, func() { warnIfMultipleAuthSources("ANTHROPIC_API_KEY", "", false, false, false, false, false, "", "") })
+		out := captureStderr(t, func() {
+			warnIfMultipleAuthSources("ANTHROPIC_API_KEY", "", false, false, false, false, false, false, "", "")
+		})
 		assert.Empty(t, out)
 	})
 
 	t.Run("emits once", func(t *testing.T) {
 		reset()
-		first := captureStderr(t, func() { warnIfMultipleAuthSources("", "ANTHROPIC_AUTH_TOKEN", true, true, false, false, false, "", "") })
-		second := captureStderr(t, func() { warnIfMultipleAuthSources("", "ANTHROPIC_AUTH_TOKEN", true, true, false, false, false, "", "") })
+		first := captureStderr(t, func() {
+			warnIfMultipleAuthSources("", "ANTHROPIC_AUTH_TOKEN", true, true, false, false, false, false, "", "")
+		})
+		second := captureStderr(t, func() {
+			warnIfMultipleAuthSources("", "ANTHROPIC_AUTH_TOKEN", true, true, false, false, false, false, "", "")
+		})
 		assert.NotEmpty(t, first)
 		assert.Empty(t, second)
 	})
@@ -455,6 +467,7 @@ func runWithCredentialSources(t *testing.T, seed func(t *testing.T, dir string),
 	clearCredentialEnv(t)
 	clearGoogleCloudEnv(t)
 	clearAWSEnv(t)
+	clearFoundryEnv(t)
 	resetWarnOnce(t)
 	withStdinCredential(t, "sk-stdin\n")
 	seed(t, os.Getenv("ANTHROPIC_CONFIG_DIR"))
@@ -579,6 +592,10 @@ func TestMultiAuthWarningWhenProfileIsNotNextInLine(t *testing.T) {
 		{
 			name: "AWS is next in line", seed: activeProfileWork,
 			env: map[string]string{"ANTHROPIC_API_KEY": "sk-env", "ANTHROPIC_AWS_WORKSPACE_ID": "wrkspc_x"},
+		},
+		{
+			name: "Foundry is next in line", seed: activeProfileWork,
+			env: map[string]string{"ANTHROPIC_API_KEY": "sk-env", "ANTHROPIC_FOUNDRY_API_KEY": "foundry-key"},
 		},
 		{
 			name: "federation is next in line and there is no profile", seed: noProfile,
@@ -2071,6 +2088,10 @@ func runStatusKeepingCredentialEnv(t *testing.T, globalArgs ...string) (string, 
 			&cli.StringFlag{Name: "aws-workspace-id", Sources: cli.EnvVars("ANTHROPIC_AWS_WORKSPACE_ID")},
 			&cli.BoolFlag{Name: "aws-api-key-stdin"},
 			&cli.StringFlag{Name: "aws-base-url", Sources: cli.EnvVars("ANTHROPIC_AWS_BASE_URL")},
+			&cli.StringFlag{Name: "foundry-resource"},
+			&cli.BoolFlag{Name: "foundry-api-key-stdin"},
+			&cli.BoolFlag{Name: "foundry-auth-token-stdin"},
+			&cli.StringFlag{Name: "foundry-base-url", Sources: cli.EnvVars("ANTHROPIC_FOUNDRY_BASE_URL")},
 		},
 		Commands: []*cli.Command{{
 			Name: "auth", Commands: []*cli.Command{{

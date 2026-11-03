@@ -688,6 +688,7 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	gc := googleCloudFromRoot(root)
 	gcSet := gc.AnySet()
 	aw := awsFromRoot(root)
+	fd := foundryFromRoot(root)
 
 	// Credential tier mirrors getDefaultRequestOptions exactly. Note that
 	// partial federation config (fed.AnySet() but not fedReady) does NOT
@@ -708,13 +709,15 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		credWinner = 5
 	case aw.AnySet():
 		credWinner = 6
-	case profileTokenPresent:
+	case fd.AnySet():
 		credWinner = 7
+	case profileTokenPresent:
+		credWinner = 8
 	}
 
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Credentials")
-	if credWinner == 3 || credWinner == 7 {
+	if credWinner == 3 || credWinner == 8 {
 		if who := loggedInSummary(creds.OrganizationName, creds.AccountEmail); who != "" {
 			fmt.Fprintf(out, "  Logged in %s\n", who)
 		}
@@ -748,7 +751,7 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 		} else {
 			profileLabel += " [via active_config]"
 		}
-		writeRow(out, credWinner == 3 || credWinner == 7, profileLabel, formatSecret(creds.AccessToken, true))
+		writeRow(out, credWinner == 3 || credWinner == 8, profileLabel, formatSecret(creds.AccessToken, true))
 		exp := time.Unix(creds.ExpiresAt, 0)
 		writeDetail(out, "expires", fmt.Sprintf("%s (%s)", exp.Format(time.RFC3339), formatRemaining(time.Until(exp))))
 		// Prefer the credentials file's scope (what the live token was granted)
@@ -794,12 +797,24 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	}
 	if aw.AnySet() {
 		if aw.APIKey != "" {
-			writeRow(out, credWinner == 6, "AWS (API key, "+aw.apiKeySource(root)+")", formatSecret(aw.APIKey, true))
+			writeRow(out, credWinner == 6, "AWS (API key, "+aw.apiKeySource(root)+")", formatOpaqueSecret(aw.APIKey))
 		} else {
 			writeRow(out, credWinner == 6, "AWS", "AWS credential chain (request signing)")
 		}
 		writeDetail(out, "region", cmp.Or(aw.Region, "(from AWS_REGION or AWS_DEFAULT_REGION)"))
 		writeDetail(out, "workspace_id", cmp.Or(aw.WorkspaceID, "(not set)"))
+	}
+	if fd.AnySet() {
+		if fd.APIKey != "" {
+			writeRow(out, credWinner == 7 && !fd.usesAuthToken(), "Foundry (API key, "+credentialSourceLabel(root, "foundry-api-key")+")", formatOpaqueSecret(fd.APIKey))
+		}
+		if fd.AuthToken != "" {
+			writeRow(out, credWinner == 7 && fd.usesAuthToken(), "Foundry (Entra ID token, "+credentialSourceLabel(root, "foundry-auth-token")+")", formatOpaqueSecret(fd.AuthToken))
+		}
+		if fd.APIKey == "" && fd.AuthToken == "" {
+			writeRow(out, credWinner == 7, "Foundry", "(no API key or Entra ID token set)")
+		}
+		writeDetail(out, "resource", cmp.Or(fd.Resource, "(not set)"))
 	}
 
 	// Surface the surprising-override case: the user ran `ant auth login` but
@@ -848,6 +863,8 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	case credWinner == 6:
 		// Likewise for AWS.
 		baseWinner = 6
+	case credWinner == 7:
+		baseWinner = 7
 	case flagBaseURL != "":
 		baseWinner = 1
 	case envBaseURL != "":
@@ -880,6 +897,13 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 			label = "--aws-base-url / ANTHROPIC_AWS_BASE_URL"
 		}
 		writeRow(out, true, label, cmp.Or(aw.host(), "(set --aws-region)"))
+	}
+	if baseWinner == 7 {
+		label := "Foundry resource"
+		if fd.BaseURL != "" {
+			label = "--foundry-base-url / ANTHROPIC_FOUNDRY_BASE_URL"
+		}
+		writeRow(out, true, label, cmp.Or(fd.host(), "(set --foundry-resource)"))
 	}
 
 	fmt.Fprintln(out)
@@ -1064,9 +1088,15 @@ func formatSecret(s string, set bool) string {
 		return "(unset)"
 	}
 	if len(s) <= 16 {
-		return "(set, " + fmt.Sprint(len(s)) + " chars)"
+		return formatOpaqueSecret(s)
 	}
 	return s[:16] + "..."
+}
+
+// formatOpaqueSecret is for secrets with no fixed prefix, whose leading
+// characters are already key material.
+func formatOpaqueSecret(s string) string {
+	return "(set, " + fmt.Sprint(len(s)) + " chars)"
 }
 
 // formatRemaining renders a time.Duration as a short human string for token

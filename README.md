@@ -96,6 +96,29 @@ ant models list
 
 The same settings are available as `--aws-region` and `--aws-workspace-id`. Either flag, `ANTHROPIC_AWS_WORKSPACE_ID` or an AWS API key selects AWS; `AWS_REGION` and `AWS_PROFILE` on their own don't, since most AWS machines set them for other reasons. The region defaults to `AWS_REGION`, then `AWS_DEFAULT_REGION`. Any credentials the AWS default credential chain finds are used, including `AWS_PROFILE`, environment keys and an IAM role. To use an API key generated in the AWS Console instead, set `ANTHROPIC_AWS_API_KEY` or pipe it to `--aws-api-key-stdin`. The key works only in the region it was generated in, so set the region to match. `ANTHROPIC_API_KEY`, an auth token, a profile named with `--profile` or Google Cloud settings take precedence; `ant auth status` shows which is in use. AWS credentials are sent only to the gateway: `--base-url` and `ANTHROPIC_BASE_URL` are not used, and `--aws-base-url` (`ANTHROPIC_AWS_BASE_URL`) overrides the gateway URL. `ant beta:worker` is not supported on AWS.
 
+### Claude in Microsoft Foundry
+
+Name your resource and set an API key from the Foundry portal. The CLI then sends requests to that resource:
+
+```sh
+export ANTHROPIC_FOUNDRY_RESOURCE=my-resource
+export ANTHROPIC_FOUNDRY_API_KEY=...
+ant messages create \
+  --max-tokens 1024 \
+  --message '{role: user, content: "Hello, Claude"}' \
+  --model claude-opus-5-5
+```
+
+`--model` takes the name of your deployment, which defaults to the model ID. To use Microsoft Entra ID instead of an API key, set an access token:
+
+```sh
+export ANTHROPIC_FOUNDRY_AUTH_TOKEN="$(az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv)"
+```
+
+The CLI doesn't refresh the token, so set it again when it expires.
+
+`--foundry-resource` also sets the resource, and `--foundry-api-key-stdin` and `--foundry-auth-token-stdin` read the key or the token from standard input. A key, a token or `--foundry-resource` selects Foundry; `ANTHROPIC_FOUNDRY_RESOURCE` on its own doesn't, since a Claude Code setup can export it with no key or token. When both a key and a token are set, the piped one is used; when both come from the environment, the token is used, as in Claude Code, and the CLI prints a note. `ANTHROPIC_API_KEY`, an auth token, a profile named with `--profile`, Google Cloud settings and AWS settings take precedence, and `ant auth status` shows which is in use. Foundry credentials are sent only to your resource, so `--base-url` and `ANTHROPIC_BASE_URL` are not used. `ANTHROPIC_CUSTOM_HEADERS` is not applied either. To send requests to another URL, set `--foundry-base-url` (`ANTHROPIC_FOUNDRY_BASE_URL`) in place of the resource, and include the `/anthropic` path. [Claude in Microsoft Foundry](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry) lists the features available there. `ant beta:worker` is not supported on Foundry.
+
 ## Requirements
 
 macOS, Linux, or Windows.
