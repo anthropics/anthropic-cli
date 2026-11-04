@@ -35,12 +35,12 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "agent-id",
-			Usage:     "Filter to usage incurred by sessions of specific Claude Managed Agents agents. Use `group_by[]=agent_id` to break out per-agent values. Claude Developer Platform organizations only.",
+			Usage:     "Filter to usage incurred by sessions of specific Claude Managed Agents agents. Use `group_by[]=agent_id` to break out per-agent values. Claude Platform organizations only.",
 			QueryPath: "agent_ids",
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "api-key-id",
-			Usage:     "Filter to usage authenticated by specific API keys, by tagged API key ID (`apikey_...`), whichever identity the usage is attributed to. Include an empty entry (`api_key_ids[]=`) to also match usage that no API key authenticated. Use `group_by[]=api_key_id` to break out per-key values; usage without a key has a null `api_key_id`. Claude Developer Platform organizations only.",
+			Usage:     "Filter to usage authenticated by specific API keys, by tagged API key ID (`apikey_...`), whichever identity the usage is attributed to. Include an empty entry (`api_key_ids[]=`) to also match usage that no API key authenticated. Use `group_by[]=api_key_id` to break out per-key values; usage without a key has a null `api_key_id`. Claude Platform organizations only.",
 			QueryPath: "api_key_ids",
 		},
 		&requestflag.Flag[[]string]{
@@ -60,7 +60,7 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "deployment-id",
-			Usage:     "Filter to usage incurred by Claude Managed Agents sessions that specific deployments started. Use `group_by[]=deployment_id` to break out per-deployment values. Claude Developer Platform organizations only.",
+			Usage:     "Filter to usage incurred by Claude Managed Agents sessions that specific deployments started. Use `group_by[]=deployment_id` to break out per-deployment values. Claude Platform organizations only.",
 			QueryPath: "deployment_ids",
 		},
 		&requestflag.Flag[any]{
@@ -70,7 +70,7 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "environment-id",
-			Usage:     "Filter to usage incurred by Claude Managed Agents sessions that ran in specific environments. Use `group_by[]=environment_id` to break out per-environment values. Claude Developer Platform organizations only.",
+			Usage:     "Filter to usage incurred by Claude Managed Agents sessions that ran in specific environments. Use `group_by[]=environment_id` to break out per-environment values. Claude Platform organizations only.",
 			QueryPath: "environment_ids",
 		},
 		&requestflag.Flag[bool]{
@@ -127,12 +127,12 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "service-tier",
-			Usage:     "Filter to specific service tiers. Use `group_by[]=service_tier` to break out per-tier values. Claude Developer Platform organizations only; matches nothing for a Claude Enterprise organization.",
+			Usage:     "Filter to specific service tiers. Use `group_by[]=service_tier` to break out per-tier values. Claude Platform organizations only; matches nothing for a Claude Enterprise organization.",
 			QueryPath: "service_tiers",
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "session-id",
-			Usage:     "Filter to usage incurred by specific Claude Managed Agents sessions, by tagged session ID (`sesn_...`). Use `group_by[]=session_id` to break out per-session values. Claude Developer Platform organizations only.",
+			Usage:     "Filter to usage incurred by specific Claude Managed Agents sessions, by tagged session ID (`sesn_...`). Use `group_by[]=session_id` to break out per-session values. Claude Platform organizations only.",
 			QueryPath: "session_ids",
 		},
 		&requestflag.Flag[[]string]{
@@ -152,12 +152,12 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "user-profile-id",
-			Usage:     "Filter to usage attributed to specific user profiles, by tagged user profile ID (`uprof_...`). Use `group_by[]=user_profile_id` to break out per-profile values. Claude Developer Platform organizations only.",
+			Usage:     "Filter to usage attributed to specific user profiles, by tagged user profile ID (`uprof_...`). Use `group_by[]=user_profile_id` to break out per-profile values. Claude Platform organizations only.",
 			QueryPath: "user_profile_ids",
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "workspace-id",
-			Usage:     "Filter to usage in specific workspaces, by tagged workspace ID (`wrkspc_...`). Use `group_by[]=workspace_id` to break out per-workspace values. Claude Developer Platform organizations only; matches nothing for a Claude Enterprise organization.",
+			Usage:     "Filter to usage in specific workspaces, by tagged workspace ID (`wrkspc_...`). Use `group_by[]=workspace_id` to break out per-workspace values. Claude Platform organizations only; matches nothing for a Claude Enterprise organization.",
 			QueryPath: "workspace_ids",
 		},
 		&requestflag.Flag[[]string]{
