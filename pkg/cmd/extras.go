@@ -161,5 +161,22 @@ func init() {
 			Usage:   "Override the gateway URL for Claude Platform on AWS, once --aws-region, --aws-workspace-id or an AWS API key has selected it. AWS credentials are sent only here or to the gateway, never to --base-url.",
 			Sources: cli.EnvVars("ANTHROPIC_AWS_BASE_URL"),
 		},
+		&cli.StringFlag{
+			Name:  "foundry-resource",
+			Usage: "Microsoft Foundry resource name, as in https://{resource}.services.ai.azure.com. Setting this, a Foundry API key or a Microsoft Entra ID token sends requests to Claude in Microsoft Foundry. Defaults to ANTHROPIC_FOUNDRY_RESOURCE, which doesn't do that on its own.",
+		},
+		&cli.BoolFlag{
+			Name:  "foundry-api-key-stdin",
+			Usage: "Read an API key for Claude in Microsoft Foundry from standard input (or set ANTHROPIC_FOUNDRY_API_KEY). Consumes stdin, so the request body must come from flags.",
+		},
+		&cli.BoolFlag{
+			Name:  "foundry-auth-token-stdin",
+			Usage: "Read a Microsoft Entra ID access token for Claude in Microsoft Foundry from standard input, instead of an API key (or set ANTHROPIC_FOUNDRY_AUTH_TOKEN). Consumes stdin, so the request body must come from flags.",
+		},
+		&cli.StringFlag{
+			Name:    "foundry-base-url",
+			Usage:   "Full base URL for Claude in Microsoft Foundry, including the /anthropic path, instead of --foundry-resource. Foundry credentials are sent only here or to the resource, never to --base-url.",
+			Sources: cli.EnvVars("ANTHROPIC_FOUNDRY_BASE_URL"),
+		},
 	)
 }

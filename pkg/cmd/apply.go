@@ -126,10 +126,11 @@ func handleApply(ctx context.Context, cmd *cli.Command) (err error) {
 		lock.Origin = &origin
 	}
 
-	cacheDir, err := remoteCacheDir()
+	cacheDir, removeCacheDir, err := remoteCacheDir()
 	if err != nil {
 		return err
 	}
+	defer removeCacheDir()
 	fetcher := core.NewGitHubFetcher(cacheDir)
 
 	loader := core.NewLoader(registry, root, fetcher)
@@ -287,14 +288,17 @@ func identifyOrigin(ctx context.Context, cmd *cli.Command, sdk anthropic.Client,
 }
 
 // currentBaseURL resolves the API host by the client's own precedence: the
-// Google Cloud or AWS tier's own host when that tier is in use, else flag,
-// then environment, then the profile in use, then the SDK default.
+// Google Cloud, AWS or Foundry tier's own host when that tier is in use, else
+// flag, then environment, then the profile in use, then the SDK default.
 func currentBaseURL(cmd *cli.Command) string {
 	if googleCloudInUse(cmd) {
 		return googleCloudFromRoot(cmd.Root()).host()
 	}
 	if awsInUse(cmd) {
 		return awsFromRoot(cmd.Root()).host()
+	}
+	if foundryInUse(cmd) {
+		return foundryFromRoot(cmd.Root()).host()
 	}
 	if flag := cmd.String("base-url"); flag != "" {
 		return flag
@@ -310,8 +314,8 @@ func currentBaseURL(cmd *cli.Command) string {
 
 // profileInUse returns the active profile's config only when that profile is
 // what requests will authenticate with — by the client's own precedence, an
-// API key, auth token, complete federation config, or Google Cloud or AWS
-// settings from flags or the environment win over an implicit profile.
+// API key, auth token, complete federation config, or Google Cloud, AWS or
+// Foundry settings from flags or the environment win over an implicit profile.
 func profileInUse(cmd *cli.Command) *config.Config {
 	cfg, explicit := loadProfileIfUsable(cmd)
 	root := cmd.Root()
@@ -325,7 +329,7 @@ func profileInUse(cmd *cli.Command) *config.Config {
 		return cfg
 	case fed.AnySet() && len(fed.Missing()) == 0:
 		return nil
-	case googleCloudFromRoot(root).AnySet(), awsFromRoot(root).AnySet():
+	case googleCloudFromRoot(root).AnySet(), awsFromRoot(root).AnySet(), foundryFromRoot(root).AnySet():
 		return nil
 	}
 	return cfg
@@ -353,6 +357,21 @@ func awsInUse(cmd *cli.Command) bool {
 	_, apiKeySet := directCredential("api-key")
 	_, authTokenSet := directCredential("auth-token")
 	if apiKeySet || authTokenSet || !awsFromRoot(root).AnySet() || googleCloudFromRoot(root).AnySet() {
+		return false
+	}
+	if cfg, explicit := loadProfileIfUsable(cmd); cfg != nil && explicit {
+		return false
+	}
+	return !federationFromRoot(root).AnySet()
+}
+
+// foundryInUse reports whether requests will authenticate through the Foundry
+// tier, by the client's own precedence.
+func foundryInUse(cmd *cli.Command) bool {
+	root := cmd.Root()
+	_, apiKeySet := directCredential("api-key")
+	_, authTokenSet := directCredential("auth-token")
+	if apiKeySet || authTokenSet || !foundryFromRoot(root).AnySet() || googleCloudFromRoot(root).AnySet() || awsFromRoot(root).AnySet() {
 		return false
 	}
 	if cfg, explicit := loadProfileIfUsable(cmd); cfg != nil && explicit {
@@ -402,6 +421,10 @@ func describeOrigin(cmd *cli.Command, o core.Origin) render.OriginSummary {
 		c.Credentials = "AWS (API key)"
 	case awsInUse(cmd):
 		c.Credentials = "AWS (AWS credential chain)"
+	case foundryInUse(cmd) && foundryFromRoot(root).usesAuthToken():
+		c.Credentials = "Foundry (Entra ID token)"
+	case foundryInUse(cmd):
+		c.Credentials = "Foundry (API key)"
 	default:
 		c.Credentials = "workload identity federation"
 	}
@@ -482,19 +505,23 @@ func profileFor(cmd *cli.Command, lock *core.Lockfile) string {
 	return match
 }
 
-// remoteCacheDir is where URL-sourced skills are unpacked. It sits under the
-// user cache directory rather than the repository so a fetched skill is never
-// mistaken for a local one during a directory walk.
-func remoteCacheDir() (string, error) {
-	base, err := os.UserCacheDir()
+// remoteCacheDir is where URL-sourced skills are unpacked: an owner-only
+// directory in the user cache, kept between runs, or failing that a new one in
+// the temp directory, which the returned function removes.
+func remoteCacheDir() (string, func(), error) {
+	if base, err := os.UserCacheDir(); err == nil {
+		dir := filepath.Join(base, "anthropic", "apply-remote")
+		// MkdirAll keeps the mode of a directory that already exists.
+		if os.MkdirAll(dir, 0o700) == nil && os.Chmod(dir, 0o700) == nil {
+			return dir, func() {}, nil
+		}
+	}
+	// A directory walk skips names that start with a dot.
+	dir, err := os.MkdirTemp("", ".anthropic-apply-remote-")
 	if err != nil {
-		base = os.TempDir()
+		return "", nil, err
 	}
-	dir := filepath.Join(base, "anthropic", "apply-remote")
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", err
-	}
-	return dir, nil
+	return dir, func() { os.RemoveAll(dir) }, nil
 }
 
 // offerUntracked lists resources under the lockfile root that nothing tracks

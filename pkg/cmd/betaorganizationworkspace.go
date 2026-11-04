@@ -163,6 +163,11 @@ var betaOrganizationWorkspacesList = cli.Command{
 			Usage:     "ID of the object to use as a cursor for pagination. When provided, returns the page of results immediately before this object.",
 			QueryPath: "before_id",
 		},
+		&requestflag.Flag[[]string]{
+			Name:      "id",
+			Usage:     "Only the Workspaces with these IDs, at most 100. `include_archived` and `include_default` still apply, and IDs of Workspaces the caller can't list are left out.",
+			QueryPath: "ids",
+		},
 		&requestflag.Flag[bool]{
 			Name:      "include-archived",
 			Usage:     "Whether to include Workspaces that have been archived in the response",

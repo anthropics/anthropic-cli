@@ -5,10 +5,12 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -251,6 +253,32 @@ func TestFetchKeepsCommitsWithTheSamePrefixApart(t *testing.T) {
 	assert.Equal(t, first, fetchSkill(t, g, first))
 	assert.Equal(t, second, fetchSkill(t, g, second))
 	assert.Equal(t, 2, *downloads)
+}
+
+// The cache directory's mode doesn't stop a process that already holds one of
+// its subdirectories open, so each entry has to be private as well.
+func TestFetchLetsOnlyTheOwnerReadWhatItWrites(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows has no mode bits")
+	}
+	server, _ := tarballServer(t)
+	cache := t.TempDir()
+	g := &GitHubFetcher{HTTPClient: server.Client(), apiBase: server.URL, CacheDir: cache, cache: map[string]*FetchedURL{}}
+	fetchSkill(t, g, strings.Repeat("d", 40))
+
+	entries := 0
+	require.NoError(t, filepath.WalkDir(cache, func(path string, d fs.DirEntry, err error) error {
+		require.NoError(t, err)
+		if path == cache {
+			return nil
+		}
+		info, err := d.Info()
+		require.NoError(t, err)
+		assert.Zero(t, info.Mode().Perm()&0o077, path)
+		entries++
+		return nil
+	}))
+	assert.Equal(t, 5, entries)
 }
 
 // a-b/c and a/b-c hyphenate to the same name. Each must still get its own

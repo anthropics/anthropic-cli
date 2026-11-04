@@ -337,7 +337,7 @@ func (g *GitHubFetcher) downloadTarball(ctx context.Context, ref githubRef, sha,
 	if len(entries) == 1 && entries[0].IsDir() {
 		root = filepath.Join(tmp, entries[0].Name())
 	}
-	if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dest), 0o700); err != nil {
 		return err
 	}
 	if err := os.Rename(root, dest); err != nil {
@@ -381,7 +381,7 @@ func extractTarGz(r io.Reader, dest string) error {
 		}
 		switch header.Typeflag {
 		case tar.TypeDir:
-			if err := os.MkdirAll(target, 0o755); err != nil {
+			if err := os.MkdirAll(target, 0o700); err != nil {
 				return err
 			}
 		case tar.TypeReg:
@@ -404,10 +404,10 @@ func extractTarGz(r io.Reader, dest string) error {
 // extractFile writes one regular archive entry to target and reports how
 // many bytes it consumed from r.
 func extractFile(target string, r io.Reader) (int64, error) {
-	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
 		return 0, err
 	}
-	f, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
+	f, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o600)
 	if err != nil {
 		return 0, err
 	}

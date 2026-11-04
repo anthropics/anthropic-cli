@@ -67,7 +67,7 @@ func TestBetaVaultsCredentialsUpdate(t *testing.T) {
 			"beta:vaults:credentials", "update",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--credential-id", "vcrd_011CZkZEMt8gZan2iYPQfSkw",
-			"--auth", "{type: mcp_oauth, access_token: x, expires_at: '2019-12-27T18:11:19.117Z', refresh: {refresh_token: x, scope: scope, token_endpoint_auth: {type: client_secret_basic, client_secret: x}}}",
+			"--auth", "{type: mcp_oauth, access_token: access_token, expires_at: '2019-12-27T18:11:19.117Z', refresh: {refresh_token: x, scope: scope, token_endpoint_auth: {type: client_secret_basic, client_secret: x}}}",
 			"--display-name", "Example credential",
 			"--metadata", "{environment: production}",
 			"--beta", "message-batches-2024-09-24",
@@ -80,7 +80,7 @@ func TestBetaVaultsCredentialsUpdate(t *testing.T) {
 		pipeData := []byte("" +
 			"auth:\n" +
 			"  type: mcp_oauth\n" +
-			"  access_token: x\n" +
+			"  access_token: access_token\n" +
 			"  expires_at: '2019-12-27T18:11:19.117Z'\n" +
 			"  refresh:\n" +
 			"    refresh_token: x\n" +

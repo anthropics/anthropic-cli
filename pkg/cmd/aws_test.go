@@ -387,7 +387,8 @@ func TestAuthStatusAWS(t *testing.T) {
 		t.Setenv("ANTHROPIC_AWS_API_KEY", "fake-aws-api-key-0123456789abcdef")
 		out, err := runStatus(t, "--aws-region", "us-east-1", "--aws-workspace-id", "wrkspc_01")
 		require.NoError(t, err)
-		assert.Regexp(t, `\(active\) \* AWS \(API key, ANTHROPIC_AWS_API_KEY\)`, out)
+		assert.Regexp(t, `\(active\) \* AWS \(API key, ANTHROPIC_AWS_API_KEY\)\s+\(set, 33 chars\)`, out)
+		assert.NotContains(t, out, "fake-aws")
 		assert.NotContains(t, out, "0123456789abcdef")
 	})
 
