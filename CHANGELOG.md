@@ -1,17 +1,28 @@
 # Changelog
 
-## [2.5.1](https://github.com/anthropics/anthropic-cli/compare/v2.5.0...v2.5.1) (2026-11-02)
+## [2.6.0](https://github.com/anthropics/anthropic-cli/compare/v2.5.0...v2.6.0) (2026-11-04)
+
+### Features
+
+* **api:** add ids filter to list workspaces
+* **foundry:** add Microsoft Foundry support
+
 
 ### Bug Fixes
 
 * **apply:** let only its owner read the cache in the user cache directory, and use a private cache for each run when that directory is missing or unusable
+* **auth:** show only the length of an AWS API key in auth status
 
 
 ### Chores
 
 * **api:** update example values for pattern-constrained string fields
+* bump go sdk to v2.6.0
 * **docs:** clarify some API field descriptions
+* **docs:** correct Claude Tag direct message notes in usage reports
 * **docs:** update the telemetry destination headers description
+* **docs:** use the Claude Platform name in analytics filter docs
+* **internal:** accept changelog entry files in the changelog check
 
 ## [2.5.0](https://github.com/anthropics/anthropic-cli/compare/v2.4.0...v2.5.0) (2026-11-02)
 
