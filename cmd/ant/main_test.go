@@ -72,3 +72,23 @@ func TestAPIErrorOutput(t *testing.T) {
 		})
 	}
 }
+
+func TestTransformedErrorStringOnStdout(t *testing.T) {
+	tests := []struct {
+		name   string
+		args   []string
+		stdout string
+	}{
+		{"QuotedWithoutRawOutput", []string{"--format-error", "json", "--transform-error", "error.message"}, "\"Overloaded\"\n"},
+		{"UnquotedWithRawOutput", []string{"--format-error", "json", "--transform-error", "error.message", "--raw-output"}, "Overloaded\n"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			body := `{"error":{"message":"Overloaded"}}`
+
+			stdout, _, _ := runMain(t, http.StatusTooManyRequests, body, test.args...)
+
+			assert.Equal(t, test.stdout, stdout)
+		})
+	}
+}

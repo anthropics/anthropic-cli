@@ -50,6 +50,7 @@ func main() {
 			show_err := cmd.ShowJSON(json, cmd.ShowJSONOpts{
 				ExplicitFormat: app.IsSet("format-error"),
 				Format:         format,
+				RawOutput:      app.Bool("raw-output"),
 				Title:          "Error",
 				Transform:      app.String("transform-error"),
 			})
