@@ -70,3 +70,16 @@ func TestBetaOrganizationUsersRemove(t *testing.T) {
 		)
 	})
 }
+
+func TestBetaOrganizationUsersSignOut(t *testing.T) {
+	t.Setenv("ANTHROPIC_API_KEY", "string")
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
+			"beta:organization:users", "sign-out",
+			"--user-id", "user_id",
+			"--beta", "message-batches-2024-09-24",
+		)
+	})
+}
