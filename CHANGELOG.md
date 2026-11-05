@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.7.0](https://github.com/anthropics/anthropic-cli/compare/v2.6.0...v2.7.0) (2026-11-05)
+
+### Features
+
+* **api:** add support for signing organization members out everywhere
+
+
+### Bug Fixes
+
+* **apply:** don't report a deployment, environment, vault or memory store as changed outside this config while its updated_at hasn't moved
+* **apply:** don't report an agent as changed outside this config when the API starts returning a new field
+* **client:** ask the terminal for its background color only in the explore view
+* **client:** wait for the pager to exit before reporting a failed response
+* **cli:** make --raw-output unquote strings picked with --transform-error
+* **cli:** report a mid-stream error by its type and message, not 200 OK
+
+
+### Chores
+
+* bump go sdk to v2.7.0
+* **internal:** tell contributors when a runtime type check belongs
+* **sessions:** ask the terminal for its background color when the terminal view opens
+
 ## [2.6.0](https://github.com/anthropics/anthropic-cli/compare/v2.5.0...v2.6.0) (2026-11-04)
 
 ### Features
