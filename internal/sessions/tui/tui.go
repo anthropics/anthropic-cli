@@ -17,10 +17,12 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/anthropics/anthropic-cli/v2/internal/sessions/live"
+	"github.com/anthropics/anthropic-cli/v2/internal/termbackground"
 )
 
 // Run takes over the terminal until the user detaches or ctx ends.
 func Run(ctx context.Context, session Session, opts Options) error {
+	termbackground.Detect()
 	program := tea.NewProgram(newModel(ctx, session, opts), tea.WithAltScreen(), tea.WithMouseCellMotion(), tea.WithContext(ctx))
 	_, err := program.Run()
 	if errors.Is(err, tea.ErrProgramKilled) {
