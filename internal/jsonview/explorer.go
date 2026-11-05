@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/anthropics/anthropic-cli/v2/internal/termbackground"
 	"github.com/anthropics/anthropic-cli/v2/internal/termsafe"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -301,6 +302,7 @@ func ExploreJSON(title string, json gjson.Result) error {
 
 	viewer := &JSONViewer{stack: []JSONView{view}, root: title, rawMode: false, help: help.New()}
 
+	termbackground.Detect()
 	_, err = tea.NewProgram(viewer).Run()
 	if viewer.message != "" {
 		_, msgErr := fmt.Fprintln(termsafe.Stdout, "\n"+viewer.message)
@@ -349,6 +351,7 @@ func ExploreJSONStream[T any](title string, it Iterator[T]) error {
 	}
 
 	viewer := &JSONViewer{stack: []JSONView{view}, root: title, rawMode: false, help: help.New()}
+	termbackground.Detect()
 	_, err = tea.NewProgram(viewer).Run()
 	if viewer.message != "" {
 		_, msgErr := fmt.Fprintln(termsafe.Stdout, "\n"+viewer.message)
