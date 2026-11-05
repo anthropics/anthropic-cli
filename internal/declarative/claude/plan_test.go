@@ -180,6 +180,118 @@ func TestOutOfBandChangeBlocksTheApply(t *testing.T) {
 	assert.NotEqual(t, "edited elsewhere", h.client.objects[verifierID]["description"])
 }
 
+func TestAFieldTheAPIStartsToReturnOnAnAgentIsNotDrift(t *testing.T) {
+	h := newHarness(t, map[string]string{"agents/a.md": "---\nmodel: m\n---\na\n"})
+	h.client.now = "2026-01-01T00:00:00Z"
+	h.apply()
+	id := h.lock.Resources["./agents/a.md"].ID
+	h.client.objects[id]["execution_identity"] = map[string]any{"type": "service_account"}
+
+	assert.False(t, h.plan().HasWork())
+
+	require.NoError(t, os.WriteFile(filepath.Join(h.root, "agents/a.md"), []byte("---\nmodel: m\n---\nb\n"), 0o644))
+	plan := h.plan()
+	assert.Equal(t, core.ActionUpdate, actionFor(plan, "./agents/a.md"))
+	assert.Empty(t, plan.Blocked())
+}
+
+func TestOnceUpdatedAtHasMovedTheFingerprintDecides(t *testing.T) {
+	for name, tc := range map[string]struct {
+		field   string
+		blocked int
+	}{
+		"with a server-set field":      {field: "status", blocked: 0},
+		"with a field that can be set": {field: "description", blocked: 1},
+	} {
+		t.Run(name, func(t *testing.T) {
+			h := newHarness(t, map[string]string{
+				"environments/e.yml": "name: e\n",
+				"agents/a.md":        "---\nmodel: m\n---\na\n",
+				"deployments/d.yml":  "agent: ../agents/a.md\nenvironment_id: ../environments/e.yml\n",
+			})
+			h.client.now = "2026-01-01T00:00:00Z"
+			h.apply()
+			deployment := h.client.objects[h.lock.Resources["./deployments/d.yml"].ID]
+			deployment["updated_at"], deployment[tc.field] = "2026-01-02T00:00:00Z", "changed"
+
+			plan := h.plan()
+
+			assert.Len(t, plan.Blocked(), tc.blocked)
+		})
+	}
+}
+
+func TestAnUpdateRecordsTheUpdatedAtItAnswersWith(t *testing.T) {
+	h := newHarness(t, map[string]string{"environments/e.yml": "name: e\n"})
+	h.client.now = "2026-01-01T00:00:00Z"
+	h.apply()
+	require.NoError(t, os.WriteFile(filepath.Join(h.root, "environments/e.yml"), []byte("name: e\ndescription: d\n"), 0o644))
+	h.client.now = "2026-01-02T00:00:00Z"
+	h.apply()
+	h.client.objects[h.lock.Resources["./environments/e.yml"].ID]["added_by_the_api"] = "default"
+
+	plan := h.plan()
+
+	assert.False(t, plan.HasWork())
+}
+
+func TestAnUnchangedEntryTakesTheServersUpdatedAtWhenTheLockfileIsSaved(t *testing.T) {
+	for name, recorded := range map[string]string{
+		"an older release's entry, which has none": "",
+		"the server has moved it on its own":       "2026-01-01T00:00:00Z",
+	} {
+		t.Run(name, func(t *testing.T) {
+			h := newHarness(t, map[string]string{"environments/e.yml": "name: e\n"})
+			h.client.now = recorded
+			h.apply()
+			environment := h.client.objects[h.lock.Resources["./environments/e.yml"].ID]
+			environment["updated_at"] = "2026-01-02T00:00:00Z"
+			require.NoError(t, os.WriteFile(filepath.Join(h.root, "environments/another.yml"), []byte("name: another\n"), 0o644))
+			h.apply()
+			environment["added_by_the_api"] = "default"
+
+			plan := h.plan()
+
+			assert.False(t, plan.HasWork())
+		})
+	}
+}
+
+func TestASkillVersionPublishedElsewhereIsDrift(t *testing.T) {
+	h := newHarness(t, map[string]string{"skills/s/SKILL.md": "---\nname: s\ndescription: d\n---\nbody\n"})
+	h.apply()
+	h.client.objects[h.lock.Resources["./skills/s"].ID]["latest_version_id"] = "published_elsewhere"
+
+	blocked := h.plan().Blocked()
+
+	require.Len(t, blocked, 1)
+	assert.Regexp(t, "its latest_version_id moved from .+ to published_elsewhere since the last apply", blocked[0].Reasons)
+}
+
+func TestAnAgentVersionMintedElsewhereIsDriftThoughTheBodyIsUnchanged(t *testing.T) {
+	h := newHarness(t, map[string]string{"agents/a.md": "---\nmodel: m\n---\na\n"})
+	h.apply()
+	h.client.objects[h.lock.Resources["./agents/a.md"].ID]["version"] = int64(2)
+
+	blocked := h.plan().Blocked()
+
+	require.Len(t, blocked, 1)
+	assert.ErrorContains(t, blocked[0].Blocked, "--force")
+	assert.Contains(t, blocked[0].Reasons, "its version moved from 1 to 2 since the last apply")
+	h.apply(withForce)
+	assert.False(t, h.plan().HasWork())
+}
+
+func TestAnAgentEntryFromBeforeStampsIsNotDriftWhenTheAPIAddsAField(t *testing.T) {
+	h := newHarness(t, map[string]string{"agents/a.md": "---\nmodel: m\n---\na\n"})
+	h.apply()
+	entry := h.lock.Resources["./agents/a.md"]
+	entry.Stamp = ""
+	h.client.objects[entry.ID]["execution_identity"] = map[string]any{"type": "service_account"}
+
+	assert.False(t, h.plan().HasWork())
+}
+
 // A vanished resource can only be replaced, and replacing it mints a new ID
 // that breaks anything referencing the old one from outside this config. That
 // is at least as consequential as overwriting fields, so it is gated by the
@@ -283,6 +395,19 @@ func TestArchivedRemoteResourceNeedsForceToBeRecreated(t *testing.T) {
 
 	h.apply(withForce)
 	assert.NotEqual(t, id, h.lock.Resources["./environments/cloud.yml"].ID)
+}
+
+func TestAnArchivedAgentNeedsForceThoughItsVersionIsUnchanged(t *testing.T) {
+	h := newHarness(t, map[string]string{"agents/a.md": "---\nmodel: m\n---\na\n"})
+	h.apply()
+	id := h.lock.Resources["./agents/a.md"].ID
+	h.client.objects[id]["archived_at"] = "2026-01-01T00:00:00Z"
+
+	blocked := h.plan().Blocked()
+
+	require.Len(t, blocked, 1)
+	assert.ErrorContains(t, blocked[0].Blocked, "archived")
+	assert.ErrorContains(t, blocked[0].Blocked, "--force")
 }
 
 func TestRemovedFilesAreOnlyDestroyedWithPrune(t *testing.T) {

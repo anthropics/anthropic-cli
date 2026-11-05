@@ -375,15 +375,21 @@ func (p *Planner) planRecreate(change *Change, why string) *Change {
 }
 
 // detectDrift compares the server's copy against what we recorded at the end of
-// the last apply. A versioned kind has a version to compare; for everything
-// else the recorded hash of the normalized object is the only signal available.
+// the last apply. While a kind's Stamp matches the recorded one nothing has
+// changed. A moved Stamp is a change for a kind whose Stamp moves only on
+// edits; otherwise the recorded hash of the normalized object decides.
 func detectDrift(change *Change) {
 	entry, remote := change.Entry, change.Remote
-	if v := remoteVersion(change.spec, remote); v != "" && entry.Version != "" && v != entry.Version {
-		change.Drift = true
-		change.Reasons = append(change.Reasons,
-			fmt.Sprintf("server has version %s but the lockfile recorded %s", v, entry.Version))
-		return
+	if s, locked := change.spec.stamp(remote), entry.lockedStamp(); s != "" && locked != "" {
+		if s == locked {
+			return
+		}
+		if change.spec.StampMovesOnlyOnEdit {
+			change.Drift = true
+			change.Reasons = append(change.Reasons,
+				fmt.Sprintf("its %s moved from %s to %s since the last apply", change.spec.StampName, locked, s))
+			return
+		}
 	}
 	if entry.RemoteHash == "" {
 		// Nothing to compare against — the last apply could not fingerprint

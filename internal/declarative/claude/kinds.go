@@ -51,6 +51,24 @@ var (
 	}
 )
 
+// updatedAt is the stamp of every kind whose updated_at moves when it is edited.
+func updatedAt(remote map[string]any) string {
+	at, _ := remote["updated_at"].(string)
+	return at
+}
+
+// agentVersion is an agent's stamp. The API mints a new version on every edit
+// and none for a request that changes nothing, and lockfiles written before
+// stamps were recorded already hold it.
+func agentVersion(remote map[string]any) string {
+	return core.FormatVersion(remote["version"])
+}
+
+// skillVersion is a skill's stamp: the API mints a new version per upload.
+func skillVersion(remote map[string]any) string {
+	return core.FormatVersion(remote["latest_version_id"])
+}
+
 // with merges field sets into one; a later set wins on a shared path.
 func with(sets ...core.Fields) core.Fields {
 	out := core.Fields{}
@@ -109,8 +127,11 @@ func Registry() *core.Registry {
 			IDPrefix: "skill",
 			// A skill's content is its files; the server derives name and
 			// description from SKILL.md and mints a version per upload.
-			VersionField: "latest_version_id",
-			Destroy:      byDeleting,
+			VersionField:         "latest_version_id",
+			Stamp:                skillVersion,
+			StampMovesOnlyOnEdit: true,
+			StampName:            "latest_version_id",
+			Destroy:              byDeleting,
 			Fields: fromAPI(KindSkill, core.Fields{
 				// Skills have no update endpoint and a version upload carries
 				// only files, so a title change cannot be applied at all; and
@@ -123,6 +144,7 @@ func Registry() *core.Registry {
 		core.KindSpec{
 			Kind:     KindEnvironment,
 			IDPrefix: "env",
+			Stamp:    updatedAt,
 			Destroy:  byArchiving,
 			Build:    build(prose{field: "description"}),
 			Fields: fromAPI(KindEnvironment, with(named, archivable, metadata, core.Fields{
@@ -134,6 +156,7 @@ func Registry() *core.Registry {
 			// agent's runtime data and are never read, diffed or removed here.
 			Kind:     KindMemoryStore,
 			IDPrefix: "memstore",
+			Stamp:    updatedAt,
 			Destroy:  byArchiving,
 			Build:    build(prose{field: "description"}),
 			Fields: fromAPI(KindMemoryStore, with(named, archivable, metadata, core.Fields{
@@ -148,6 +171,7 @@ func Registry() *core.Registry {
 			// is the exception to the note on byArchiving: it purges their secrets.
 			Kind:     KindVault,
 			IDPrefix: "vlt",
+			Stamp:    updatedAt,
 			Destroy:  byArchiving,
 			Build:    buildVault,
 			Fields: fromAPI(KindVault, with(archivable, metadata, core.Fields{
@@ -156,13 +180,16 @@ func Registry() *core.Registry {
 			})),
 		},
 		core.KindSpec{
-			Kind:               KindAgent,
-			IDPrefix:           "agent",
-			VersionField:       "version",
-			VersionIsInt:       true,
-			UpdateNeedsVersion: true,
-			Destroy:            byArchiving,
-			Build:              build(prose{field: "system"}),
+			Kind:                 KindAgent,
+			IDPrefix:             "agent",
+			VersionField:         "version",
+			VersionIsInt:         true,
+			UpdateNeedsVersion:   true,
+			Stamp:                agentVersion,
+			StampMovesOnlyOnEdit: true,
+			StampName:            "version",
+			Destroy:              byArchiving,
+			Build:                build(prose{field: "system"}),
 			Fields: fromAPI(KindAgent, with(named, archivable, metadata, core.Fields{
 				// `model: x` is accepted, but read back as `{id: x, speed: …}`.
 				"model":       {Shorthand: "id", Summary: true},
@@ -181,6 +208,7 @@ func Registry() *core.Registry {
 		core.KindSpec{
 			Kind:     KindDeployment,
 			IDPrefix: "depl",
+			Stamp:    updatedAt,
 			Destroy:  byArchiving,
 			Build:    build(firstMessage),
 			Fields: fromAPI(KindDeployment, with(named, archivable, metadata, core.Fields{

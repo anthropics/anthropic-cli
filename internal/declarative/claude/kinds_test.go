@@ -53,6 +53,26 @@ func TestAChangedTimestampIsNotDrift(t *testing.T) {
 	assert.False(t, plan.HasWork())
 }
 
+func TestNothingIsDriftWhileUpdatedAtHasNotMoved(t *testing.T) {
+	h := newHarness(t, map[string]string{
+		"environments/e.yml":  "name: e\n",
+		"memory_stores/m.yml": "name: m\n",
+		"vaults/v.yml":        "display_name: v\n",
+		"agents/a.md":         "---\nmodel: m\n---\na\n",
+		"deployments/d.yml":   "agent: ../agents/a.md\nenvironment_id: ../environments/e.yml\n",
+	})
+	h.client.now = "2026-01-01T00:00:00Z"
+	h.apply()
+	for _, obj := range h.client.objects {
+		obj["added_by_the_api"] = "default"
+		obj["metadata"] = map[string]any{"filled_in_by": "the API"}
+	}
+
+	plan := h.plan()
+
+	assert.False(t, plan.HasWork())
+}
+
 func TestAChangedDescriptionIsDrift(t *testing.T) {
 	h := newHarness(t, map[string]string{"environments/e.yml": "name: e\n"})
 	h.apply()

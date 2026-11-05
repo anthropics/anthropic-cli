@@ -1,0 +1,41 @@
+schema: 1
+name: a console edit to a deployment is refused, then overwritten when forced
+resources:
+  box:
+    kind: environment
+    body:
+      name: cf-{run}-drift-box
+  lead:
+    kind: agent
+    body:
+      name: cf-{run}-drift-lead
+      model: claude-sonnet-4-5
+      system: Say hello.
+  test:
+    kind: deployment
+    body:
+      name: cf-{run}-drift
+      description: as the file says
+      agent: {$ref: lead}
+      environment_id: {$ref: box}
+      initial_events:
+        - type: user.message
+          content: [{type: text, text: "Say hello."}]
+steps:
+  - expect:
+      plan:
+        box: create
+        lead: create
+        test: create
+  - remote:
+      test:
+        patch: {description: edited in the console}
+    expect:
+      error: "outside|drift|changed"
+  - flags: [force]
+    expect:
+      plan:
+        test: {update: [description]}
+      remote:
+        test:
+          description: as the file says

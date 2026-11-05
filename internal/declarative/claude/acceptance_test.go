@@ -201,7 +201,7 @@ func TestAccOutOfBandAgentEditBlocksTheApply(t *testing.T) {
 			Check: func(t *testing.T, fx *acctest.Fixture) {
 				c := fx.Change(t, "./agents/code-verifier.md")
 				assert.True(t, c.Drift)
-				assert.Contains(t, c.Reasons[0], "server has version")
+				assert.Contains(t, c.Reasons[0], "its version moved from")
 			},
 		},
 		{

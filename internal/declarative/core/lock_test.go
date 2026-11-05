@@ -18,6 +18,9 @@ func TestLockfileRoundTrips(t *testing.T) {
 	lf.Resources["./gadgets/a.md"] = &LockEntry{
 		Kind: "gadget", ID: "gdgt_01", Version: "4", Hash: "aaaa", RemoteHash: "bbbb",
 	}
+	lf.Resources["./widgets/w.yml"] = &LockEntry{
+		Kind: "widget", ID: "wdgt_02", Hash: "dddd", RemoteHash: "eeee", Stamp: "2026-01-01T00:00:00Z",
+	}
 	lf.Resources["https://github.com/o/r/tree/main/s"] = &LockEntry{
 		Kind: "widget", ID: "wdgt_01", Version: "1759178010641129", Hash: "cccc",
 		Revision: "0123456789abcdef0123456789abcdef01234567", Subpath: "s",
