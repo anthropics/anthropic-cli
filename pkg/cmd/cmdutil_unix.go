@@ -39,12 +39,7 @@ func streamOutputOSSpecific(label string, generateOutput func(w *os.File) error)
 		os.Setenv("FORCE_COLOR", "1")
 	}
 
-	// If the pager exits before reading all input, then generateOutput() will
-	// produce a broken pipe error, which is fine and we don't want to propagate it.
-	if err := generateOutput(pagerInput); err != nil &&
-		!strings.Contains(err.Error(), "broken pipe") {
-		return err
-	}
+	outputErr := generateOutput(pagerInput)
 
 	// Close the file NOW before we wait for the child process to terminate.
 	// This way, the child will receive the end-of-file signal and know that
@@ -53,9 +48,16 @@ func streamOutputOSSpecific(label string, generateOutput func(w *os.File) error)
 	// less than a screenful of data to a pager).
 	pagerInput.Close()
 
-	// Wait for child process to exit
+	// Wait for child process to exit, even after a failure: a pager that outlives
+	// the command shares the terminal with the user's shell.
 	var wstatus syscall.WaitStatus
 	_, err = syscall.Wait4(pid, &wstatus, 0, nil)
+
+	// If the pager exits before reading all input, then generateOutput() will
+	// produce a broken pipe error, which is fine and we don't want to propagate it.
+	if outputErr != nil && !strings.Contains(outputErr.Error(), "broken pipe") {
+		return outputErr
+	}
 	if wstatus.ExitStatus() != 0 {
 		return fmt.Errorf("Pager exited with non-zero exit status: %d", wstatus.ExitStatus())
 	}
