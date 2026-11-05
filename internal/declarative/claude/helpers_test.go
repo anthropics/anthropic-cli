@@ -82,9 +82,10 @@ func planBody(t *testing.T, l *core.Loader, key string) (map[string]any, error) 
 	return nil, nil
 }
 
-// fakeClient is an in-memory stand-in for the API. It reproduces the two
-// behaviors the reconciler actually depends on: agents bump an integer version
-// on every update, and skills mint a new opaque version per upload.
+// fakeClient is an in-memory stand-in for the API. It reproduces the behaviors
+// the reconciler actually depends on: agents bump an integer version on every
+// update, skills mint a new opaque version per upload, and, once now is set, a
+// write stamps updated_at.
 type fakeClient struct {
 	objects map[string]map[string]any
 	seq     int
@@ -93,6 +94,8 @@ type fakeClient struct {
 	calls []string
 	// failOn makes the named operation ("create environment") return an error.
 	failOn string
+	// now, if set, is the updated_at a write leaves behind.
+	now string
 }
 
 func newFakeClient() *fakeClient {
@@ -145,6 +148,9 @@ func (f *fakeClient) Create(_ context.Context, kind core.Kind, req core.Request)
 	if spec, _ := Registry().Spec(kind); spec.VersionField == "version" {
 		obj["version"] = int64(1)
 	}
+	if f.now != "" {
+		obj["updated_at"] = f.now
+	}
 	f.objects[obj["id"].(string)] = obj
 	return deepCopyMap(obj), nil
 }
@@ -195,6 +201,9 @@ func (f *fakeClient) Update(_ context.Context, kind core.Kind, id string, req co
 	if spec, _ := Registry().Spec(kind); spec.VersionField == "version" {
 		current, _ := obj["version"].(int64)
 		obj["version"] = current + 1
+	}
+	if f.now != "" {
+		obj["updated_at"] = f.now
 	}
 	return deepCopyMap(obj), nil
 }

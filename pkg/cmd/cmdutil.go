@@ -483,12 +483,15 @@ func streamToPagerWithPipe(label string, generateOutput func(w *os.File) error) 
 		os.Setenv("FORCE_COLOR", "1")
 	}
 
-	if err := generateOutput(w); err != nil && !strings.Contains(err.Error(), "broken pipe") {
-		return err
-	}
+	outputErr := generateOutput(w)
 
 	w.Close()
-	return cmd.Wait()
+	waitErr := cmd.Wait()
+
+	if outputErr != nil && !strings.Contains(outputErr.Error(), "broken pipe") {
+		return outputErr
+	}
+	return waitErr
 }
 
 func streamToStdout(generateOutput func(w *os.File) error) error {

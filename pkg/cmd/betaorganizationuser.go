@@ -106,6 +106,28 @@ var betaOrganizationUsersRemove = cli.Command{
 	HideHelpCommand: true,
 }
 
+var betaOrganizationUsersSignOut = cli.Command{
+	Name:    "sign-out",
+	Usage:   "Sign a member out of Claude everywhere, without removing them from the\norganization. This ends their sign-in sessions and removes their trusted devices\nwherever they use Claude, including other organizations and individual plans. It\nalso ends the OAuth tokens issued to them for this organization, so apps such as\nClaude Code must sign in again.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:        "user-id",
+			Usage:       "ID of the User.",
+			Required:    true,
+			PathParam:   "user_id",
+			DataAliases: []string{"id"},
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "This endpoint is in beta: requests must send `admin-user-sign-out-2026-10-08` in this header.",
+			HeaderPath: "anthropic-beta",
+		},
+	},
+	Action:          handleBetaOrganizationUsersSignOut,
+	HideHelpCommand: true,
+}
+
 func handleBetaOrganizationUsersRetrieve(ctx context.Context, cmd *cli.Command) error {
 	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
@@ -299,6 +321,55 @@ func handleBetaOrganizationUsersRemove(ctx context.Context, cmd *cli.Command) er
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:organization:users remove",
+		Transform:      transform,
+	})
+}
+
+func handleBetaOrganizationUsersSignOut(ctx context.Context, cmd *cli.Command) error {
+	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("user-id") && len(unusedArgs) > 0 {
+		cmd.Set("user-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatBrackets,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := anthropic.BetaOrganizationUserSignOutParams{}
+
+	var res []byte
+	options = append(options, option.WithResponseBodyInto(&res))
+	_, err = client.Beta.Organization.Users.SignOut(
+		ctx,
+		cmd.Value("user-id").(string),
+		params,
+		options...,
+	)
+	if err != nil {
+		return err
+	}
+
+	obj := gjson.ParseBytes(res)
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "beta:organization:users sign-out",
 		Transform:      transform,
 	})
 }

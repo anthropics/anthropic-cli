@@ -1,0 +1,24 @@
+schema: 1
+name: a console edit to an environment is refused, then overwritten when forced
+resources:
+  test:
+    kind: environment
+    body:
+      name: cf-{run}-drift
+      description: as the file says
+steps:
+  - expect:
+      plan:
+        test: create
+  - remote:
+      test:
+        patch: {description: edited in the console}
+    expect:
+      error: "outside|drift|changed"
+  - flags: [force]
+    expect:
+      plan:
+        test: {update: [description]}
+      remote:
+        test:
+          description: as the file says

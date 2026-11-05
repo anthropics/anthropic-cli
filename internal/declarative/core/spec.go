@@ -25,8 +25,9 @@ type KindSpec struct {
 	IDPrefix string
 
 	// VersionField is the response field holding the resource's version, if it
-	// has one. Empty means the kind is unversioned, and drift can only be
-	// detected by fingerprinting the whole object.
+	// has one, which references pin and updates echo back. Empty means the
+	// kind is unversioned. Drift is detected from Stamp and a fingerprint of the
+	// whole object, for versioned and unversioned kinds alike.
 	VersionField string
 	// VersionIsInt renders the version as a number rather than a string when
 	// it is sent back to the API.
@@ -35,6 +36,19 @@ type KindSpec struct {
 	// version back, under `version` in the request body, which is how the API
 	// rejects a racing writer.
 	UpdateNeedsVersion bool
+
+	// Stamp returns what the server says about when the resource last
+	// changed. While it equals the value recorded at the last apply, nobody
+	// has changed the resource. Unless StampMovesOnlyOnEdit is set, a moved
+	// stamp proves nothing, since the server can move it on its own, so the
+	// fingerprint then decides. Nil means the kind has none.
+	Stamp func(remote map[string]any) string
+	// StampMovesOnlyOnEdit means the server moves the Stamp only when someone
+	// edits the resource, as with a version, so a moved Stamp is itself a change.
+	StampMovesOnlyOnEdit bool
+	// StampName is the name of the Stamp's field, such as "version", for the
+	// message that reports a moved Stamp. Set it with StampMovesOnlyOnEdit.
+	StampName string
 
 	// Destroy is what removal actually does, for plan output: most APIs
 	// offer archive, delete, or only one of the two.
@@ -169,6 +183,14 @@ func (s KindSpec) Clearable() []string { return s.clearable }
 
 // RefSlots lists the reference fields, in a stable order.
 func (s KindSpec) RefSlots() []RefSlot { return s.refs }
+
+// stamp returns obj's Stamp, or "" if the kind has none.
+func (s KindSpec) stamp(obj map[string]any) string {
+	if s.Stamp == nil || obj == nil {
+		return ""
+	}
+	return s.Stamp(obj)
+}
 
 // IsArchived reports whether the server's copy carries the kind's tombstone.
 // Archiving is a one-way door, so the only way forward is a new resource.

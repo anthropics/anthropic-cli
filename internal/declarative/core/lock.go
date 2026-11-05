@@ -32,9 +32,14 @@ type LockEntry struct {
 	// local files changed.
 	Hash string `json:"hash"`
 	// RemoteHash fingerprints the normalized remote object as it looked right
-	// after that apply. A mismatch means somebody changed it out of band —
-	// this is the only drift signal available for kinds with no version field.
+	// after that apply. It is compared when the kind has no Stamp, or when
+	// the Stamp has moved on a kind whose Stamp can move without an edit. For
+	// agents and skills a moved Stamp is a change on its own and this is not
+	// compared.
 	RemoteHash string `json:"remote_hash,omitempty"`
+	// Stamp is the kind's Stamp of the server's copy, as last seen. While the
+	// server reports the same value, nobody has changed it.
+	Stamp string `json:"stamp,omitempty"`
 	// Revision and Subpath are the commit a URL-sourced resource was pinned
 	// to and where in it the resource lives.
 	Revision string `json:"revision,omitempty"`
@@ -46,6 +51,16 @@ type LockEntry struct {
 	unknown map[string]json.RawMessage
 }
 
+// lockedStamp is the recorded Stamp, else the recorded version: the same value
+// for agents and skills, whose entries lack a Stamp if written before stamps
+// existed or by a skill upload. Unversioned kinds get "", so the hash decides.
+func (e *LockEntry) lockedStamp() string {
+	if e.Stamp != "" {
+		return e.Stamp
+	}
+	return e.Version
+}
+
 // lockEntryFields is LockEntry without its methods, so the custom marshalers
 // can defer to the standard ones for the known fields.
 type lockEntryFields LockEntry
@@ -53,7 +68,7 @@ type lockEntryFields LockEntry
 // lockEntryKeys are the json names of LockEntry's known fields; keep them in
 // step with its tags. Any other key in an entry is kept in unknown, and a key
 // missing here would be read into unknown and would override the field on save.
-var lockEntryKeys = []string{"kind", "id", "version", "hash", "remote_hash", "revision", "subpath"}
+var lockEntryKeys = []string{"kind", "id", "version", "hash", "remote_hash", "stamp", "revision", "subpath"}
 
 // UnmarshalJSON decodes the known fields and keeps any others in unknown.
 func (e *LockEntry) UnmarshalJSON(data []byte) error {

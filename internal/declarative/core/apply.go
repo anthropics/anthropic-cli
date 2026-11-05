@@ -113,6 +113,7 @@ func (a *Applier) applyOne(ctx context.Context, builder bodyBuilder, change *Cha
 			// fingerprint so the next plan need not rediscover that.
 			change.Entry.Hash = change.Hash
 		}
+		change.Entry.Stamp = change.spec.stamp(change.Remote)
 		a.report(change, change.Entry.ID, "unchanged", nil)
 		return targetAfter(change), nil
 	case ActionCreate, ActionUpdate:
@@ -252,6 +253,7 @@ func (a *Applier) record(change *Change, id, version, hash string, obj map[strin
 		if h, err := hashBody(normalizeRemote(change.spec, obj)); err == nil {
 			entry.RemoteHash = h
 		}
+		entry.Stamp = change.spec.stamp(obj)
 	}
 	a.Lock.Resources[change.Key] = entry
 }

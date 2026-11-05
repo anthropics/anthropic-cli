@@ -39,12 +39,18 @@ func main() {
 
 		var apierr *anthropic.Error
 		if errors.As(err, &apierr) {
-			fmt.Fprintf(termsafe.Stderr, "%s %q: %d %s\n", apierr.Request.Method, apierr.Request.URL, apierr.Response.StatusCode, http.StatusText(apierr.Response.StatusCode))
-			format := app.String("format-error")
 			json := gjson.Parse(apierr.RawJSON())
+			reason := fmt.Sprintf("%d %s", apierr.Response.StatusCode, http.StatusText(apierr.Response.StatusCode))
+			// An error event in a stream comes with the response that started the stream.
+			if apierr.Response.StatusCode < 400 {
+				reason = fmt.Sprintf("%s: %s", json.Get("error.type"), json.Get("error.message"))
+			}
+			fmt.Fprintf(termsafe.Stderr, "%s %q: %s\n", apierr.Request.Method, apierr.Request.URL, reason)
+			format := app.String("format-error")
 			show_err := cmd.ShowJSON(json, cmd.ShowJSONOpts{
 				ExplicitFormat: app.IsSet("format-error"),
 				Format:         format,
+				RawOutput:      app.Bool("raw-output"),
 				Title:          "Error",
 				Transform:      app.String("transform-error"),
 			})

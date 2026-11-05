@@ -17,7 +17,13 @@ func remoteVersion(spec KindSpec, remote map[string]any) string {
 	if remote == nil || field == "" {
 		return ""
 	}
-	switch v := remote[field].(type) {
+	return FormatVersion(remote[field])
+}
+
+// FormatVersion renders a version as the string the lockfile records, whatever
+// type the decoder chose for it.
+func FormatVersion(version any) string {
+	switch v := version.(type) {
 	case nil:
 		return ""
 	case string:

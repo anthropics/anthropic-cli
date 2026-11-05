@@ -871,6 +871,7 @@ func init() {
 					&betaOrganizationUsersUpdate,
 					&betaOrganizationUsersList,
 					&betaOrganizationUsersRemove,
+					&betaOrganizationUsersSignOut,
 				},
 			},
 			{

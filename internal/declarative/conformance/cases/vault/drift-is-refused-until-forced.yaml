@@ -1,0 +1,25 @@
+schema: 1
+name: a console edit to a vault is refused, then overwritten when forced
+resources:
+  test:
+    kind: vault
+    body:
+      display_name: cf-{run}-drift
+      metadata:
+        owner: as the file says
+steps:
+  - expect:
+      plan:
+        test: create
+  - remote:
+      test:
+        patch: {metadata: {owner: edited in the console}}
+    expect:
+      error: "outside|drift|changed"
+  - flags: [force]
+    expect:
+      plan:
+        test: {update: [metadata]}
+      remote:
+        test:
+          metadata.owner: as the file says
