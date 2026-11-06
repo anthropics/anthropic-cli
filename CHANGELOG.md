@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.1](https://github.com/anthropics/anthropic-cli/compare/v2.7.0...v2.7.1) (2026-11-06)
+
+### Chores
+
+* **docs:** say when a work heartbeat does not compare its value
+
 ## [2.7.0](https://github.com/anthropics/anthropic-cli/compare/v2.6.0...v2.7.0) (2026-11-05)
 
 ### Features
