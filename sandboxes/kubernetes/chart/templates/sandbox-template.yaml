@@ -1,0 +1,180 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+{{- $sandboxImage := include "cma-sandboxes.image" (dict "root" $ "repository" .Values.image.sandbox "digest" .Values.image.sandboxDigest) -}}
+{{- $carriesToken := eq $platform.sandboxIdentity "projectedToken" -}}
+apiVersion: extensions.agents.x-k8s.io/{{ $platform.sandboxAPIVersion }}
+kind: SandboxTemplate
+metadata:
+  name: cma-sandbox
+  namespace: {{ .Release.Namespace }}
+spec:
+  # The controller's own managed NetworkPolicy leaves 100.64.0.0/10 open, so
+  # this chart's policies are the whole allowance and the managed one is off.
+  networkPolicyManagement: Unmanaged
+  {{- if eq $platform.sandboxSchema "upstream" }}
+  envVarsInjectionPolicy: Disallowed
+  volumeClaimTemplatesPolicy: Disallowed
+  volumeClaimTemplates:
+    - metadata:
+        name: workspace
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- with .Values.sandbox.workspace.storageClassName }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.sandbox.workspace.size }}
+  {{- end }}
+  podTemplate:
+    metadata:
+      labels:
+        anthropic.com/role: sandbox
+    spec:
+      runtimeClassName: {{ .Values.runtimeClass.name }}
+      {{- if eq $platform.podPlacement "gkeSandbox" }}
+      nodeSelector:
+        sandbox.gke.io/runtime: gvisor
+      # GKE adds this toleration itself for a gVisor pod. It is spelled out
+      # because the add-on's admission policy rejects a sandbox whose pod spec
+      # does not carry it.
+      tolerations:
+        - key: sandbox.gke.io/runtime
+          operator: Equal
+          value: gvisor
+          effect: NoSchedule
+      {{- end }}
+      serviceAccountName: cma-sandbox
+      automountServiceAccountToken: false
+      {{- if eq .Values.gke.dns "nodeLocalCache" }}
+      # NodeLocal DNSCache answers at the cluster DNS address on each node and
+      # drops a gVisor pod's queries to it. The pod asks the kube-dns-upstream
+      # Service instead. Under dnsPolicy None a pod has only the search list
+      # named here, which fetch needs to resolve the dispatcher's Service name.
+      dnsPolicy: None
+      dnsConfig:
+        nameservers: [{{ .Values.gke.kubeDnsUpstreamIP | quote }}]
+        searches:
+          - {{ .Release.Namespace }}.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+        options:
+          - name: ndots
+            value: "5"
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        # Group 1000 is what the two containers share: fetch writes the session
+        # files for it, and the workspace volume belongs to it.
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        # fetch alone holds what the dispatcher accepts. It collects the pod's
+        # work item once and writes it to /run/cma. It proves who the pod is
+        # with a projected service-account token where the cluster allows one.
+        # The GKE add-on bans that token, so there the dispatcher points this
+        # container at a per-sandbox nonce Secret instead.
+        - name: fetch
+          image: {{ $sandboxImage }}
+          command: ["cma-sandbox-fetch"]
+          env:
+            - name: CMA_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CMA_DISPATCHER_URL
+              value: https://cma-dispatcher.$(CMA_NAMESPACE).svc:8443
+            - name: CMA_CA_FILE
+              value: /etc/cma-dispatcher/ca.crt
+            - name: CMA_SHARED_DIR
+              value: /run/cma
+            - name: CMA_FETCH_DIR
+              value: /run/cma-fetch
+            {{- if $carriesToken }}
+            - name: CMA_SA_TOKEN_FILE
+              value: /var/run/secrets/cma-dispatcher/token
+            {{- end }}
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              # The GKE add-on's admission policy requires a cpu limit on every
+              # container.
+              cpu: 500m
+              memory: 64Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: run-cma
+              mountPath: /run/cma
+            # The session's code can rename entries of /run/cma, so what fetch
+            # reads back lives where only fetch mounts.
+            - name: fetch-scratch
+              mountPath: /run/cma-fetch
+            - name: dispatcher-ca
+              mountPath: /etc/cma-dispatcher
+              readOnly: true
+            {{- if $carriesToken }}
+            - name: dispatcher-token
+              mountPath: /var/run/secrets/cma-dispatcher
+              readOnly: true
+            {{- end }}
+        # worker runs the session as another user with nothing the dispatcher
+        # accepts: it reads the session files fetch wrote and runs ant.
+        - name: worker
+          image: {{ $sandboxImage }}
+          command: ["cma-sandbox-worker"]
+          env:
+            - name: CMA_MAX_IDLE
+              value: {{ .Values.sandbox.idleTimeout | quote }}
+          resources:
+            {{- toYaml .Values.sandbox.resources | nindent 12 }}
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: run-cma
+              mountPath: /run/cma
+            - name: tmp
+              mountPath: /tmp
+            - name: memory
+              mountPath: /mnt/memory
+      volumes:
+        - name: run-cma
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Mi
+        - name: fetch-scratch
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Mi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: memory
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: dispatcher-ca
+          configMap:
+            name: {{ .Values.tls.caConfigMap }}
+        {{- if $carriesToken }}
+        - name: dispatcher-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  audience: cma-dispatcher
+                  expirationSeconds: 600
+                  path: token
+        {{- end }}

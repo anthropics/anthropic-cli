@@ -1,0 +1,108 @@
+name: Sandboxes
+on:
+  push:
+    branches:
+      - '**'
+      - '!integrated/**'
+      - '!stl-preview-head/**'
+      - '!stl-preview-base/**'
+      - '!generated'
+      - '!codegen/**'
+    paths:
+      - 'sandboxes/**'
+      - '.github/workflows/sandboxes.yml'
+  pull_request:
+    branches-ignore:
+      - 'stl-preview-head/**'
+      - 'stl-preview-base/**'
+    paths:
+      - 'sandboxes/**'
+      - '.github/workflows/sandboxes.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    timeout-minutes: 15
+    name: build and test
+    runs-on: 'ubuntu-latest'
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    defaults:
+      run:
+        working-directory: sandboxes
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: sandboxes/go.mod
+          cache-dependency-path: sandboxes/go.sum
+
+      - name: Check formatting
+        run: test -z "$(gofmt -s -l .)"
+
+      - name: Check go.mod and go.sum are tidy
+        run: go mod tidy -diff
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test ./...
+
+  images:
+    timeout-minutes: 60
+    name: build images
+    runs-on: 'ubuntu-latest'
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    services:
+      registry:
+        image: registry:3.1.1@sha256:1be55279f18a2fe1a74edf2664cac61c1bea305b7b4642dab412e7affdcb3e33
+        ports:
+          - 5000:5000
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          driver-opts: |
+            network=host
+            image=moby/buildkit:v0.33.1@sha256:cec9f139f45e93c5c69c60f8b07cfad9f43f4ef6b6a6cd917527fea5ff2e3dea
+
+      - name: Build the dispatcher image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: sandboxes
+          file: sandboxes/dispatcher/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: false
+
+      - name: Build the sandbox image
+        id: sandbox
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: sandboxes/image
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: localhost:5000/cma-sandbox:ci
+
+      - name: Build the source image of the sandbox image's GPL and LGPL packages
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: sandboxes/image
+          target: source
+          build-contexts: |
+            packages=docker-image://localhost:5000/cma-sandbox@${{ steps.sandbox.outputs.digest }}
+          platforms: linux/amd64,linux/arm64
+          push: false

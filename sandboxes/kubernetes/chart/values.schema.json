@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "cma-sandboxes values",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["platform", "environment", "image", "tls", "runtimeClass", "sandbox", "dispatcher", "egress", "gke"],
+  "properties": {
+    "platform": {"enum": ["gke", "eks", "generic"]},
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["secretName"],
+      "properties": {
+        "secretName": {"type": "string", "minLength": 1}
+      }
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry", "dispatcher", "sandbox"],
+      "properties": {
+        "registry": {"type": "string"},
+        "tag": {"type": "string"},
+        "dispatcher": {"type": "string", "minLength": 1},
+        "sandbox": {"type": "string", "minLength": 1},
+        "dispatcherDigest": {"type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$"},
+        "sandboxDigest": {"type": "string", "pattern": "^(sha256:[0-9a-f]{64})?$"}
+      }
+    },
+    "tls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["secretName", "caConfigMap"],
+      "properties": {
+        "secretName": {"type": "string", "minLength": 1},
+        "caConfigMap": {"type": "string", "minLength": 1}
+      }
+    },
+    "runtimeClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "create"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "create": {"type": "boolean"}
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idleTimeout", "resources", "workspace"],
+      "properties": {
+        "idleTimeout": {"type": "string", "minLength": 1},
+        "resources": {"$ref": "#/definitions/resources"},
+        "workspace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["size"],
+          "properties": {
+            "size": {"type": "string", "minLength": 1},
+            "storageClassName": {"type": "string"}
+          }
+        },
+        "warmPoolSize": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "dispatcher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retentionDays", "resources"],
+      "properties": {
+        "retentionDays": {"type": "integer", "minimum": 0},
+        "resources": {"$ref": "#/definitions/resources"}
+      }
+    },
+    "egress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "clusterCIDRs", "clusterIsPrivate", "cmaServer", "fqdnGke"],
+      "properties": {
+        "mode": {"enum": ["publicInternet", "fqdnGke"]},
+        "clusterCIDRs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "clusterIsPrivate": {"type": "boolean"},
+        "cmaServer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["public", "pods", "cidr", "port"],
+          "properties": {
+            "public": {"type": "boolean"},
+            "pods": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "namespace": {"type": "string", "minLength": 1},
+                "matchLabels": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {"type": "string"}
+                }
+              }
+            },
+            "cidr": {"type": "string"},
+            "port": {"type": "integer", "minimum": 1, "maximum": 65535}
+          }
+        },
+        "fqdnGke": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hosts"],
+          "properties": {
+            "hosts": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+          }
+        }
+      }
+    },
+    "gke": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dns", "serviceCIDR"],
+      "properties": {
+        "dns": {"enum": ["kubeDns", "cloudDns", "nodeLocalCache"]},
+        "kubeDnsUpstreamIP": {"type": "string"},
+        "serviceCIDR": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "definitions": {
+    "quantity": {"type": ["string", "number"]},
+    "resourceList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {"$ref": "#/definitions/quantity"},
+        "memory": {"$ref": "#/definitions/quantity"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requests": {"$ref": "#/definitions/resourceList"},
+        "limits": {"$ref": "#/definitions/resourceList"}
+      }
+    }
+  }
+}

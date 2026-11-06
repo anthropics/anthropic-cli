@@ -1,0 +1,35 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+{{- if eq .Values.egress.mode "publicInternet" }}
+# This policy opens the public IPv4 internet to sandbox pods, and no private
+# range. It is the whole public allowance, since the SandboxTemplate turns the
+# controller's managed policy off. IPv6 egress stays closed.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cma-sandbox-internet
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      anthropic.com/role: sandbox
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              # Carrier-grade NAT: GKE and EKS place pod and service ranges here.
+              - 100.64.0.0/10
+              # Link-local, including the cloud metadata server 169.254.169.254.
+              - 169.254.0.0/16
+              # Azure's WireServer and Oracle Cloud's metadata address sit in
+              # public space.
+              - 168.63.129.16/32
+              - 192.0.0.192/32
+              {{- range concat $platform.egressExceptExtra .Values.egress.clusterCIDRs }}
+              - {{ . }}
+              {{- end }}
+{{- end }}

@@ -1,0 +1,22 @@
+{{- if eq .Values.egress.mode "fqdnGke" }}
+# Hostname matching happens when the sandbox resolves the name: a sandbox that
+# connects to an IP without a DNS lookup, or reuses an address another name
+# resolved to, is not caught by it. The baseline policy stays in place.
+apiVersion: networking.gke.io/v1alpha1
+kind: FQDNNetworkPolicy
+metadata:
+  name: cma-sandbox-fqdn-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      anthropic.com/role: sandbox
+  egress:
+    - matches:
+        {{- range .Values.egress.fqdnGke.hosts }}
+        - name: {{ . | quote }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: 443
+{{- end }}

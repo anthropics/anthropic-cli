@@ -1,0 +1,137 @@
+# Required. Tells the chart the kind of cluster. Allowed values: gke, eks,
+# generic.
+# gke is GKE with the Agent Sandbox add-on.
+# eks is EKS with the upstream Agent Sandbox controller.
+# generic is any other cluster with the upstream controller.
+platform: ""
+
+environment:
+  # The name of a Secret you create in this namespace, never the key itself.
+  # That Secret holds ANTHROPIC_ENVIRONMENT_KEY, ANTHROPIC_ENVIRONMENT_ID and
+  # ANTHROPIC_BASE_URL, and only the dispatcher reads it.
+  secretName: cma-environment
+
+image:
+  # The registry the cluster pulls the two images from. Each release publishes
+  # them to us-docker.pkg.dev/anthropic-public-registry/sandboxes; change it when
+  # you mirror them or build your own, for example to
+  # us-docker.pkg.dev/my-project/cma.
+  registry: us-docker.pkg.dev/anthropic-public-registry/sandboxes
+  # The tag both images carry. Empty means this chart's appVersion.
+  tag: ""
+  # The repository names of the two images under that registry.
+  dispatcher: cma-dispatcher
+  sandbox: cma-sandbox
+  # The digest of each image, such as sha256:0123..., from the release notes.
+  # With both set the cluster pulls exactly those images and image.tag is not
+  # used: a registry tag can be moved, and a digest cannot. Set both or neither.
+  dispatcherDigest: ""
+  sandboxDigest: ""
+
+tls:
+  # The kubernetes.io/tls Secret with the dispatcher's certificate and key.
+  secretName: cma-dispatcher-tls
+  # The ConfigMap whose ca.crt the sandboxes trust when they call the
+  # dispatcher.
+  caConfigMap: cma-dispatcher-ca
+
+runtimeClass:
+  # The RuntimeClass sandbox pods run under. GKE Sandbox registers gvisor;
+  # change it on a generic cluster whose sandboxed runtime has another name.
+  name: gvisor
+  # eks only. Create that RuntimeClass for the runsc handler, restricted to
+  # nodes labelled and tainted cma.anthropic.com/sandbox-node=true. Set false
+  # when another release in the cluster already created it.
+  create: true
+
+sandbox:
+  # How long a session may sit idle before its worker stops and the sandbox is
+  # suspended.
+  idleTimeout: 30m
+  # CPU and memory of the container that runs the session's commands.
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+  workspace:
+    # Size of each session's /workspace volume.
+    size: 10Gi
+    # StorageClass of that volume. Empty means the cluster's default class.
+    storageClassName: ""
+  # Sandbox pods kept ready for the next session; each holds a workspace
+  # volume. Unset means 2. Platform gke keeps none and accepts only 0 here.
+  warmPoolSize: null
+
+dispatcher:
+  # Delete a suspended sandbox, and its workspace volume, once its session has
+  # been idle this many days. 0 keeps them until you delete them.
+  retentionDays: 0
+  # CPU and memory of the dispatcher.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+egress:
+  # Configures what sandboxes may reach. Allowed values: publicInternet,
+  # fqdnGke.
+  # publicInternet opens the public IPv4 internet to sandboxes, and no private
+  # range. On most clusters a sandbox can still connect to its node's ports
+  # (kubernetes/README.md, Node isolation you own).
+  # fqdnGke lets them reach only the addresses that egress.fqdnGke.hosts resolve
+  # to. It is available on platform gke with Dataplane V2.
+  mode: publicInternet
+  # Addresses of yours that sit outside the private ranges and that sandboxes
+  # must not reach: the cluster's API endpoint as a /32, and any pod, service or
+  # node range outside 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 and
+  # 100.64.0.0/10.
+  clusterCIDRs: []
+  # Set true only when the API endpoint and every cluster range already fall
+  # inside those private ranges. The install is refused while clusterCIDRs is
+  # empty and this is false.
+  clusterIsPrivate: false
+  # Where the CMA server is: api.anthropic.com, or the server behind a custom
+  # API base URL. Set exactly one of public, pods and cidr.
+  cmaServer:
+    # The server has a public address, as api.anthropic.com does.
+    public: false
+    # The server runs in this cluster: the namespace of its pods and the labels
+    # that select them, for example
+    # {namespace: cma-server, matchLabels: {anthropic.com/role: server}}.
+    pods: {}
+    # The server has a private address outside the cluster, such as
+    # 10.20.0.5/32.
+    cidr: ""
+    # The server's port, used with pods or cidr.
+    port: 443
+  fqdnGke:
+    # Lists the hosts sandboxes may reach on port 443 in fqdnGke mode. It must
+    # include the CMA server's host, which is api.anthropic.com unless you use
+    # a custom API base URL. It must also include every host your agents'
+    # commands need, such as a package index or a git host, because those
+    # commands run inside the sandbox.
+    hosts:
+      - api.anthropic.com
+
+gke:
+  # Tells the chart how the cluster serves DNS. Allowed values: kubeDns,
+  # cloudDns, nodeLocalCache.
+  # kubeDns is GKE's default.
+  # cloudDns is Cloud DNS for GKE, which Autopilot clusters use.
+  # nodeLocalCache is for a cluster that runs NodeLocal DNSCache. gVisor pods
+  # get no answer through the cache, so sandboxes send their queries to
+  # gke.kubeDnsUpstreamIP instead.
+  dns: kubeDns
+  # Used with nodeLocalCache: the address of the cluster's kube-dns-upstream
+  # Service. This command prints it:
+  # kubectl -n kube-system get svc kube-dns-upstream -o jsonpath='{.spec.clusterIP}'
+  kubeDnsUpstreamIP: ""
+  # The cluster's Service range. 34.118.224.0/20 is the range new GKE clusters
+  # get by default; it is public address space, so sandboxes are kept out of
+  # it. Change it when the cluster has a custom Service range.
+  serviceCIDR: 34.118.224.0/20

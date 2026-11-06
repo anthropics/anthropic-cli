@@ -1,0 +1,14 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+apiVersion: extensions.agents.x-k8s.io/{{ $platform.sandboxAPIVersion }}
+kind: SandboxWarmPool
+metadata:
+  name: cma-sandbox
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ $platform.warmPoolReplicas }}
+  sandboxTemplateRef:
+    name: cma-sandbox
+  {{- if eq $platform.sandboxSchema "upstream" }}
+  updateStrategy:
+    type: Recreate
+  {{- end }}

@@ -65,7 +65,8 @@ jobs:
               missing="$missing $dir"
             fi
           }
-          check '.'
+          check '.' ':(exclude)sandboxes'
+          check 'sandboxes'
           if [ -n "$refused" ]; then
             echo "::error::A release cannot read:$refused. A changelog entry is a file directly in .changelog/, with no colon or backslash in its name, that holds a first line such as 'fix(client): close the socket on timeout' and, after a blank line, optional notes in Markdown. Its type is one of feat, fix, perf, revert, chore, docs, style, refactor, build. The file .changelog/version holds one line, the version of the next release, such as 1.2.0."
           fi

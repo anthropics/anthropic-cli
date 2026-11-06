@@ -1,0 +1,8 @@
+apiVersion: v2
+name: cma-sandboxes
+description: >-
+  The sandboxes of one Claude Managed Agents environment: a dispatcher and one
+  gVisor pod per session, managed by the Agent Sandbox controller.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
