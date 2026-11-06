@@ -26,7 +26,7 @@ func displayedJSON(res gjson.Result, opts ShowJSONOpts) gjson.Result {
 			res = transformed
 		}
 	}
-	// FORCE_COLOR=1 says that piped output is headed for a display, such as `less -R`, and pretty is only for reading.
+	// Forced color says that piped output is headed for a display, such as `less -R`, and pretty is only for reading.
 	if rendersToTerminal(opts.Stdout) || shouldUseColors(opts.Stdout) || strings.EqualFold(opts.Format, "pretty") {
 		return gjson.Parse(termsafe.JSON(res.Raw))
 	}

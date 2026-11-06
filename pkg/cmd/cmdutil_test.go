@@ -496,6 +496,127 @@ func TestShowJSONWithForcedColor(t *testing.T) {
 	}
 }
 
+// setColorEnv unsets every variable that the CLI or its libraries read to decide on color, then sets the given ones.
+func setColorEnv(t *testing.T, env map[string]string) {
+	t.Helper()
+
+	// Registered first so that it runs last, once the environment and os.Stdout are back.
+	t.Cleanup(setLipGlossColorProfile)
+	for _, name := range []string{"FORCE_COLOR", "NO_COLOR", "TERM", "COLORTERM", "CLICOLOR", "CLICOLOR_FORCE"} {
+		t.Setenv(name, "")
+		os.Unsetenv(name)
+	}
+	for name, value := range env {
+		t.Setenv(name, value)
+	}
+}
+
+func TestShouldUseColors(t *testing.T) {
+	tests := []struct {
+		name        string
+		env         map[string]string
+		onTerminal  bool
+		offTerminal bool
+	}{
+		{"NothingSet", nil, true, false},
+		{"NoColor", map[string]string{"NO_COLOR": "1"}, false, false},
+		{"NoColorOfAnyValue", map[string]string{"NO_COLOR": "0"}, false, false},
+		{"EmptyNoColor", map[string]string{"NO_COLOR": ""}, true, false},
+		{"ForceColor", map[string]string{"FORCE_COLOR": "1"}, true, true},
+		{"ForceColorTrue", map[string]string{"FORCE_COLOR": "true"}, true, true},
+		{"ForceColorDepth", map[string]string{"FORCE_COLOR": "3"}, true, true},
+		{"ForceColorZero", map[string]string{"FORCE_COLOR": "0"}, false, false},
+		{"ForceColorFalse", map[string]string{"FORCE_COLOR": "false"}, false, false},
+		{"EmptyForceColor", map[string]string{"FORCE_COLOR": ""}, true, false},
+		{"DumbTerminal", map[string]string{"TERM": "dumb"}, false, false},
+		{"DumbTerminalWithColorterm", map[string]string{"TERM": "dumb", "COLORTERM": "truecolor"}, false, false},
+		{"ForceColorOnDumbTerminal", map[string]string{"TERM": "dumb", "FORCE_COLOR": "1"}, true, true},
+		{"ForceColorOutranksNoColor", map[string]string{"NO_COLOR": "1", "FORCE_COLOR": "1"}, true, true},
+		{"ForceColorZeroWithNoColor", map[string]string{"NO_COLOR": "1", "FORCE_COLOR": "0"}, false, false},
+		{"EmptyForceColorWithNoColor", map[string]string{"NO_COLOR": "1", "FORCE_COLOR": ""}, false, false},
+		{"ClicolorIsNotRead", map[string]string{"CLICOLOR": "0"}, true, false},
+		{"ClicolorForceIsNotRead", map[string]string{"CLICOLOR_FORCE": "1"}, true, false},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			setColorEnv(t, test.env)
+
+			onTerminal := shouldUseColors(openTerminal(t))
+			offTerminal := shouldUseColors(io.Discard)
+
+			assert.Equal(t, test.onTerminal, onTerminal)
+			assert.Equal(t, test.offTerminal, offTerminal)
+		})
+	}
+}
+
+func TestFormatsFollowTheColorDecision(t *testing.T) {
+	res := gjson.Parse(`{"a":"b"}`)
+	tests := []struct {
+		name       string
+		env        map[string]string
+		onTerminal bool
+		wantColor  bool
+	}{
+		{"OnATerminal", nil, true, true},
+		{"OnATerminalWithNoColor", map[string]string{"NO_COLOR": "1"}, true, false},
+		{"OnATerminalWithClicolorZero", map[string]string{"CLICOLOR": "0"}, true, true},
+		{"PipedWithForceColor", map[string]string{"FORCE_COLOR": "1"}, false, true},
+		{"PipedWithClicolorForce", map[string]string{"CLICOLOR_FORCE": "1"}, false, false},
+	}
+	for _, format := range []string{"json", "jsonl", "pretty"} {
+		for _, test := range tests {
+			t.Run(format+"/"+test.name, func(t *testing.T) {
+				setColorEnv(t, test.env)
+				if test.onTerminal {
+					stdoutIsTerminal(t)
+				} else if isTerminal(os.Stdout) {
+					t.Skip("the test's own stdout is a terminal")
+				}
+				setLipGlossColorProfile()
+
+				formatted, err := formatJSON(res, ShowJSONOpts{Format: format, Stdout: os.Stdout})
+
+				require.NoError(t, err)
+				assert.Equal(t, test.wantColor, strings.Contains(string(formatted), "\x1b["))
+			})
+		}
+	}
+}
+
+func TestPagedItemsFollowTheColorDecision(t *testing.T) {
+	tests := []struct {
+		name      string
+		env       map[string]string
+		wantColor bool
+	}{
+		{"NothingSet", nil, true},
+		{"NoColor", map[string]string{"NO_COLOR": "1"}, false},
+		{"DumbTerminal", map[string]string{"TERM": "dumb"}, false},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			setColorEnv(t, test.env)
+			stdoutIsTerminal(t)
+			pager := filepath.Join(t.TempDir(), "pager")
+			require.NoError(t, os.WriteFile(pager, []byte("#!/bin/sh\ncat >\"$0.input\"\n"), 0o755))
+			t.Setenv("PAGER", pager)
+			// More items than fit on any screen, so that the last ones are formatted once the pager runs.
+			iter := &sliceIterator[int]{items: make([]int, 100)}
+
+			err := ShowJSONIterator(iter, -1, ShowJSONOpts{Format: "jsonl", Title: "test"})
+
+			require.NoError(t, err)
+			paged, err := os.ReadFile(pager + ".input")
+			require.NoError(t, err)
+			lines := strings.Split(strings.TrimSpace(string(paged)), "\n")
+			require.Len(t, lines, 100)
+			assert.Equal(t, test.wantColor, strings.Contains(lines[0], "\x1b["))
+			assert.Equal(t, test.wantColor, strings.Contains(lines[99], "\x1b["))
+		})
+	}
+}
+
 func TestShowJSONWhenPiped(t *testing.T) {
 	t.Parallel()
 
