@@ -1,0 +1,18 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+{{- if $platform.createRuntimeClass }}
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: {{ .Values.runtimeClass.name }}
+handler: runsc
+# Restricts sandbox pods to the tainted node group that has runsc. Both lines
+# must match the label and the taint on that group.
+scheduling:
+  nodeSelector:
+    cma.anthropic.com/sandbox-node: "true"
+  tolerations:
+    - key: cma.anthropic.com/sandbox-node
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+{{- end }}

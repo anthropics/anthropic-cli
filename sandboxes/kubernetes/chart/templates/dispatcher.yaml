@@ -1,0 +1,123 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+{{- $workspace := .Values.sandbox.workspace -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cma-dispatcher
+  namespace: {{ .Release.Namespace }}
+  labels:
+    anthropic.com/role: dispatcher
+spec:
+  # Recreate, not a rolling update, so two replicas never poll the
+  # environment's work queue at once.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      anthropic.com/role: dispatcher
+  template:
+    metadata:
+      labels:
+        anthropic.com/role: dispatcher
+    spec:
+      serviceAccountName: cma-dispatcher
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: dispatcher
+          image: {{ include "cma-sandboxes.image" (dict "root" $ "repository" .Values.image.dispatcher "digest" .Values.image.dispatcherDigest) }}
+          command: ["cma-dispatcher"]
+          ports:
+            - name: https
+              containerPort: 8443
+          env:
+            {{- range list "ANTHROPIC_ENVIRONMENT_KEY" "ANTHROPIC_ENVIRONMENT_ID" "ANTHROPIC_BASE_URL" }}
+            - name: {{ . }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.environment.secretName }}
+                  key: {{ . }}
+            {{- end }}
+            - name: CMA_DISPATCHER_LISTEN
+              value: ":8443"
+            - name: CMA_DISPATCHER_TLS_CERT_FILE
+              value: /etc/cma-dispatcher/tls/tls.crt
+            - name: CMA_DISPATCHER_TLS_KEY_FILE
+              value: /etc/cma-dispatcher/tls/tls.key
+            - name: CMA_DISPATCHER_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CMA_DISPATCHER_API_VERSION
+              value: {{ $platform.sandboxAPIVersion }}
+            - name: CMA_DISPATCHER_SANDBOX_TEMPLATE
+              value: cma-sandbox
+            - name: CMA_DISPATCHER_WARM_POOL
+              value: cma-sandbox
+            - name: CMA_DISPATCHER_SANDBOX_SERVICE_ACCOUNT
+              value: cma-sandbox
+            - name: CMA_DISPATCHER_TOKEN_AUDIENCE
+              value: cma-dispatcher
+            {{- if gt (int .Values.dispatcher.retentionDays) 0 }}
+            - name: CMA_DISPATCHER_RETENTION_DAYS
+              value: {{ .Values.dispatcher.retentionDays | toString | quote }}
+            {{- end }}
+            {{- if eq $platform.workspaceClaimOn "dispatcher" }}
+            - name: CMA_DISPATCHER_WORKSPACE_CLAIM_SIZE
+              value: {{ $workspace.size | quote }}
+            {{- with $workspace.storageClassName }}
+            - name: CMA_DISPATCHER_WORKSPACE_STORAGE_CLASS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: https
+              scheme: HTTPS
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: https
+              scheme: HTTPS
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: https
+              scheme: HTTPS
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.dispatcher.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/cma-dispatcher/tls
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: {{ .Values.tls.secretName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cma-dispatcher
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    anthropic.com/role: dispatcher
+  ports:
+    - name: https
+      port: 8443
+      targetPort: https

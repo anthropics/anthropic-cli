@@ -1,0 +1,24 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+{{- if and (eq $platform.dnsPolicies "gke") (eq .Values.gke.dns "cloudDns") }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cma-sandbox-dns-cloud
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      anthropic.com/role: sandbox
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        # Cloud DNS for GKE answers at the metadata address. Port 53 only: the
+        # metadata server itself listens on port 80 and stays blocked.
+        - ipBlock:
+            cidr: 169.254.169.254/32
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+{{- end }}

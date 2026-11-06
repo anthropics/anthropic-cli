@@ -1,0 +1,15 @@
+# Any other cluster with the upstream Agent Sandbox controller, whose sandboxed
+# runtime is registered as kata. The CMA server is reached through a custom API
+# base URL and runs in the same cluster. The API endpoint and every cluster
+# range are private here.
+platform: generic
+runtimeClass:
+  name: kata
+egress:
+  clusterIsPrivate: true
+  cmaServer:
+    pods:
+      namespace: cma-server
+      matchLabels:
+        anthropic.com/role: server
+    port: 8400

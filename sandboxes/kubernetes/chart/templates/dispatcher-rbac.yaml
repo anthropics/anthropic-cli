@@ -1,0 +1,71 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cma-dispatcher
+  namespace: {{ .Release.Namespace }}
+---
+# Nothing reads Secrets: the environment key reaches the dispatcher as an
+# environment variable, and no code path reads Secrets through the API.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cma-dispatcher
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups: ["extensions.agents.x-k8s.io"]
+    resources: ["sandboxclaims"]
+    verbs: ["create", "get", "list", "watch", "patch", "delete"]
+  - apiGroups: ["extensions.agents.x-k8s.io"]
+    resources: ["sandboxwarmpools"]
+    verbs: ["get"]
+  - apiGroups: ["agents.x-k8s.io"]
+    resources: ["sandboxes"]
+    verbs: ["get", "list", "watch", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  {{- if eq $platform.sandboxIdentity "nonce" }}
+  - apiGroups: ["agents.x-k8s.io"]
+    resources: ["sandboxes"]
+    verbs: ["create", "delete"]
+  - apiGroups: ["extensions.agents.x-k8s.io"]
+    resources: ["sandboxtemplates"]
+    verbs: ["get"]
+  # create is the only Secrets verb. The dispatcher writes a fresh nonce Secret
+  # per Sandbox and can never read, change or delete one, so a compromised
+  # dispatcher cannot reach the environment Secret through it.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create"]
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cma-dispatcher
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cma-dispatcher
+subjects:
+  - kind: ServiceAccount
+    name: cma-dispatcher
+    namespace: {{ .Release.Namespace }}
+---
+# system:auth-delegator is the built-in ClusterRole that grants TokenReview and
+# SubjectAccessReview and nothing else. The name ends in the namespace so two
+# releases in one cluster hold separate bindings.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cma-dispatcher-auth-delegator-{{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: cma-dispatcher
+    namespace: {{ .Release.Namespace }}

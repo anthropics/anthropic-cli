@@ -1,0 +1,11 @@
+# GKE with the Agent Sandbox add-on, a GKE Sandbox node pool and Cloud DNS,
+# against api.anthropic.com.
+platform: gke
+egress:
+  clusterCIDRs:
+    # gcloud container clusters describe CLUSTER --format 'value(endpoint)'
+    - 203.0.113.10/32
+  cmaServer:
+    public: true
+gke:
+  dns: cloudDns

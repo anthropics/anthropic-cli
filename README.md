@@ -125,7 +125,7 @@ macOS, Linux, or Windows.
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md). The [`sandboxes/`](./sandboxes/README.md) directory, the pieces for running Claude Managed Agents self-hosted sandboxes, is a separate Go module with its own README.
 
 ## License
 

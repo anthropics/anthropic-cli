@@ -1,0 +1,22 @@
+# EKS with the upstream Agent Sandbox controller and a runsc node group, pulling
+# the two images from a mirror. The CMA server is reached through a custom API
+# base URL, on a private address in a peered VPC.
+platform: eks
+image:
+  registry: 123456789012.dkr.ecr.us-east-1.amazonaws.com/cma
+sandbox:
+  warmPoolSize: 4
+  workspace:
+    size: 20Gi
+    storageClassName: gp3
+dispatcher:
+  retentionDays: 7
+egress:
+  clusterCIDRs:
+    # aws eks describe-cluster --name CLUSTER --query cluster.endpoint,
+    # resolved to its addresses
+    - 203.0.113.20/32
+    - 203.0.113.21/32
+  cmaServer:
+    cidr: 10.20.0.5/32
+    port: 8400

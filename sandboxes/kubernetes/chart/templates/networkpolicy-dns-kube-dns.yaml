@@ -1,0 +1,29 @@
+{{- $platform := include "cma-sandboxes.platformPreset" . | fromYaml -}}
+{{- if eq $platform.dnsPolicies "gke" }}
+# GKE Sandbox does not support NodeLocal DNSCache, so a gVisor pod's queries
+# are never answered at the link-local address. This policy opens the kube-dns
+# backends themselves, selected by label, on port 53 only.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cma-sandbox-dns-kube-dns
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      anthropic.com/role: sandbox
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+{{- end }}

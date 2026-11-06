@@ -1,0 +1,32 @@
+{{- with .Values.egress.cmaServer }}
+{{- if not .public }}
+# Opens egress to a CMA server on a private address, which the internet
+# policy's except list blocks.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cma-sandbox-to-server
+  namespace: {{ $.Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      anthropic.com/role: sandbox
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        {{- if .cidr }}
+        - ipBlock:
+            cidr: {{ .cidr }}
+        {{- else }}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .pods.namespace }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .pods.matchLabels | nindent 14 }}
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .port }}
+{{- end }}
+{{- end }}

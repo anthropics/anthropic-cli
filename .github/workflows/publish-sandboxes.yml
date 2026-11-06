@@ -1,0 +1,42 @@
+---
+name: Publish Sandboxes
+
+concurrency:
+  group: publish-sandboxes
+
+on:
+  push:
+    tags:
+      - "sandboxes-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Verify release commit is on main's first-parent history
+      run: |
+        git fetch origin main
+        commit="$(git rev-parse "$GITHUB_SHA^{commit}")"
+        if ! git rev-list --first-parent origin/main | grep -qxF "$commit"; then
+          echo "::error::Ref $GITHUB_REF points at $commit, which is not on the first-parent history of origin/main. Refusing to release."
+          exit 1
+        fi
+
+    - name: Verify the tag names the version this commit declares
+      run: |
+        declared="$(sed -n 's/^version: //p' sandboxes/kubernetes/chart/Chart.yaml)"
+        if [ "${GITHUB_REF_NAME#sandboxes-v}" != "$declared" ]; then
+          echo "::error::Tag $GITHUB_REF_NAME does not name version $declared, which sandboxes/kubernetes/chart/Chart.yaml declares at $GITHUB_SHA. Refusing to release."
+          exit 1
+        fi
