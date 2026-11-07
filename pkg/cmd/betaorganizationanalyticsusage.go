@@ -110,6 +110,11 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 			Usage:     `Allowed values: "output_tokens", "requests", "time", "total_tokens", "uncached_input_tokens".`,
 			QueryPath: "order_by",
 		},
+		&requestflag.Flag[[]string]{
+			Name:      "organization-id",
+			Usage:     "Filter a parent organization's report to specific child organizations, by organization UUID or `org_` ID; an ID that is not one of its child organizations matches nothing. Requires an API key created at the parent organization level. Use `group_by[]=organization_id` to break out per-organization values.",
+			QueryPath: "organization_ids",
+		},
 		&requestflag.Flag[string]{
 			Name:      "page",
 			Usage:     "Opaque cursor from a previous response's `next_page` field.",
