@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/anthropics/anthropic-cli/v2/internal/termsafe"
 	"github.com/anthropics/anthropic-sdk-go/v2/config"
 	"github.com/urfave/cli/v3"
 )
@@ -417,7 +418,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 			"⚠  Authorized into organization %s (%s), but profile %q has organization_id=%s.\n"+
 				"   Console enforces the requested org, so this likely means the authorize URL was edited.\n"+
 				"   Run `ant profile set organization_id %s --profile %s` to retarget the profile, or re-login.\n",
-			gotOrg, tok.Organization.Name, profile, wantOrg, gotOrg, profile)
+			gotOrg, termsafe.Escape(tok.Organization.Name), profile, wantOrg, gotOrg, profile)
 	}
 
 	// Effective workspace: prefer what the token is actually bound to (the
@@ -539,7 +540,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 		fmt.Fprintf(os.Stderr, "✓ Logged in as profile %q.\n", profile)
 	}
 	if tok.Organization.UUID != "" {
-		fmt.Fprintf(os.Stderr, "  organization: %s (%s)\n", tok.Organization.Name, tok.Organization.UUID)
+		fmt.Fprintf(os.Stderr, "  organization: %s (%s)\n", termsafe.Escape(tok.Organization.Name), tok.Organization.UUID)
 	}
 	switch {
 	case effectiveWorkspaceID == "":
@@ -621,6 +622,7 @@ type storedCredentials struct {
 // Degrades gracefully when one or both pieces are missing (older creds files
 // may lack them).
 func loggedInSummary(orgName, accountEmail string) string {
+	orgName = termsafe.Escape(orgName)
 	switch {
 	case orgName != "" && accountEmail != "":
 		return fmt.Sprintf("to %s as %s", orgName, accountEmail)
@@ -764,7 +766,7 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 			writeDetail(out, "scope", scope)
 		}
 		if creds.OrganizationUUID != "" {
-			writeDetail(out, "organization", fmt.Sprintf("%s (%s)", creds.OrganizationName, creds.OrganizationUUID))
+			writeDetail(out, "organization", fmt.Sprintf("%s (%s)", termsafe.Escape(creds.OrganizationName), creds.OrganizationUUID))
 		}
 		if cfg.AuthenticationInfo != nil && cfg.AuthenticationInfo.UserOAuth != nil {
 			if uo := cfg.AuthenticationInfo.UserOAuth; uo.ClientID != "" {
@@ -929,7 +931,7 @@ func authStatus(ctx context.Context, c *cli.Command) error {
 	}
 	if orgWinner == 3 {
 		if creds.OrganizationUUID != "" {
-			writeRow(out, true, "Token organization (from credentials)", fmt.Sprintf("%s (%s)", creds.OrganizationName, creds.OrganizationUUID))
+			writeRow(out, true, "Token organization (from credentials)", fmt.Sprintf("%s (%s)", termsafe.Escape(creds.OrganizationName), creds.OrganizationUUID))
 		} else {
 			writeRow(out, true, "Derived from credential (server-side)", "(determined at request time)")
 		}
