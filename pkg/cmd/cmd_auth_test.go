@@ -2253,9 +2253,9 @@ func mustRead(t *testing.T, path string) []byte {
 	return b
 }
 
-// TestTokenRequestsRefuseCleartextBaseURL guards the two token requests the
-// CLI makes itself: neither may send an authorization code or a refresh token
-// to a base URL that is neither https nor loopback.
+// TestTokenRequestsRefuseCleartextBaseURL guards the token requests the CLI
+// makes itself: none may send an authorization code or a token to a base URL
+// that is neither https nor loopback.
 func TestTokenRequestsRefuseCleartextBaseURL(t *testing.T) {
 	const cleartext = "http://gateway.example.com"
 
@@ -2266,6 +2266,11 @@ func TestTokenRequestsRefuseCleartextBaseURL(t *testing.T) {
 
 	t.Run("refresh", func(t *testing.T) {
 		_, err := refreshAccessToken(context.Background(), cleartext, "client-x", "rt-x")
+		require.ErrorContains(t, err, "non-https token endpoint")
+	})
+
+	t.Run("revoke", func(t *testing.T) {
+		err := revokeToken(context.Background(), cleartext, "client-x", "rt-x", "refresh_token")
 		require.ErrorContains(t, err, "non-https token endpoint")
 	})
 
@@ -2315,7 +2320,7 @@ func TestTokenRequestsRefuseCleartextBaseURL(t *testing.T) {
 }
 
 // TestTokenRequestsDoNotFollowRedirects: a 307 replays the body, so following
-// one would hand the code or refresh token to a host the base URL check never saw.
+// one would hand the code or token to a host the base URL check never saw.
 func TestTokenRequestsDoNotFollowRedirects(t *testing.T) {
 	replayed := 0
 	elsewhere := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { replayed++ }))
@@ -2329,5 +2334,6 @@ func TestTokenRequestsDoNotFollowRedirects(t *testing.T) {
 	require.Error(t, err)
 	_, err = refreshAccessToken(context.Background(), srv.URL, "client-x", "rt-x")
 	require.Error(t, err)
+	require.Error(t, revokeToken(context.Background(), srv.URL, "client-x", "rt-x", "refresh_token"))
 	assert.Zero(t, replayed, "the token request body must not reach the redirect target")
 }
