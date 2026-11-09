@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.8.0](https://github.com/anthropics/anthropic-cli/compare/v2.7.1...v2.8.0) (2026-11-09)
+
+### Features
+
+* **api:** add parent organization filtering and grouping to the usage and cost reports
+
+
+### Bug Fixes
+
+* **auth:** print control characters in the organization name as visible escapes in `auth login` and `auth status`
+* **cli:** honor NO_COLOR, FORCE_COLOR and TERM=dumb when coloring output
+
+
+### Chores
+
+* bump go sdk to v2.8.0
+
 ## [2.7.1](https://github.com/anthropics/anthropic-cli/compare/v2.7.0...v2.7.1) (2026-11-06)
 
 ### Chores
