@@ -38,6 +38,18 @@ func TestNavigateForward_EmptyRowData(t *testing.T) {
 	require.Equal(t, 1, len(viewer.stack), "expected stack length 1, got %d", len(viewer.stack))
 }
 
+func TestPrintValue_EmptyRowData(t *testing.T) {
+	t.Parallel()
+
+	view, err := newTableView("", gjson.Parse("[]"), false)
+	require.NoError(t, err)
+	viewer := &JSONViewer{stack: []JSONView{view}, root: "test", help: help.New()}
+
+	viewer.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'p'}})
+
+	require.Empty(t, viewer.message)
+}
+
 // JSON-encoded control sequences that gjson decodes to live ones: an OSC 52 clipboard write and a CSI color change.
 const (
 	jsonOSC52 = `\u001b]52;c;aGVsbG8=\u0007`
@@ -189,6 +201,54 @@ func TestPrintValue_EscapesControlSequencesAndKeepsNewlines(t *testing.T) {
 	viewer.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'p'}})
 
 	require.Equal(t, `value\x1b]52;c;aGVsbG8=\a`+"\nline two", viewer.message)
+}
+
+func TestTableView_MovesCursorInShortWindow(t *testing.T) {
+	t.Parallel()
+
+	for name, size := range map[string]tea.WindowSizeMsg{
+		"NoSize":  {},
+		"SixRows": {Width: 80, Height: 6},
+	} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			view, err := newTableView("", safeJSON(`[1, 2, 3]`), false)
+			require.NoError(t, err)
+			viewer := &JSONViewer{stack: []JSONView{view}, root: "test", help: help.New()}
+			viewer.Update(size)
+
+			viewer.Update(tea.KeyMsg{Type: tea.KeyDown})
+			viewer.Update(tea.KeyMsg{Type: tea.KeyDown})
+			viewer.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'p'}})
+
+			require.Equal(t, "3", viewer.message)
+		})
+	}
+}
+
+func TestTextView_ScrollsInShortWindow(t *testing.T) {
+	t.Parallel()
+
+	for name, size := range map[string]tea.WindowSizeMsg{
+		"NoSize":   {},
+		"FourRows": {Width: 80, Height: 4},
+	} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			view, err := newTableView("", safeJSON(`["one\ntwo\nthree"]`), false)
+			require.NoError(t, err)
+			viewer := &JSONViewer{stack: []JSONView{view}, root: "test", help: help.New()}
+			viewer.Update(size)
+			viewer.navigateForward()
+
+			require.NotPanics(t, func() {
+				viewer.Update(tea.KeyMsg{Type: tea.KeyDown})
+				viewer.Update(tea.KeyMsg{Type: tea.KeyPgUp})
+			})
+		})
+	}
 }
 
 type sliceIterator struct {
