@@ -32,13 +32,6 @@ func streamOutputOSSpecific(label string, generateOutput func(w *os.File) error)
 	}
 	defer pagerInput.Close()
 
-	// If we would be streaming to a terminal and aren't forcing color one way
-	// or the other, we should configure things to use color so the pager gets
-	// colorized input.
-	if isTerminal(os.Stdout) && os.Getenv("FORCE_COLOR") == "" {
-		os.Setenv("FORCE_COLOR", "1")
-	}
-
 	outputErr := generateOutput(pagerInput)
 
 	// Close the file NOW before we wait for the child process to terminate.

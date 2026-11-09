@@ -21,9 +21,11 @@ import (
 	"github.com/anthropics/anthropic-cli/v2/internal/jsonview"
 	"github.com/anthropics/anthropic-sdk-go/v2/config"
 	"github.com/anthropics/anthropic-sdk-go/v2/option"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
 	"github.com/itchyny/json2yaml"
 	"github.com/muesli/reflow/wrap"
+	"github.com/muesli/termenv"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
 	"github.com/urfave/cli/v3"
@@ -476,13 +478,6 @@ func streamToPagerWithPipe(label string, generateOutput func(w *os.File) error) 
 		return err
 	}
 
-	// If we would be streaming to a terminal and aren't forcing color one way
-	// or the other, we should configure things to use color so the pager gets
-	// colorized input.
-	if isTerminal(os.Stdout) && os.Getenv("FORCE_COLOR") == "" {
-		os.Setenv("FORCE_COLOR", "1")
-	}
-
 	outputErr := generateOutput(w)
 
 	w.Close()
@@ -605,17 +600,38 @@ func guessExtension(data []byte) string {
 	}
 }
 
+// shouldUseColors is the only place that decides on color. An empty variable counts as unset, and FORCE_COLOR
+// (https://force-color.org) outranks NO_COLOR (https://no-color.org). FORCE_COLOR=0 and false turn color off, as in the
+// libraries that force-color.org lists.
 func shouldUseColors(w io.Writer) bool {
-	force, ok := os.LookupEnv("FORCE_COLOR")
-	if ok {
-		if force == "1" {
-			return true
-		}
-		if force == "0" {
-			return false
-		}
+	switch os.Getenv("FORCE_COLOR") {
+	case "":
+	case "0", "false":
+		return false
+	default:
+		return true
+	}
+	if os.Getenv("NO_COLOR") != "" || os.Getenv("TERM") == "dumb" {
+		return false
 	}
 	return isTerminal(w)
+}
+
+func init() {
+	setLipGlossColorProfile()
+}
+
+// setLipGlossColorProfile keeps Lip Gloss, whose output goes to stdout, from deciding on color by its own rules.
+func setLipGlossColorProfile() {
+	profile := termenv.Ascii
+	if shouldUseColors(os.Stdout) {
+		profile = termenv.ColorProfile()
+		// termenv finds no color support in a pipe or on a terminal it doesn't know.
+		if profile == termenv.Ascii {
+			profile = termenv.ANSI
+		}
+	}
+	lipgloss.SetColorProfile(profile)
 }
 
 func formatJSON(res gjson.Result, opts ShowJSONOpts) ([]byte, error) {
@@ -630,7 +646,7 @@ func formatJSON(res gjson.Result, opts ShowJSONOpts) ([]byte, error) {
 		return []byte(jsonview.RenderJSON(opts.Title, res) + "\n"), nil
 	case "auto", "json":
 		prettyJSON := pretty.Pretty([]byte(res.Raw))
-		if shouldUseColors(opts.Stdout) {
+		if opts.useColors() {
 			return pretty.Color(prettyJSON, pretty.TerminalStyle), nil
 		} else {
 			return prettyJSON, nil
@@ -638,7 +654,7 @@ func formatJSON(res gjson.Result, opts ShowJSONOpts) ([]byte, error) {
 	case "jsonl":
 		// @ugly is gjson syntax for "no whitespace", so it fits on one line
 		oneLineJSON := res.Get("@ugly").Raw
-		if shouldUseColors(opts.Stdout) {
+		if opts.useColors() {
 			bytes := append(pretty.Color([]byte(oneLineJSON), pretty.TerminalStyle), '\n')
 			return bytes, nil
 		} else {
@@ -670,6 +686,15 @@ type ShowJSONOpts struct {
 	Stdout         *os.File  // stdout (or pager); injectable for testing; defaults to os.Stdout
 	Title          string    // display title
 	Transform      string    // GJSON path to extract before displaying
+
+	pagerTerminal *os.File // where the pager that Stdout feeds shows the output; nil without a pager
+}
+
+func (o ShowJSONOpts) useColors() bool {
+	if o.pagerTerminal != nil {
+		return shouldUseColors(o.pagerTerminal)
+	}
+	return shouldUseColors(o.Stdout)
 }
 
 func (o *ShowJSONOpts) setDefaults() {
@@ -794,6 +819,7 @@ func ShowJSONIterator[T any](iter jsonview.Iterator[T], itemsToDisplay int64, op
 
 		pagerOpts := opts
 		pagerOpts.Stdout = pager
+		pagerOpts.pagerTerminal = opts.Stdout
 
 		for iter.Next() {
 			if itemsToDisplay == 0 {

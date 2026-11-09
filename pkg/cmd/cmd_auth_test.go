@@ -2198,6 +2198,54 @@ func TestAuthStatusLoggedInLine(t *testing.T) {
 	})
 }
 
+// TestAuthOutputEscapesOrganizationName guards against an organization name
+// that rewrites the terminal or forges a line of output. The login covers the
+// mismatch warning too, and the status reads the name that login stored.
+func TestAuthOutputEscapesOrganizationName(t *testing.T) {
+	for name, tc := range map[string]struct{ orgName, printed string }{
+		"ordinary":  {"Acme, Inc.", "Acme, Inc."},
+		"non-ASCII": {"Société Générale 株式会社 🚀", "Société Générale 株式会社 🚀"},
+		"OSC 52":    {"Acme\x1b]52;c;Y3VybCB4LmNvfHNo\a", `Acme\x1b]52;c;Y3VybCB4LmNvfHNo\a`},
+		"C1":        {"Acme\u009b2J", `Acme\u009b2J`},
+		"newline":   {"Acme\n✓ Verified\rBcme", `Acme\n✓ Verified\rBcme`},
+		"bidi":      {"Acme\u202egro", `Acme\u202egro`},
+	} {
+		t.Run(name, func(t *testing.T) {
+			dir := t.TempDir()
+			t.Setenv("ANTHROPIC_CONFIG_DIR", dir)
+			clearEnv(t, "ANTHROPIC_PROFILE")
+			cfg := &config.Config{
+				AuthenticationInfo: &config.AuthenticationInfo{Type: config.AuthenticationTypeUserOAuth, UserOAuth: &config.UserOAuth{}},
+				OrganizationID:     "org-A",
+			}
+			require.NoError(t, config.SaveProfile(dir, "default", cfg))
+			srv := newTokenServer(t, tokenResponse{
+				AccessToken: "tok", RefreshToken: "rt", ExpiresIn: 600,
+				Organization: tokenOrganization{UUID: "org-B", Name: tc.orgName},
+				Account:      tokenAccount{EmailAddress: "user@example.com"},
+			})
+
+			_, login, err := driveLoginErr(t, srv.URL)
+			require.NoError(t, err)
+			assert.Contains(t, login, "Authorized into organization org-B ("+tc.printed+"), but profile")
+			assert.Contains(t, login, "Logged in to "+tc.printed+" as user@example.com (profile")
+			assert.Contains(t, login, "organization: "+tc.printed+" (org-B)\n")
+
+			// Without a profile organization_id, status falls back to the token's.
+			cfg.OrganizationID = ""
+			require.NoError(t, config.SaveProfile(dir, "default", cfg))
+			status, err := runStatus(t)
+			require.NoError(t, err)
+			assert.Contains(t, status, "Logged in to "+tc.printed+" as user@example.com\n")
+			assert.Equal(t, 2, strings.Count(status, tc.printed+" (org-B)\n"))
+
+			var creds map[string]any
+			require.NoError(t, json.Unmarshal(mustRead(t, config.ProfileCredentialsPath(dir, "default")), &creds))
+			assert.Equal(t, tc.orgName, creds["organization_name"], "the stored name must stay as the server sent it")
+		})
+	}
+}
+
 func mustRead(t *testing.T, path string) []byte {
 	t.Helper()
 	b, err := os.ReadFile(path)

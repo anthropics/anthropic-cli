@@ -32,6 +32,7 @@ func TestBetaOrganizationAnalyticsCostList(t *testing.T) {
 			"--model", "string",
 			"--order", "asc",
 			"--order-by", "amount",
+			"--organization-id", "12345678-1234-5678-1234-567812345678",
 			"--page", "page",
 			"--product", "chat",
 			"--rbac-group-id", "rbac_group_012rppKaSVsmTo6NqRDXQXNF",
