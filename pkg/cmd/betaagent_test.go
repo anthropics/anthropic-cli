@@ -20,7 +20,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--execution-identity", "{role_arn: arn:aws:iam::228601553692:role/T, type: aws_role}",
 			"--mcp-server", "{name: example-mcp, type: url, url: https://example-server.modelcontextprotocol.io/sse}",
 			"--metadata", "{foo: bar}",
-			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
+			"--multiagent", "{type: multiagent_20261001, advisor: {type: disabled}, subagents: {type: enabled, inline_agents: {type: disabled}, predefined_agents: [agent_011CZkYqphY8vELVzwCUpqiQ]}, workflows: {type: enabled, inline_agents: {type: disabled}, predefined_agents: [{id: agent_011CZkYqphY8vELVzwCUpqiQ, type: agent, version: 1}]}}",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
@@ -46,7 +46,7 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"--mcp-server.type", "url",
 			"--mcp-server.url", "https://example-server.modelcontextprotocol.io/sse",
 			"--metadata", "{foo: bar}",
-			"--multiagent", "{agents: [agent_011CZkYqphY8vELVzwCUpqiQ, {type: self}], type: coordinator}",
+			"--multiagent", "{type: multiagent_20261001, advisor: {type: disabled}, subagents: {type: enabled, inline_agents: {type: disabled}, predefined_agents: [agent_011CZkYqphY8vELVzwCUpqiQ]}, workflows: {type: enabled, inline_agents: {type: disabled}, predefined_agents: [{id: agent_011CZkYqphY8vELVzwCUpqiQ, type: agent, version: 1}]}}",
 			"--skill", "{skill_id: xlsx, type: anthropic, version: '1'}",
 			"--system", "You are a general-purpose agent that can research, write code, run commands, and use connected tools to complete the user's task end to end.",
 			"--tool", "{type: agent_toolset_20260401, configs: [{name: bash, enabled: true, permission_policy: {type: always_allow}, type: bash}], default_config: {enabled: true, permission_policy: {type: always_allow}}}",
@@ -71,10 +71,23 @@ func TestBetaAgentsCreate(t *testing.T) {
 			"metadata:\n" +
 			"  foo: bar\n" +
 			"multiagent:\n" +
-			"  agents:\n" +
-			"    - agent_011CZkYqphY8vELVzwCUpqiQ\n" +
-			"    - type: self\n" +
-			"  type: coordinator\n" +
+			"  type: multiagent_20261001\n" +
+			"  advisor:\n" +
+			"    type: disabled\n" +
+			"  subagents:\n" +
+			"    type: enabled\n" +
+			"    inline_agents:\n" +
+			"      type: disabled\n" +
+			"    predefined_agents:\n" +
+			"      - agent_011CZkYqphY8vELVzwCUpqiQ\n" +
+			"  workflows:\n" +
+			"    type: enabled\n" +
+			"    inline_agents:\n" +
+			"      type: disabled\n" +
+			"    predefined_agents:\n" +
+			"      - id: agent_011CZkYqphY8vELVzwCUpqiQ\n" +
+			"        type: agent\n" +
+			"        version: 1\n" +
 			"skills:\n" +
 			"  - skill_id: xlsx\n" +
 			"    type: anthropic\n" +
