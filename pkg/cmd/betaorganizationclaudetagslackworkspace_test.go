@@ -29,7 +29,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:slack-workspaces", "update",
 			"--id", "slws_01Hq8TzW5mKc2YbX7vNd4RfJ",
-			"--settings", "{enabled: true, environment_id: x, guest_policy: {type: allow}, instructions: instructions, model: x}",
+			"--settings", "{enabled: true, environment_id: x, guest_policy: {type: allow}, instructions: instructions, model: x, reply_mode: {type: automatic}}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -49,6 +49,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesUpdate(t *testing.T) {
 			"--settings.guest-policy", "{type: allow}",
 			"--settings.instructions", "instructions",
 			"--settings.model", "x",
+			"--settings.reply-mode", "{type: automatic}",
 			"--beta", "message-batches-2024-09-24",
 		)
 	})
@@ -62,7 +63,9 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesUpdate(t *testing.T) {
 			"  guest_policy:\n" +
 			"    type: allow\n" +
 			"  instructions: instructions\n" +
-			"  model: x\n")
+			"  model: x\n" +
+			"  reply_mode:\n" +
+			"    type: automatic\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),

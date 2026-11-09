@@ -75,6 +75,11 @@ var betaOrganizationClaudeTagSlackChannelsCreate = requestflag.WithInnerFlags(cl
 			Usage:      "The model Claude uses: the identifier of a model, or the name of a model line, that the organization is entitled to for Claude Tag. Null clears it.",
 			InnerField: "model",
 		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "settings.reply-mode",
+			Usage:      "How Claude takes part in a Slack channel. A channel alone stores one. More types can be added.",
+			InnerField: "reply_mode",
+		},
 	},
 })
 
@@ -155,6 +160,11 @@ var betaOrganizationClaudeTagSlackChannelsUpdate = requestflag.WithInnerFlags(cl
 			Name:       "settings.model",
 			Usage:      "The model Claude uses: the identifier of a model, or the name of a model line, that the organization is entitled to for Claude Tag. Null clears it.",
 			InnerField: "model",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "settings.reply-mode",
+			Usage:      "How Claude takes part in a Slack channel. A channel alone stores one. More types can be added.",
+			InnerField: "reply_mode",
 		},
 	},
 })
