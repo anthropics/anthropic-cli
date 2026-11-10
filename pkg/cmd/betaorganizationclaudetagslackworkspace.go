@@ -72,7 +72,7 @@ var betaOrganizationClaudeTagSlackWorkspacesUpdate = requestflag.WithInnerFlags(
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "settings.environment-id",
-			Usage:      "The environment Claude's sessions run in: the identifier of an active environment of the organization, starting with `env_`. Null clears it.",
+			Usage:      "The environment Claude's sessions run in: the identifier of an active environment of the organization, starting with `env_`, or of a self-hosted runner pool of the organization that every member may use, starting with `ccpool_`. Null clears it.",
 			InnerField: "environment_id",
 		},
 		&requestflag.InnerFlag[map[string]any]{
