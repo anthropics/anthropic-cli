@@ -6,8 +6,8 @@ cloud.google.com/go/compute/metadata v0.5.0 h1:Zr0eK8JbFv6+Wi4ilXAR8FJ3wyNdpxHKJ
 cloud.google.com/go/compute/metadata v0.5.0/go.mod h1:aHnloV2TPI38yx4s9+wAZhHykWvVCfu7hQbF+9CWoiY=
 github.com/Masterminds/semver/v3 v3.4.0 h1:Zog+i5UMtVoCU8oKka5P7i9q9HgrJeGzI9SA1Xbatp0=
 github.com/Masterminds/semver/v3 v3.4.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
-github.com/anthropics/anthropic-sdk-go/v2 v2.8.0 h1:rtxFOQBAnyFByVSwLHGw0/SNDJqT3z48slFAorp4+CQ=
-github.com/anthropics/anthropic-sdk-go/v2 v2.8.0/go.mod h1:LAOInMKgn6reTIrPvKXa5weyqzxsJkxSBuzhnxzukpQ=
+github.com/anthropics/anthropic-sdk-go/v2 v2.9.0 h1:kn8rCJlgcOTd5/yjofmTuUdfMRP14OL9vDS4tsdJqZg=
+github.com/anthropics/anthropic-sdk-go/v2 v2.9.0/go.mod h1:LAOInMKgn6reTIrPvKXa5weyqzxsJkxSBuzhnxzukpQ=
 github.com/aws/aws-sdk-go-v2 v1.38.0 h1:UCRQ5mlqcFk9HJDIqENSLR3wiG1VTWlyUfLDEvY7RxU=
 github.com/aws/aws-sdk-go-v2 v1.38.0/go.mod h1:9Q0OoGQoboYIAJyslFyF1f5K1Ryddop8gqMhWx/n4Wg=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 h1:tW1/Rkad38LA15X4UQtjXZXNKsCgkshC3EbmcUmghTg=
