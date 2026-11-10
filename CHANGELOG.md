@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.9.0](https://github.com/anthropics/anthropic-cli/compare/v2.8.0...v2.9.0) (2026-11-10)
+
+### Features
+
+* **api:** add reply_mode to Claude Tag Slack channel settings
+* **client:** read OpenTelemetry baggage from the BAGGAGE environment variable
+
+  While tracing is on, API requests send the value of `BAGGAGE` in the `baggage` header, the same way they continue the trace in `TRACEPARENT`.
+
+
+### Bug Fixes
+
+* **auth:** revoke tokens on the server at ant auth logout
+* **cli:** stop the JSON explorer crashing in a very short terminal or on an empty list
+
+
+### Chores
+
+* bump go sdk to v2.9.0
+* **docs:** clarify plugin delete and skill name conflict descriptions
+* **docs:** clarify when to omit user_profile_id on external keys
+* **docs:** note that Claude Tag settings accept self-hosted runner pools
+
+
+### Documentation
+
+* **examples:** show multiagent when creating a Managed Agents agent
+
 ## [2.8.0](https://github.com/anthropics/anthropic-cli/compare/v2.7.1...v2.8.0) (2026-11-09)
 
 ### Features
