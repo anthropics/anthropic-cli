@@ -103,17 +103,17 @@ func otelBefore(ctx context.Context, _ *cli.Command) (context.Context, error) {
 	tracerProvider = sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter), sdktrace.WithResource(res))
 	otel.SetTracerProvider(cliScopeTracerProvider{inner: tracerProvider})
 	// The API's default propagator is a no-op, which would leave requests without a traceparent header.
-	otel.SetTextMapPropagator(propagation.TraceContext{})
+	propagator := propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{})
+	otel.SetTextMapPropagator(propagator)
 
-	// A parent process hands its trace over in TRACEPARENT, so that the spans of
-	// this run join it. `beta:worker poll` leaves that trace again (handleWorkerPoll).
-	if traceparent := os.Getenv("TRACEPARENT"); traceparent != "" {
-		ctx = propagation.TraceContext{}.Extract(ctx, propagation.MapCarrier{
-			"traceparent": traceparent,
-			"tracestate":  os.Getenv("TRACESTATE"),
-		})
-	}
-	return ctx, nil
+	// A parent process hands its trace over in TRACEPARENT and its baggage in
+	// BAGGAGE, so that the spans of this run join that trace. `beta:worker poll`
+	// leaves both again (handleWorkerPoll).
+	return propagator.Extract(ctx, propagation.MapCarrier{
+		"traceparent": os.Getenv("TRACEPARENT"),
+		"tracestate":  os.Getenv("TRACESTATE"),
+		"baggage":     os.Getenv("BAGGAGE"),
+	}), nil
 }
 
 // otelAfter is the root command's After hook, which runs whether or not the

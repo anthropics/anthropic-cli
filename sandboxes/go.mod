@@ -3,7 +3,7 @@ module github.com/anthropics/anthropic-cli/sandboxes
 go 1.25.0
 
 require (
-	github.com/anthropics/anthropic-sdk-go/v2 v2.8.0
+	github.com/anthropics/anthropic-sdk-go/v2 v2.9.0
 	k8s.io/api v0.35.4
 	k8s.io/apimachinery v0.35.4
 	k8s.io/client-go v0.35.4

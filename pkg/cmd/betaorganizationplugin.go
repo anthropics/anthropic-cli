@@ -169,7 +169,7 @@ var betaOrganizationPluginsList = cli.Command{
 
 var betaOrganizationPluginsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Permanently delete a Plugin and every version it holds, exactly as when an\nadministrator deletes it in claude.ai. The Plugin may belong to the organization\nor to a member, including a member who has since left the organization.",
+	Usage:   "Permanently delete a Plugin and every version it holds, exactly as when an\nadministrator deletes it in claude.ai. The Plugin may belong to the organization\nor to a member, including a member who has since left the organization. Do not\ndelete a Plugin only because your pipeline did not create it: a member or an\nadministrator might have added it in claude.ai.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

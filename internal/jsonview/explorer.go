@@ -198,7 +198,7 @@ func (tv *TableView) Resize(width, height int) {
 	tv.width = width
 	tv.height = height
 	tv.updateColumnWidths(width)
-	tv.table.SetHeight(min(height-heightOffset, tableMinHeight+len(tv.table.Rows())))
+	tv.table.SetHeight(max(tableMinHeight, min(height-heightOffset, tableMinHeight+len(tv.table.Rows()))))
 }
 
 func (tv *TableView) updateColumnWidths(width int) {
@@ -272,7 +272,7 @@ func (tv *TextView) Update(msg tea.Msg, raw bool) tea.Cmd {
 }
 
 func (tv *TextView) Resize(width, height int) {
-	h := height - heightOffset
+	h := max(0, height-heightOffset)
 	if !tv.ready {
 		tv.viewport = viewport.New(width, h)
 		tv.viewport.SetContent(wordwrap.String(tv.data.String(), width))
@@ -321,7 +321,7 @@ func ExploreJSONStream[T any](title string, it Iterator[T]) error {
 	anyIt := genericToAnyIterator(it)
 
 	preloadCount := 20
-	if _, termHeight, err := term.GetSize(os.Stdout.Fd()); err == nil {
+	if _, termHeight, err := term.GetSize(os.Stdout.Fd()); err == nil && termHeight > 0 {
 		preloadCount = termHeight
 	}
 
@@ -425,6 +425,10 @@ func (v *JSONViewer) getSelectedContent() string {
 	tableView, ok := v.current().(*TableView)
 	if !ok {
 		return v.current().GetData().Raw
+	}
+
+	if len(tableView.rowData) < 1 {
+		return ""
 	}
 
 	selected := tableView.rowData[tableView.table.Cursor()]

@@ -72,7 +72,7 @@ var betaOrganizationClaudeTagSlackWorkspacesUpdate = requestflag.WithInnerFlags(
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "settings.environment-id",
-			Usage:      "The environment Claude's sessions run in: the identifier of an active environment of the organization, starting with `env_`. Null clears it.",
+			Usage:      "The environment Claude's sessions run in: the identifier of an active environment of the organization, starting with `env_`, or of a self-hosted runner pool of the organization that every member may use, starting with `ccpool_`. Null clears it.",
 			InnerField: "environment_id",
 		},
 		&requestflag.InnerFlag[map[string]any]{
@@ -89,6 +89,11 @@ var betaOrganizationClaudeTagSlackWorkspacesUpdate = requestflag.WithInnerFlags(
 			Name:       "settings.model",
 			Usage:      "The model Claude uses: the identifier of a model, or the name of a model line, that the organization is entitled to for Claude Tag. Null clears it.",
 			InnerField: "model",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "settings.reply-mode",
+			Usage:      "How Claude takes part in a Slack channel. A channel alone stores one. More types can be added.",
+			InnerField: "reply_mode",
 		},
 	},
 })

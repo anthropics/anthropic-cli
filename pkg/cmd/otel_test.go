@@ -23,6 +23,7 @@ import (
 	"github.com/urfave/cli/v3"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/baggage"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -33,6 +34,7 @@ import (
 const (
 	testTraceID     = "0af7651916cd43dd8448eb211c80319c"
 	testTraceparent = "00-" + testTraceID + "-b7ad6b7169203331-01"
+	testBaggage     = "tenant=acme"
 )
 
 // otelTestEnv clears every variable the setup and the exporters read, so that
@@ -41,7 +43,7 @@ const (
 func otelTestEnv(t *testing.T, env map[string]string) {
 	t.Helper()
 	for _, kv := range os.Environ() {
-		if k, _, _ := strings.Cut(kv, "="); strings.HasPrefix(k, "OTEL_") || k == "TRACEPARENT" || k == "TRACESTATE" {
+		if k, _, _ := strings.Cut(kv, "="); strings.HasPrefix(k, "OTEL_") || k == "TRACEPARENT" || k == "TRACESTATE" || k == "BAGGAGE" {
 			clearEnv(t, k)
 		}
 	}
@@ -55,7 +57,7 @@ func otelTestEnv(t *testing.T, env map[string]string) {
 		if otel.GetTracerProvider() != provider {
 			otel.SetTracerProvider(provider)
 		}
-		if otel.GetTextMapPropagator() != propagator {
+		if !assert.ObjectsAreEqual(propagator, otel.GetTextMapPropagator()) {
 			otel.SetTextMapPropagator(propagator)
 		}
 	})
@@ -118,7 +120,7 @@ func TestOtelInactive(t *testing.T) {
 		env  map[string]string
 	}{
 		{name: "no endpoint"},
-		{name: "no endpoint, other variables set", env: map[string]string{"OTEL_SERVICE_NAME": "svc", "OTEL_TRACES_EXPORTER": "otlp", "TRACEPARENT": testTraceparent}},
+		{name: "no endpoint, other variables set", env: map[string]string{"OTEL_SERVICE_NAME": "svc", "OTEL_TRACES_EXPORTER": "otlp", "TRACEPARENT": testTraceparent, "BAGGAGE": testBaggage}},
 		{name: "sdk disabled", env: map[string]string{"OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:1", "OTEL_SDK_DISABLED": "true"}},
 		{name: "sdk disabled, upper case", env: map[string]string{"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://127.0.0.1:1", "OTEL_SDK_DISABLED": "TRUE"}},
 		{name: "traces exporter none", env: map[string]string{"OTEL_EXPORTER_OTLP_ENDPOINT": "http://127.0.0.1:1", "OTEL_TRACES_EXPORTER": "none"}},
@@ -134,6 +136,7 @@ func TestOtelInactive(t *testing.T) {
 			assert.Equal(t, provider, otel.GetTracerProvider())
 			assert.Equal(t, propagator, otel.GetTextMapPropagator())
 			assert.False(t, trace.SpanContextFromContext(ctx).IsValid(), "TRACEPARENT must be ignored while tracing is off")
+			assert.Zero(t, baggage.FromContext(ctx).Len(), "BAGGAGE must be ignored while tracing is off")
 			require.NoError(t, otelAfter(ctx, nil))
 		})
 	}
@@ -228,6 +231,40 @@ func TestOtelTraceparent(t *testing.T) {
 			_, span := otel.Tracer("test").Start(ctx, "child")
 			assert.Equal(t, tc.wantTraceID, span.SpanContext().TraceID().String())
 			span.End()
+		})
+	}
+}
+
+func TestOtelBaggage(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		env  map[string]string
+		want string
+	}{
+		{name: "with TRACEPARENT", env: map[string]string{"BAGGAGE": testBaggage, "TRACEPARENT": testTraceparent}, want: testBaggage},
+		{name: "without TRACEPARENT", env: map[string]string{"BAGGAGE": testBaggage}, want: testBaggage},
+		{name: "malformed is ignored", env: map[string]string{"BAGGAGE": "not-a-baggage"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			clearWorkerEnv(t)
+			collector := newOTLPServer(t)
+			otelTestEnv(t, tc.env)
+			t.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", collector.URL)
+			t.Setenv("ANTHROPIC_CONFIG_DIR", t.TempDir())
+			t.Setenv("ANTHROPIC_API_KEY", "k")
+			var headers []http.Header
+			api := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				headers = append(headers, r.Header)
+				w.Header().Set("Content-Type", "application/json")
+				fmt.Fprint(w, `{"data":[],"has_more":false,"first_id":null,"last_id":null}`)
+			}))
+			defer api.Close()
+
+			require.NoError(t, Command.Run(context.Background(), []string{"ant", "--base-url", api.URL, "models", "list"}))
+			api.Close()
+
+			require.Len(t, headers, 1)
+			assert.Equal(t, tc.want, headers[0].Get("baggage"))
 		})
 	}
 }
@@ -407,15 +444,16 @@ func TestOtelHooksOnRoot(t *testing.T) {
 
 // TestOtelWorker covers the self-hosted worker, which builds its own client and
 // derives its context from the one the Before hook returns. `run` serves one
-// session, so its requests continue the trace from TRACEPARENT. `poll` serves
-// many, one after another, so its requests must not. Stopping either must flush
-// its spans.
+// session, so its requests continue the trace from TRACEPARENT and carry the
+// baggage from BAGGAGE. `poll` serves many, one after another, so its requests
+// must not. Stopping either must flush its spans.
 func TestOtelWorker(t *testing.T) {
 	for _, tc := range []struct {
 		name          string
 		args          []string
 		wantSpan      string
 		continueTrace bool
+		wantBaggage   string
 	}{
 		{
 			name:     "poll",
@@ -427,20 +465,21 @@ func TestOtelWorker(t *testing.T) {
 			args:          []string{"beta:worker", "run", "--environment-id", "env_t", "--environment-key", "ek_t", "--work-id", "work_t", "--session-id", "sesn_t"},
 			wantSpan:      "anthropic.environments.work.heartbeat",
 			continueTrace: true,
+			wantBaggage:   testBaggage,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			clearWorkerEnv(t)
 			collector := newOTLPServer(t)
-			otelTestEnv(t, map[string]string{"OTEL_EXPORTER_OTLP_ENDPOINT": collector.URL, "TRACEPARENT": testTraceparent})
+			otelTestEnv(t, map[string]string{"OTEL_EXPORTER_OTLP_ENDPOINT": collector.URL, "TRACEPARENT": testTraceparent, "BAGGAGE": testBaggage})
 			t.Setenv("ANTHROPIC_CONFIG_DIR", t.TempDir())
 
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
-			traceparentCh := make(chan string, 1)
+			headersCh := make(chan http.Header, 1)
 			api := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				select {
-				case traceparentCh <- r.Header.Get("traceparent"):
+				case headersCh <- r.Header:
 					cancel()
 				default:
 				}
@@ -450,12 +489,13 @@ func TestOtelWorker(t *testing.T) {
 
 			_ = Command.Run(ctx, append([]string{"ant"}, append(tc.args, "--workdir", t.TempDir(), "--base-url", api.URL)...))
 
-			var traceparent string
+			var headers http.Header
 			select {
-			case traceparent = <-traceparentCh:
+			case headers = <-headersCh:
 			default:
 				t.Fatal("worker made no requests")
 			}
+			traceparent := headers.Get("traceparent")
 			assert.Nil(t, tracerProvider, "the After hook must have shut the provider down")
 			exported := string(collector.exported())
 			if traceparent == "" && exported == "" {
@@ -463,6 +503,7 @@ func TestOtelWorker(t *testing.T) {
 			}
 			assert.Regexp(t, "^00-[0-9a-f]{32}-[0-9a-f]{16}-01$", traceparent)
 			assert.Equal(t, tc.continueTrace, strings.Contains(traceparent, testTraceID))
+			assert.Equal(t, tc.wantBaggage, headers.Get("baggage"))
 			assert.Contains(t, exported, tc.wantSpan)
 			assert.Contains(t, exported, cliScope)
 			assert.NotContains(t, exported, "com.anthropic.sdk.go")

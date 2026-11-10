@@ -146,7 +146,7 @@ func init() {
 			},
 			{
 				Name:   "logout",
-				Usage:  "Remove stored credentials",
+				Usage:  "Revoke and remove stored credentials",
 				Action: authLogout,
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
@@ -567,6 +567,7 @@ func authLogin(ctx context.Context, c *cli.Command) error {
 func authLogout(ctx context.Context, c *cli.Command) error {
 	dir := config.DefaultDir()
 	if c.Bool("all") {
+		revokeAllTokens(ctx, dir)
 		// Remove only what we own, never RemoveAll(dir) — DefaultDir() respects
 		// ANTHROPIC_CONFIG_DIR, so a misconfigured env var pointing at $HOME
 		// would otherwise be catastrophic.
@@ -583,6 +584,7 @@ func authLogout(ctx context.Context, c *cli.Command) error {
 		return nil
 	}
 	profile, _ := activeProfile(c)
+	revokeProfileTokens(ctx, dir, profile)
 	// Logout removes only the credential. The profile config (organization_id,
 	// workspace_id, base_url, auth block) is durable, user- or MDM-provisioned
 	// intent and survives logout untouched — re-login reuses it instead of
