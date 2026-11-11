@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os/exec"
+	"sync/atomic"
 	"testing"
 
 	"github.com/anthropics/anthropic-cli/v2/internal/mocktest"
@@ -34,7 +35,13 @@ func TestNullableStringFileInput(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var body []byte
+			var requests atomic.Int32
 			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if requests.Add(1) != 1 || r.Method != http.MethodPost || r.URL.Path != "/v1/agents" {
+					t.Errorf("unexpected request: %s %s (request %d)", r.Method, r.URL.Path, requests.Load())
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
 				var request map[string]json.RawMessage
 				if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 					t.Error(err)
@@ -56,7 +63,29 @@ func TestNullableStringFileInput(t *testing.T) {
 			out, err := cmd.CombinedOutput()
 			srv.Close()
 			require.NoError(t, err, "%s", out)
+			require.EqualValues(t, 1, requests.Load())
 			require.JSONEq(t, tc.want, string(body))
 		})
 	}
+}
+
+func TestEmbedFilesNestedNullableStrings(t *testing.T) {
+	t.Parallel()
+	const prompt = "Nested prompt contents."
+	reference := "@" + mocktest.TestFile(t, prompt)
+	var nullString *string
+
+	embedded, err := embedFiles(map[string]any{
+		"nested": []any{map[string]any{
+			"system":      &reference,
+			"description": nullString,
+		}},
+	}, EmbedText, nil)
+	require.NoError(t, err)
+	require.Equal(t, map[string]any{
+		"nested": []any{map[string]any{
+			"system":      prompt,
+			"description": nullString,
+		}},
+	}, embedded)
 }
