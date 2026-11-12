@@ -100,7 +100,7 @@ func connectWeb(ctx context.Context, cmd *cli.Command, client anthropic.Client, 
 		Logf:       func(format string, args ...any) { fmt.Fprintf(os.Stderr, format+"\n", args...) },
 	}
 	if !cmd.Bool("no-browser") {
-		opts.OpenURL = openBrowser
+		opts.Open = openBrowser
 	}
 	return web.Serve(ctx, threads, opts)
 }

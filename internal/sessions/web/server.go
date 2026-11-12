@@ -27,6 +27,8 @@ type server struct {
 
 	bootMu    sync.Mutex
 	bootCodes map[string]time.Time // unspent code → expiry
+
+	redirectFile string // carries the first boot code to the browser; "" with no browser to open
 }
 
 func newServer(session Session, page []byte, host, consoleURL string) *server {
@@ -110,6 +112,7 @@ func (srv *server) serveIndex(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(bytes.ReplaceAll([]byte(resumePage), []byte(nonceMarker), []byte(nonce)))
 		return
 	}
+	srv.removeRedirectFile()
 	// json.Marshal escapes <, > and & so the config cannot close its <script>.
 	config, _ := json.Marshal(map[string]string{
 		"eventsURL": "/events", "sendURL": "/send", "token": srv.token, "consoleURL": srv.consoleURL,
