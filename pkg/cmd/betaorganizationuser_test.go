@@ -79,7 +79,7 @@ func TestBetaOrganizationUsersSignOut(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:users", "sign-out",
 			"--user-id", "user_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

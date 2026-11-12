@@ -20,7 +20,7 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -41,7 +41,7 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -63,7 +63,7 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

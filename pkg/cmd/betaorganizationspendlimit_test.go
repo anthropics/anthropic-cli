@@ -30,7 +30,7 @@ func TestBetaOrganizationSpendLimitsList(t *testing.T) {
 			"--page", "page",
 			"--scope-type", "organization",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -57,7 +57,7 @@ func TestBetaOrganizationSpendLimitsSet(t *testing.T) {
 			"--amount", "50000",
 			"--scope", "{type: user, user_id: user_01WxYzAbCdEfGhJkMnPqRsTu}",
 			"--period", "monthly",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -73,7 +73,7 @@ func TestBetaOrganizationSpendLimitsSet(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:spend-limits", "set",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

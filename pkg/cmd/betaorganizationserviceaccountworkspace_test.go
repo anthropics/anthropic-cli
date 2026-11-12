@@ -17,7 +17,7 @@ func TestBetaOrganizationServiceAccountsWorkspacesList(t *testing.T) {
 			"--service-account-id", "service_account_id",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -32,7 +32,7 @@ func TestBetaOrganizationServiceAccountsWorkspacesAdd(t *testing.T) {
 			"--service-account-id", "service_account_id",
 			"--workspace-id", "workspace_id",
 			"--workspace-role", "workspace_admin",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -46,7 +46,7 @@ func TestBetaOrganizationServiceAccountsWorkspacesAdd(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:service-accounts:workspaces", "add",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -60,7 +60,7 @@ func TestBetaOrganizationServiceAccountsWorkspacesRemove(t *testing.T) {
 			"beta:organization:service-accounts:workspaces", "remove",
 			"--service-account-id", "service_account_id",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

@@ -22,7 +22,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -45,7 +45,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -78,7 +78,7 @@ func TestBetaSessionsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:sessions", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -92,7 +92,7 @@ func TestBetaSessionsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:sessions", "retrieve",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -111,7 +111,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -133,7 +133,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--metadata", "{foo: string}",
 			"--title", "Order #1234 inquiry",
 			"--vault-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -173,7 +173,7 @@ func TestBetaSessionsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:sessions", "update",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -200,7 +200,7 @@ func TestBetaSessionsList(t *testing.T) {
 			"--order", "asc",
 			"--page", "page",
 			"--status", "rescheduling",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -214,7 +214,7 @@ func TestBetaSessionsDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:sessions", "delete",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -228,7 +228,7 @@ func TestBetaSessionsArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:sessions", "archive",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

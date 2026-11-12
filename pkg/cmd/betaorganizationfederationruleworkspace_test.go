@@ -17,7 +17,7 @@ func TestBetaOrganizationFederationRulesWorkspacesList(t *testing.T) {
 			"--federation-rule-id", "federation_rule_id",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -31,7 +31,7 @@ func TestBetaOrganizationFederationRulesWorkspacesAdd(t *testing.T) {
 			"beta:organization:federation:rules:workspaces", "add",
 			"--federation-rule-id", "federation_rule_id",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -43,7 +43,7 @@ func TestBetaOrganizationFederationRulesWorkspacesAdd(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules:workspaces", "add",
 			"--federation-rule-id", "federation_rule_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -57,7 +57,7 @@ func TestBetaOrganizationFederationRulesWorkspacesRemove(t *testing.T) {
 			"beta:organization:federation:rules:workspaces", "remove",
 			"--federation-rule-id", "federation_rule_id",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

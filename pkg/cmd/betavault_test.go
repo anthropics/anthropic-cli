@@ -15,7 +15,7 @@ func TestBetaVaultsCreate(t *testing.T) {
 			"beta:vaults", "create",
 			"--display-name", "Example vault",
 			"--metadata", "{environment: production}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -30,7 +30,7 @@ func TestBetaVaultsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:vaults", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -44,7 +44,7 @@ func TestBetaVaultsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:vaults", "retrieve",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -60,7 +60,7 @@ func TestBetaVaultsUpdate(t *testing.T) {
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
 			"--display-name", "Example vault",
 			"--metadata", "{environment: production}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -76,7 +76,7 @@ func TestBetaVaultsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:vaults", "update",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -93,7 +93,7 @@ func TestBetaVaultsList(t *testing.T) {
 			"--include-archived=true",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -107,7 +107,7 @@ func TestBetaVaultsDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:vaults", "delete",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -121,7 +121,7 @@ func TestBetaVaultsArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:vaults", "archive",
 			"--vault-id", "vlt_011CZkZDLs7fYzm1hXNPeRjv",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

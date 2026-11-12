@@ -14,7 +14,7 @@ func TestBetaDeploymentRunsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployment-runs", "retrieve",
 			"--deployment-run-id", "deployment_run_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -37,7 +37,7 @@ func TestBetaDeploymentRunsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--trigger-type", "schedule",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

@@ -19,7 +19,7 @@ func TestBetaOrganizationPluginsInstallationSettingsList(t *testing.T) {
 			"--organization-id", "organization_id",
 			"--page", "page",
 			"--target-type", "organization",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -33,7 +33,7 @@ func TestBetaOrganizationPluginsInstallationSettingsRemove(t *testing.T) {
 			"beta:organization:plugins:installation-settings", "remove",
 			"--plugin-id", "plugin_id",
 			"--target", "target",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -48,7 +48,7 @@ func TestBetaOrganizationPluginsInstallationSettingsSet(t *testing.T) {
 			"--plugin-id", "plugin_id",
 			"--target", "target",
 			"--installation-preference", "required",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -61,7 +61,7 @@ func TestBetaOrganizationPluginsInstallationSettingsSet(t *testing.T) {
 			"beta:organization:plugins:installation-settings", "set",
 			"--plugin-id", "plugin_id",
 			"--target", "target",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

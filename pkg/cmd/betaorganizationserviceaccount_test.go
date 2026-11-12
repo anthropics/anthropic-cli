@@ -16,7 +16,7 @@ func TestBetaOrganizationServiceAccountsCreate(t *testing.T) {
 			"--name", "ci-deploy-bot",
 			"--description", "description",
 			"--organization-role", "admin",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -30,7 +30,7 @@ func TestBetaOrganizationServiceAccountsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:service-accounts", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -43,7 +43,7 @@ func TestBetaOrganizationServiceAccountsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:service-accounts", "retrieve",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -58,7 +58,7 @@ func TestBetaOrganizationServiceAccountsUpdate(t *testing.T) {
 			"--service-account-id", "service_account_id",
 			"--description", "description",
 			"--organization-role", "admin",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -72,7 +72,7 @@ func TestBetaOrganizationServiceAccountsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:service-accounts", "update",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -88,7 +88,7 @@ func TestBetaOrganizationServiceAccountsList(t *testing.T) {
 			"--include-archived=true",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -101,7 +101,7 @@ func TestBetaOrganizationServiceAccountsArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:service-accounts", "archive",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

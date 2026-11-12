@@ -19,7 +19,7 @@ func TestBetaOrganizationPluginsSharesList(t *testing.T) {
 			"--organization-id", "organization_id",
 			"--page", "page",
 			"--target-type", "organization",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

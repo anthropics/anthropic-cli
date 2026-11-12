@@ -14,7 +14,7 @@ func TestBetaModelsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:models", "retrieve",
 			"--model-id", "model_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -32,7 +32,7 @@ func TestBetaModelsList(t *testing.T) {
 			"--before-id", "before_id",
 			"--lifecycle", "active",
 			"--limit", "1",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

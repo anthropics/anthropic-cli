@@ -43,7 +43,7 @@ func TestBetaOrganizationAnalyticsCostList(t *testing.T) {
 			"--time-bucket-width", "1d",
 			"--user-profile-id", "uprof_01M33NeYUQK2WV9PpYcsPHLi",
 			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

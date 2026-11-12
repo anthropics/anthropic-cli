@@ -16,7 +16,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesRetrieve(t *testing.T) {
 			"beta:organization:claude-tag:slack-workspaces", "retrieve",
 			"--id", "slws_01Hq8TzW5mKc2YbX7vNd4RfJ",
 			"--include-inherited=true",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -30,7 +30,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesUpdate(t *testing.T) {
 			"beta:organization:claude-tag:slack-workspaces", "update",
 			"--id", "slws_01Hq8TzW5mKc2YbX7vNd4RfJ",
 			"--settings", "{enabled: true, environment_id: x, guest_policy: {type: allow}, instructions: instructions, model: x, reply_mode: {type: automatic}}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -50,7 +50,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesUpdate(t *testing.T) {
 			"--settings.instructions", "instructions",
 			"--settings.model", "x",
 			"--settings.reply-mode", "{type: automatic}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -71,7 +71,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:slack-workspaces", "update",
 			"--id", "slws_01Hq8TzW5mKc2YbX7vNd4RfJ",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -88,7 +88,7 @@ func TestBetaOrganizationClaudeTagSlackWorkspacesList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--slack-workspace-id", "slack_workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

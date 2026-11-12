@@ -15,7 +15,7 @@ func TestBetaTunnelsCertificatesCreate(t *testing.T) {
 			"beta:tunnels:certificates", "create",
 			"--tunnel-id", "tunnel_id",
 			"--ca-certificate-pem", "ca_certificate_pem",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -28,7 +28,7 @@ func TestBetaTunnelsCertificatesCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:tunnels:certificates", "create",
 			"--tunnel-id", "tunnel_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -43,7 +43,7 @@ func TestBetaTunnelsCertificatesRetrieve(t *testing.T) {
 			"beta:tunnels:certificates", "retrieve",
 			"--tunnel-id", "tunnel_id",
 			"--certificate-id", "certificate_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -61,7 +61,7 @@ func TestBetaTunnelsCertificatesList(t *testing.T) {
 			"--include-archived=true",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -76,7 +76,7 @@ func TestBetaTunnelsCertificatesArchive(t *testing.T) {
 			"beta:tunnels:certificates", "archive",
 			"--tunnel-id", "tunnel_id",
 			"--certificate-id", "certificate_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

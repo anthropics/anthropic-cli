@@ -19,7 +19,7 @@ func TestBetaFilesList(t *testing.T) {
 			"--limit", "1",
 			"--page", "page",
 			"--scope-id", "scope_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -33,7 +33,7 @@ func TestBetaFilesDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:files", "delete",
 			"--file-id", "file_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -47,7 +47,7 @@ func TestBetaFilesDownload(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:files", "download",
 			"--file-id", "file_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 			"--output", "/dev/null",
 		)
@@ -62,7 +62,7 @@ func TestBetaFilesRetrieveMetadata(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:files", "retrieve-metadata",
 			"--file-id", "file_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -77,7 +77,7 @@ func TestBetaFilesUpload(t *testing.T) {
 			"beta:files", "upload",
 			"--file", mocktest.TestFile(t, "Example data"),
 			"--expires-in-seconds", "3600",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -94,7 +94,7 @@ func TestBetaFilesUpload(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:files", "upload",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

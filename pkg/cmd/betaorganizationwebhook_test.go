@@ -17,7 +17,7 @@ func TestBetaOrganizationWebhooksCreate(t *testing.T) {
 			"--url", "x",
 			"--description", "description",
 			"--name", "name",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -33,7 +33,7 @@ func TestBetaOrganizationWebhooksCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -46,7 +46,7 @@ func TestBetaOrganizationWebhooksRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "retrieve",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -64,7 +64,7 @@ func TestBetaOrganizationWebhooksUpdate(t *testing.T) {
 			"--name", "name",
 			"--state", "disabled",
 			"--url", "x",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -82,7 +82,7 @@ func TestBetaOrganizationWebhooksUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "update",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -99,7 +99,7 @@ func TestBetaOrganizationWebhooksList(t *testing.T) {
 			"--before-id", "before_id",
 			"--limit", "0",
 			"--order", "asc",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -112,7 +112,7 @@ func TestBetaOrganizationWebhooksDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "delete",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -125,7 +125,7 @@ func TestBetaOrganizationWebhooksRegenerateSigningSecret(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "regenerate-signing-secret",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

@@ -20,7 +20,7 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 			"--external-user-onboarded-at", "'2019-12-27T18:11:19.117Z'",
 			"--metadata", "{}",
 			"--name", "Example User",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -46,7 +46,7 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 			"--external-user-onboarded-at", "'2019-12-27T18:11:19.117Z'",
 			"--metadata", "{}",
 			"--name", "Example User",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -71,7 +71,7 @@ func TestBetaUserProfilesCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:user-profiles", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -85,7 +85,7 @@ func TestBetaUserProfilesRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:user-profiles", "retrieve",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -105,7 +105,7 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 			"--external-user-onboarded-at", "'2019-12-27T18:11:19.117Z'",
 			"--metadata", "{foo: string}",
 			"--name", "x",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -132,7 +132,7 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 			"--external-user-onboarded-at", "'2019-12-27T18:11:19.117Z'",
 			"--metadata", "{foo: string}",
 			"--name", "x",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -159,7 +159,7 @@ func TestBetaUserProfilesUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:user-profiles", "update",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -177,7 +177,7 @@ func TestBetaUserProfilesList(t *testing.T) {
 			"--order", "asc",
 			"--order-by", "created_at",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -191,7 +191,7 @@ func TestBetaUserProfilesDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:user-profiles", "delete",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -205,7 +205,7 @@ func TestBetaUserProfilesCreateEnrollmentURL(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:user-profiles", "create-enrollment-url",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

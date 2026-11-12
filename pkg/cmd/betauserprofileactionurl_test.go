@@ -16,7 +16,7 @@ func TestBetaUserProfilesActionURLsCreate(t *testing.T) {
 			"beta:user-profiles:action-urls", "create",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
 			"--action", "{type: enroll_end_user}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -32,7 +32,7 @@ func TestBetaUserProfilesActionURLsCreate(t *testing.T) {
 			"beta:user-profiles:action-urls", "create",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
 			"--action.type", "enroll_end_user",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -47,7 +47,7 @@ func TestBetaUserProfilesActionURLsCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:user-profiles:action-urls", "create",
 			"--user-profile-id", "uprof_011CZkZCu8hGbp5mYRQgUmz9",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

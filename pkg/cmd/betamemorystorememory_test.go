@@ -18,7 +18,7 @@ func TestBetaMemoryStoresMemoriesCreate(t *testing.T) {
 			"--content", "content",
 			"--path", "/P",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -34,7 +34,7 @@ func TestBetaMemoryStoresMemoriesCreate(t *testing.T) {
 			"beta:memory-stores:memories", "create",
 			"--memory-store-id", "memory_store_id",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -50,7 +50,7 @@ func TestBetaMemoryStoresMemoriesRetrieve(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--memory-id", "memory_id",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -69,7 +69,7 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--content", "content",
 			"--path", "/P",
 			"--precondition", "{type: content_sha256, content_sha256: 210b9798eb53baa4e69d31c1071cf03d212b8ad0ca30cf321e0ea82e120aac26}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -90,7 +90,7 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--path", "/P",
 			"--precondition.type", "content_sha256",
 			"--precondition.content-sha256", "210b9798eb53baa4e69d31c1071cf03d212b8ad0ca30cf321e0ea82e120aac26",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -110,7 +110,7 @@ func TestBetaMemoryStoresMemoriesUpdate(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--memory-id", "memory_id",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -130,7 +130,7 @@ func TestBetaMemoryStoresMemoriesList(t *testing.T) {
 			"--page", "page",
 			"--path-prefix", "path_prefix",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -146,7 +146,7 @@ func TestBetaMemoryStoresMemoriesDelete(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--memory-id", "memory_id",
 			"--expected-content-sha256", "expected_content_sha256",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

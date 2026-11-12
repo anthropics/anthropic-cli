@@ -14,7 +14,7 @@ func TestBetaOrganizationClaudeTagBundlesRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:bundles", "retrieve",
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -29,7 +29,7 @@ func TestBetaOrganizationClaudeTagBundlesList(t *testing.T) {
 			"--max-items", "10",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
