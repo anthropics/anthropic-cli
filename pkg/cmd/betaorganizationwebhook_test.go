@@ -14,9 +14,10 @@ func TestBetaOrganizationWebhooksCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "create",
 			"--enabled-event", "user_profile.enforcement_action_opened",
-			"--url", "x",
+			"--enabled-event", "user_profile.enforcement_action_resolved",
+			"--url", "https://example.com/anthropic-webhooks",
 			"--description", "description",
-			"--name", "name",
+			"--name", "Enforcement actions",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
@@ -26,9 +27,10 @@ func TestBetaOrganizationWebhooksCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"enabled_events:\n" +
 			"  - user_profile.enforcement_action_opened\n" +
-			"url: x\n" +
+			"  - user_profile.enforcement_action_resolved\n" +
+			"url: https://example.com/anthropic-webhooks\n" +
 			"description: description\n" +
-			"name: name\n")
+			"name: Enforcement actions\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
