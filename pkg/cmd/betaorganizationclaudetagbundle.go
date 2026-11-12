@@ -18,10 +18,11 @@ var betaOrganizationClaudeTagBundlesRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:      "bundle-id",
-			Usage:     "The Bundle's identifier, starting with `capp_`.",
-			Required:  true,
-			PathParam: "bundle_id",
+			Name:        "bundle-id",
+			Usage:       "The Bundle's identifier, starting with `capp_`.",
+			Required:    true,
+			PathParam:   "bundle_id",
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
