@@ -1226,6 +1226,7 @@ func init() {
 				Suggest:  true,
 				Commands: []*cli.Command{
 					&betaOrganizationClaudeTagBundlesRetrieve,
+					&betaOrganizationClaudeTagBundlesUpdate,
 					&betaOrganizationClaudeTagBundlesList,
 				},
 			},

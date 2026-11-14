@@ -34,6 +34,33 @@ var betaOrganizationClaudeTagBundlesRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
+var betaOrganizationClaudeTagBundlesUpdate = cli.Command{
+	Name:    "update",
+	Usage:   "Change a Bundle's instructions. The update is partial: a field left out is\nunchanged, and `instructions` sent as null or as an empty string clears them.\nThe later of two updates wins. Sessions that start after the change use the new\ninstructions; sessions already running keep the ones they started with. Some\nBundles are managed in claude.ai, and an update of one returns 400.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:        "bundle-id",
+			Usage:       "The Bundle's identifier, starting with `capp_`.",
+			Required:    true,
+			PathParam:   "bundle_id",
+			DataAliases: []string{"id"},
+		},
+		&requestflag.Flag[*string]{
+			Name:     "instructions",
+			Usage:    "Instructions for Claude, up to 10,000 bytes (UTF-8), added to the instructions of every session that can use the Bundle. Null or an empty string clears them.",
+			BodyPath: "instructions",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "This endpoint is in beta: requests must send `experimental-claude-tag-2026-10-21` in this header.",
+			HeaderPath: "anthropic-beta",
+		},
+	},
+	Action:          handleBetaOrganizationClaudeTagBundlesUpdate,
+	HideHelpCommand: true,
+}
+
 var betaOrganizationClaudeTagBundlesList = cli.Command{
 	Name:    "list",
 	Usage:   "List the organization's Bundles, newest first by `created_at`. A Bundle that\nClaude Tag manages for itself is not listed.",
@@ -111,6 +138,55 @@ func handleBetaOrganizationClaudeTagBundlesRetrieve(ctx context.Context, cmd *cl
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
 		Title:          "beta:organization:claude-tag:bundles retrieve",
+		Transform:      transform,
+	})
+}
+
+func handleBetaOrganizationClaudeTagBundlesUpdate(ctx context.Context, cmd *cli.Command) error {
+	client := anthropic.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("bundle-id") && len(unusedArgs) > 0 {
+		cmd.Set("bundle-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatBrackets,
+		ApplicationJSON,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := anthropic.BetaOrganizationClaudeTagBundleUpdateParams{}
+
+	var res []byte
+	options = append(options, option.WithResponseBodyInto(&res))
+	_, err = client.Beta.Organization.ClaudeTag.Bundles.Update(
+		ctx,
+		cmd.Value("bundle-id").(string),
+		params,
+		options...,
+	)
+	if err != nil {
+		return err
+	}
+
+	obj := gjson.ParseBytes(res)
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "beta:organization:claude-tag:bundles update",
 		Transform:      transform,
 	})
 }
