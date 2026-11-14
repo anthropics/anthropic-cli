@@ -47,7 +47,7 @@ ____APPNAME___zsh_autocomplete() {
 # When installed in fpath (e.g., via Homebrew's zsh_completion stanza), this file
 # is autoloaded as the function ___APPNAME__ and its body becomes that function's
 # body. Detect that case via funcstack and dispatch to the completion function.
-# When sourced (e.g., `source <(__APPNAME__ @completion zsh)`), register the
+# When sourced (e.g., `source <(__APPNAME__ completion zsh)`), register the
 # function with compdef instead.
 if [[ "${funcstack[1]}" = "___APPNAME__" ]]; then
   ____APPNAME___zsh_autocomplete "$@"

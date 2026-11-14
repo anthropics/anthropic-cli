@@ -1,0 +1,5 @@
+# Shell completion scripts are embedded verbatim into the ant binary and
+# served via `ant completion <shell>`. They must stay LF-terminated so the
+# output is sourcable on Linux/macOS regardless of the platform the binary
+# was built on.
+internal/autocomplete/shellscripts/* text eol=lf
