@@ -9,6 +9,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/urfave/cli/v3"
+
+	"github.com/anthropics/anthropic-cli/internal/apiquery"
+	"github.com/anthropics/anthropic-cli/internal/requestflag"
 )
 
 func TestIsUTF8TextFile(t *testing.T) {
@@ -389,4 +393,95 @@ func writeTestFile(t *testing.T, dir, filename, content string) {
 
 	err := os.WriteFile(path, []byte(content), 0644)
 	require.NoError(t, err, "failed to write test file %s", path)
+}
+
+// TestFlagOptionsFileInputStdin covers the FileInput "-" idiom: a command like
+// `ant beta:files upload --file - < photo.png` must reserve stdin for the file
+// parameter instead of parsing the piped bytes as a YAML/JSON request body.
+func TestFlagOptionsFileInputStdin(t *testing.T) {
+	// Binary payload that is not a YAML map, like a real uploaded photo.
+	content := []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00")
+
+	pipeStdin := func(t *testing.T) {
+		t.Helper()
+		oldStdin := os.Stdin
+		t.Cleanup(func() {
+			os.Stdin = oldStdin
+		})
+		path := filepath.Join(t.TempDir(), "pipe.bin")
+		require.NoError(t, os.WriteFile(path, content, 0644))
+		pipe, err := os.Open(path)
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = pipe.Close() })
+		os.Stdin = pipe
+	}
+
+	uploadCmd := func(t *testing.T, multi bool) *cli.Command {
+		t.Helper()
+		var fileFlag cli.Flag
+		if multi {
+			fileFlag = &requestflag.Flag[[]string]{
+				Name:      "file",
+				BodyPath:  "files",
+				FileInput: true,
+			}
+		} else {
+			fileFlag = &requestflag.Flag[string]{
+				Name:      "file",
+				BodyPath:  "file",
+				FileInput: true,
+			}
+		}
+		c := &cli.Command{
+			Name: "upload",
+			Flags: []cli.Flag{
+				&cli.BoolFlag{Name: "debug"},
+				fileFlag,
+			},
+		}
+		require.NoError(t, c.Set("file", "-"))
+		return c
+	}
+
+	t.Run("ignoreStdin streams piped stdin as the file", func(t *testing.T) {
+		pipeStdin(t)
+
+		options, err := flagOptions(
+			uploadCmd(t, false),
+			apiquery.NestedQueryFormatBrackets,
+			apiquery.ArrayQueryFormatBrackets,
+			MultipartFormEncoded,
+			true,
+		)
+		require.NoError(t, err)
+		require.NotEmpty(t, options)
+	})
+
+	t.Run("ignoreStdin streams piped stdin for array file flags", func(t *testing.T) {
+		pipeStdin(t)
+
+		options, err := flagOptions(
+			uploadCmd(t, true),
+			apiquery.NestedQueryFormatBrackets,
+			apiquery.ArrayQueryFormatBrackets,
+			MultipartFormEncoded,
+			true,
+		)
+		require.NoError(t, err)
+		require.NotEmpty(t, options)
+	})
+
+	t.Run("without ignoreStdin piped binary is misparsed as YAML", func(t *testing.T) {
+		pipeStdin(t)
+
+		_, err := flagOptions(
+			uploadCmd(t, false),
+			apiquery.NestedQueryFormatBrackets,
+			apiquery.ArrayQueryFormatBrackets,
+			MultipartFormEncoded,
+			false,
+		)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "Cannot merge flags with a body that is not a map")
+	})
 }
