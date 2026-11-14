@@ -80,6 +80,17 @@ func init() {
 				Name:    "webhook-key",
 				Sources: cli.EnvVars("ANTHROPIC_WEBHOOK_SIGNING_KEY"),
 			},
+			&cli.IntFlag{
+				Name:  "max-retries",
+				Usage: "Maximum number of retries for failed API requests (0 to disable)",
+				Value: 3,
+				Validator: func(n int) error {
+					if n < 0 || n > 10 {
+						return fmt.Errorf("max-retries must be between 0 and 10")
+					}
+					return nil
+				},
+			},
 		},
 		Commands: []*cli.Command{
 			{
