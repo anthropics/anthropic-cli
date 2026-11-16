@@ -19,7 +19,7 @@ func TestBetaOrganizationTelemetryDestinationsCreate(t *testing.T) {
 			"--display-name", "display_name",
 			"--headers", "{foo: string}",
 			"--traces", "{content_mode: metadata_only, enabled: true, endpoint_url: endpoint_url, max_content_bytes: 0}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -40,7 +40,7 @@ func TestBetaOrganizationTelemetryDestinationsCreate(t *testing.T) {
 			"--traces.enabled=true",
 			"--traces.endpoint-url", "endpoint_url",
 			"--traces.max-content-bytes", "0",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -62,7 +62,7 @@ func TestBetaOrganizationTelemetryDestinationsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -75,7 +75,7 @@ func TestBetaOrganizationTelemetryDestinationsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "retrieve",
 			"--destination-id", "destination_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -94,7 +94,7 @@ func TestBetaOrganizationTelemetryDestinationsUpdate(t *testing.T) {
 			"--state", "{type: enabled}",
 			"--traces", "{content_mode: metadata_only, enabled: true, endpoint_url: endpoint_url, max_content_bytes: 0}",
 			"--workspaces", "{type: all}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -117,7 +117,7 @@ func TestBetaOrganizationTelemetryDestinationsUpdate(t *testing.T) {
 			"--traces.endpoint-url", "endpoint_url",
 			"--traces.max-content-bytes", "0",
 			"--workspaces", "{type: all}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -142,7 +142,7 @@ func TestBetaOrganizationTelemetryDestinationsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "update",
 			"--destination-id", "destination_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -158,7 +158,7 @@ func TestBetaOrganizationTelemetryDestinationsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--workspace-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -171,7 +171,7 @@ func TestBetaOrganizationTelemetryDestinationsDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "delete",
 			"--destination-id", "destination_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -184,7 +184,7 @@ func TestBetaOrganizationTelemetryDestinationsTest(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "test",
 			"--destination-id", "destination_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

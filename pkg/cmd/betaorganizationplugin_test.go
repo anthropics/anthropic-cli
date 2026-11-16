@@ -17,7 +17,7 @@ func TestBetaOrganizationPluginsCreate(t *testing.T) {
 			"--file", mocktest.TestFile(t, "Example data"),
 			"--marketplace-id", "marketplace_id",
 			"--release-notes", "release_notes",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -35,7 +35,7 @@ func TestBetaOrganizationPluginsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:plugins", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -49,7 +49,7 @@ func TestBetaOrganizationPluginsRetrieve(t *testing.T) {
 			"beta:organization:plugins", "retrieve",
 			"--plugin-id", "plugin_id",
 			"--organization-id", "organization_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -63,7 +63,7 @@ func TestBetaOrganizationPluginsUpdate(t *testing.T) {
 			"beta:organization:plugins", "update",
 			"--plugin-id", "plugin_id",
 			"--served-version-id", "pluginver_01KaZmQpRsTuVwXyZ2b4c6d8",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -75,7 +75,7 @@ func TestBetaOrganizationPluginsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:plugins", "update",
 			"--plugin-id", "plugin_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -98,7 +98,7 @@ func TestBetaOrganizationPluginsList(t *testing.T) {
 			"--owner-type", "organization",
 			"--owner-user-id", "owner_user_id",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -111,7 +111,7 @@ func TestBetaOrganizationPluginsDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:plugins", "delete",
 			"--plugin-id", "plugin_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

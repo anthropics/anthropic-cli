@@ -15,7 +15,7 @@ func TestBetaMessagesBatchesCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages:batches", "create",
 			"--request", "{custom_id: my-custom-id-1, params: {max_tokens: 1024, messages: [{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}], model: claude-opus-5-5, cache_control: {type: ephemeral, ttl: 5m}, compaction: {type: summarize, instructions: instructions}, container: {id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}, context_management: {edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}, diagnostics: {previous_message_id: previous_message_id}, fallback_credit_token: x, fallbacks: default, inference_geo: inference_geo, mcp_servers: [{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}], metadata: {user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}, output_format: {schema: {foo: bar}, type: json_schema}, service_tier: auto, speed: standard, stop_sequences: [string], stream: false, system: [{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], thinking: {type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}, thread: {type: create}, tool_choice: {type: auto, disable_parallel_tool_use: true}, tools: [{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}]}}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -32,7 +32,7 @@ func TestBetaMessagesBatchesCreate(t *testing.T) {
 			"beta:messages:batches", "create",
 			"--request.custom-id", "my-custom-id-1",
 			"--request.params", "{max_tokens: 1024, messages: [{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}], model: claude-opus-5-5, cache_control: {type: ephemeral, ttl: 5m}, compaction: {type: summarize, instructions: instructions}, container: {id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}, context_management: {edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}, diagnostics: {previous_message_id: previous_message_id}, fallback_credit_token: x, fallbacks: default, inference_geo: inference_geo, mcp_servers: [{name: name, type: url, url: url, authorization_token: authorization_token, tool_configuration: {allowed_tools: [string], enabled: true}}], metadata: {user_id: 13803d75-b4b5-4c3e-b2a2-6f21399b021b}, output_config: {effort: low, format: {schema: {foo: bar}, type: json_schema}, task_budget: {total: 1024, type: tokens, remaining: 0}}, output_format: {schema: {foo: bar}, type: json_schema}, service_tier: auto, speed: standard, stop_sequences: [string], stream: false, system: [{text: Today's date is 2024-06-01., type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], thinking: {type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}, thread: {type: create}, tool_choice: {type: auto, disable_parallel_tool_use: true}, tools: [{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}]}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -171,7 +171,7 @@ func TestBetaMessagesBatchesCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages:batches", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -186,7 +186,7 @@ func TestBetaMessagesBatchesRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages:batches", "retrieve",
 			"--message-batch-id", "message_batch_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -203,7 +203,7 @@ func TestBetaMessagesBatchesList(t *testing.T) {
 			"--after-id", "after_id",
 			"--before-id", "before_id",
 			"--limit", "1",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -217,7 +217,7 @@ func TestBetaMessagesBatchesDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages:batches", "delete",
 			"--message-batch-id", "message_batch_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -231,7 +231,7 @@ func TestBetaMessagesBatchesCancel(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages:batches", "cancel",
 			"--message-batch-id", "message_batch_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -246,7 +246,7 @@ func TestBetaMessagesBatchesResults(t *testing.T) {
 			"beta:messages:batches", "results",
 			"--max-items", "10",
 			"--message-batch-id", "message_batch_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

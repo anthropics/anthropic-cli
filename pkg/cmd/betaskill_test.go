@@ -16,7 +16,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 			"beta:skills", "create",
 			"--file", mocktest.TestFile(t, "Example data"),
 			"--display-name", "display_name",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -34,7 +34,7 @@ func TestBetaSkillsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:skills", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -48,7 +48,7 @@ func TestBetaSkillsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:skills", "retrieve",
 			"--skill-id", "skill_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -65,7 +65,7 @@ func TestBetaSkillsList(t *testing.T) {
 			"--limit", "1",
 			"--page", "page",
 			"--source", "source",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -79,7 +79,7 @@ func TestBetaSkillsDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:skills", "delete",
 			"--skill-id", "skill_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

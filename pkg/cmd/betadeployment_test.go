@@ -24,7 +24,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--resource", "{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}",
 			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -51,7 +51,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			"--schedule.timezone", "America/Los_Angeles",
 			"--schedule.type", "cron",
 			"--vault-id", "string",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -89,7 +89,7 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -103,7 +103,7 @@ func TestBetaDeploymentsRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "retrieve",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -127,7 +127,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--resource", "[{file_id: file_011CNha8iCJcU1wXNR6q4V8w, type: file, mount_path: /uploads/receipt.pdf}]",
 			"--schedule", "{expression: 0 9 * * 1-5, timezone: America/Los_Angeles, type: cron}",
 			"--vault-id", "[string]",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -155,7 +155,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--schedule.timezone", "America/Los_Angeles",
 			"--schedule.type", "cron",
 			"--vault-id", "[string]",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -194,7 +194,7 @@ func TestBetaDeploymentsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "update",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -215,7 +215,7 @@ func TestBetaDeploymentsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--status", "active",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -229,7 +229,7 @@ func TestBetaDeploymentsArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "archive",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -243,7 +243,7 @@ func TestBetaDeploymentsPause(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "pause",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -257,7 +257,7 @@ func TestBetaDeploymentsRun(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "run",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -271,7 +271,7 @@ func TestBetaDeploymentsUnpause(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "unpause",
 			"--deployment-id", "depl_011CZkZcDH3vPqd7xnEfwTai",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

@@ -15,7 +15,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsCreate(t *testing.T) {
 			"beta:organization:claude-tag:bundles:targets", "create",
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
 			"--target", "{slack_channel_id: xxxxxxxx, type: slack_channel}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -29,7 +29,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:bundles:targets", "create",
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -43,7 +43,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsRetrieve(t *testing.T) {
 			"beta:organization:claude-tag:bundles:targets", "retrieve",
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
 			"--target-id", "btgt_01SvpyRQK3nN6eH9uhRA7n1qHq8TzW5mKc2YbX7vNd4RfJ",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -59,7 +59,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsList(t *testing.T) {
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -73,7 +73,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsDelete(t *testing.T) {
 			"beta:organization:claude-tag:bundles:targets", "delete",
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
 			"--target-id", "btgt_01SvpyRQK3nN6eH9uhRA7n1qHq8TzW5mKc2YbX7vNd4RfJ",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

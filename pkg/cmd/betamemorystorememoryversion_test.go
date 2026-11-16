@@ -16,7 +16,7 @@ func TestBetaMemoryStoresMemoryVersionsRetrieve(t *testing.T) {
 			"--memory-store-id", "memory_store_id",
 			"--memory-version-id", "memory_version_id",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -41,7 +41,7 @@ func TestBetaMemoryStoresMemoryVersionsList(t *testing.T) {
 			"--service-account-id", "service_account_id",
 			"--session-id", "session_id",
 			"--view", "basic",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -56,7 +56,7 @@ func TestBetaMemoryStoresMemoryVersionsRedact(t *testing.T) {
 			"beta:memory-stores:memory-versions", "redact",
 			"--memory-store-id", "memory_store_id",
 			"--memory-version-id", "memory_version_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

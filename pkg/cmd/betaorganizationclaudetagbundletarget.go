@@ -68,10 +68,11 @@ var betaOrganizationClaudeTagBundlesTargetsRetrieve = cli.Command{
 			PathParam: "bundle_id",
 		},
 		&requestflag.Flag[string]{
-			Name:      "target-id",
-			Usage:     "The Bundle Target's identifier, starting with `btgt_`. Attach Bundle and List Bundle Targets return it. It is never the identifier of the channel or workspace.",
-			Required:  true,
-			PathParam: "target_id",
+			Name:        "target-id",
+			Usage:       "The Bundle Target's identifier, starting with `btgt_`. Attach Bundle and List Bundle Targets return it. It is never the identifier of the channel or workspace.",
+			Required:    true,
+			PathParam:   "target_id",
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",
@@ -130,10 +131,11 @@ var betaOrganizationClaudeTagBundlesTargetsDelete = cli.Command{
 			PathParam: "bundle_id",
 		},
 		&requestflag.Flag[string]{
-			Name:      "target-id",
-			Usage:     "The Bundle Target's identifier, starting with `btgt_`. Attach Bundle and List Bundle Targets return it. It is never the identifier of the channel or workspace.",
-			Required:  true,
-			PathParam: "target_id",
+			Name:        "target-id",
+			Usage:       "The Bundle Target's identifier, starting with `btgt_`. Attach Bundle and List Bundle Targets return it. It is never the identifier of the channel or workspace.",
+			Required:    true,
+			PathParam:   "target_id",
+			DataAliases: []string{"id"},
 		},
 		&requestflag.Flag[[]string]{
 			Name:       "beta",

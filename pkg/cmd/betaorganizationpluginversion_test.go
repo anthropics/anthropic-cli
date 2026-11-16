@@ -17,7 +17,7 @@ func TestBetaOrganizationPluginsVersionsCreate(t *testing.T) {
 			"--plugin-id", "plugin_id",
 			"--file", mocktest.TestFile(t, "Example data"),
 			"--release-notes", "release_notes",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -35,7 +35,7 @@ func TestBetaOrganizationPluginsVersionsCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:plugins:versions", "create",
 			"--plugin-id", "plugin_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -50,7 +50,7 @@ func TestBetaOrganizationPluginsVersionsRetrieve(t *testing.T) {
 			"--plugin-id", "plugin_id",
 			"--version", "version",
 			"--organization-id", "organization_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -67,7 +67,7 @@ func TestBetaOrganizationPluginsVersionsList(t *testing.T) {
 			"--limit", "1",
 			"--organization-id", "organization_id",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -82,7 +82,7 @@ func TestBetaOrganizationPluginsVersionsDownload(t *testing.T) {
 			"--plugin-id", "plugin_id",
 			"--version", "version",
 			"--organization-id", "organization_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--output", "/dev/null",
 		)
 	})

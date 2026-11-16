@@ -16,7 +16,7 @@ func TestBetaSkillsVersionsCreate(t *testing.T) {
 			"beta:skills:versions", "create",
 			"--skill-id", "skill_id",
 			"--file", mocktest.TestFile(t, "Example data"),
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -34,7 +34,7 @@ func TestBetaSkillsVersionsCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:skills:versions", "create",
 			"--skill-id", "skill_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -49,7 +49,7 @@ func TestBetaSkillsVersionsRetrieve(t *testing.T) {
 			"beta:skills:versions", "retrieve",
 			"--skill-id", "skill_id",
 			"--version", "version",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -66,7 +66,7 @@ func TestBetaSkillsVersionsList(t *testing.T) {
 			"--skill-id", "skill_id",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -81,7 +81,7 @@ func TestBetaSkillsVersionsDelete(t *testing.T) {
 			"beta:skills:versions", "delete",
 			"--skill-id", "skill_id",
 			"--version", "version",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -96,7 +96,7 @@ func TestBetaSkillsVersionsDownload(t *testing.T) {
 			"beta:skills:versions", "download",
 			"--skill-id", "skill_id",
 			"--version", "version",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 			"--output", "/dev/null",
 		)

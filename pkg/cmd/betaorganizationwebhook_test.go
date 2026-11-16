@@ -14,10 +14,11 @@ func TestBetaOrganizationWebhooksCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "create",
 			"--enabled-event", "user_profile.enforcement_action_opened",
-			"--url", "x",
+			"--enabled-event", "user_profile.enforcement_action_resolved",
+			"--url", "https://example.com/anthropic-webhooks",
 			"--description", "description",
-			"--name", "name",
-			"--beta", "message-batches-2024-09-24",
+			"--name", "Enforcement actions",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -26,14 +27,15 @@ func TestBetaOrganizationWebhooksCreate(t *testing.T) {
 		pipeData := []byte("" +
 			"enabled_events:\n" +
 			"  - user_profile.enforcement_action_opened\n" +
-			"url: x\n" +
+			"  - user_profile.enforcement_action_resolved\n" +
+			"url: https://example.com/anthropic-webhooks\n" +
 			"description: description\n" +
-			"name: name\n")
+			"name: Enforcement actions\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -46,7 +48,7 @@ func TestBetaOrganizationWebhooksRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "retrieve",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -64,7 +66,7 @@ func TestBetaOrganizationWebhooksUpdate(t *testing.T) {
 			"--name", "name",
 			"--state", "disabled",
 			"--url", "x",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -82,7 +84,7 @@ func TestBetaOrganizationWebhooksUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "update",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -99,7 +101,7 @@ func TestBetaOrganizationWebhooksList(t *testing.T) {
 			"--before-id", "before_id",
 			"--limit", "0",
 			"--order", "asc",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -112,7 +114,7 @@ func TestBetaOrganizationWebhooksDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "delete",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -125,7 +127,7 @@ func TestBetaOrganizationWebhooksRegenerateSigningSecret(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:webhooks", "regenerate-signing-secret",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

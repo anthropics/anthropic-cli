@@ -14,13 +14,13 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "create",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--data-residency", "{allowed_inference_geos: unrestricted, default_inference_geo: global, workspace_geo: us}",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -33,7 +33,7 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "create",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--data-residency.allowed-inference-geos", "unrestricted",
 			"--data-residency.default-inference-geo", "global",
 			"--data-residency.workspace-geo", "us",
@@ -41,14 +41,14 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"name: x\n" +
+			"name: Workspace Name\n" +
 			"data_residency:\n" +
 			"  allowed_inference_geos: unrestricted\n" +
 			"  default_inference_geo: global\n" +
@@ -63,7 +63,7 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -91,7 +91,7 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"--data-residency", "{allowed_inference_geos: unrestricted, default_inference_geo: global}",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
 		)
@@ -111,7 +111,7 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"--data-residency.default-inference-geo", "global",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
 		)
@@ -125,7 +125,7 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"  default_inference_geo: global\n" +
 			"display_color: '#6C5BB9'\n" +
 			"external_key_id: ekey_01SDCCSbTxrXDpWc1phhtcfK\n" +
-			"name: x\n" +
+			"name: Workspace Name\n" +
 			"tags:\n" +
 			"  env: prod\n" +
 			"  team: platform\n" +

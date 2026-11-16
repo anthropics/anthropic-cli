@@ -15,7 +15,7 @@ func TestBetaSessionsThreadsRetrieve(t *testing.T) {
 			"beta:sessions:threads", "retrieve",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--thread-id", "sthr_011CZkZVWa6oJjw1rgXZpnBt",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -33,7 +33,7 @@ func TestBetaSessionsThreadsList(t *testing.T) {
 			"--limit", "0",
 			"--page", "page",
 			"--status", "running",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -48,7 +48,7 @@ func TestBetaSessionsThreadsArchive(t *testing.T) {
 			"beta:sessions:threads", "archive",
 			"--session-id", "sesn_011CZkZAtmR3yMPDzynEDxu7",
 			"--thread-id", "sthr_011CZkZVWa6oJjw1rgXZpnBt",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

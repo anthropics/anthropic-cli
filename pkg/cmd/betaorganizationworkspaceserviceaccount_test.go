@@ -15,7 +15,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsRetrieve(t *testing.T) {
 			"beta:organization:workspaces:service-accounts", "retrieve",
 			"--workspace-id", "workspace_id",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -30,7 +30,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsUpdate(t *testing.T) {
 			"--workspace-id", "workspace_id",
 			"--service-account-id", "service_account_id",
 			"--workspace-role", "workspace_admin",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -43,7 +43,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsUpdate(t *testing.T) {
 			"beta:organization:workspaces:service-accounts", "update",
 			"--workspace-id", "workspace_id",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -59,7 +59,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsList(t *testing.T) {
 			"--workspace-id", "workspace_id",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -74,7 +74,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsAdd(t *testing.T) {
 			"--workspace-id", "workspace_id",
 			"--service-account-id", "service_account_id",
 			"--workspace-role", "workspace_admin",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -88,7 +88,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsAdd(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces:service-accounts", "add",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -102,7 +102,7 @@ func TestBetaOrganizationWorkspacesServiceAccountsRemove(t *testing.T) {
 			"beta:organization:workspaces:service-accounts", "remove",
 			"--workspace-id", "workspace_id",
 			"--service-account-id", "service_account_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

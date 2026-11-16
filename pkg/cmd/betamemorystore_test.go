@@ -16,7 +16,7 @@ func TestBetaMemoryStoresCreate(t *testing.T) {
 			"--name", "x",
 			"--description", "description",
 			"--metadata", "{foo: string}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -32,7 +32,7 @@ func TestBetaMemoryStoresCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:memory-stores", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -46,7 +46,7 @@ func TestBetaMemoryStoresRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:memory-stores", "retrieve",
 			"--memory-store-id", "memory_store_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -63,7 +63,7 @@ func TestBetaMemoryStoresUpdate(t *testing.T) {
 			"--description", "description",
 			"--metadata", "{foo: string}",
 			"--name", "x",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -80,7 +80,7 @@ func TestBetaMemoryStoresUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:memory-stores", "update",
 			"--memory-store-id", "memory_store_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -99,7 +99,7 @@ func TestBetaMemoryStoresList(t *testing.T) {
 			"--include-archived=true",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -113,7 +113,7 @@ func TestBetaMemoryStoresDelete(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:memory-stores", "delete",
 			"--memory-store-id", "memory_store_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -127,7 +127,7 @@ func TestBetaMemoryStoresArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:memory-stores", "archive",
 			"--memory-store-id", "memory_store_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

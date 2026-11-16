@@ -39,7 +39,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--thread", "{type: create}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -88,7 +88,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--thread", "{type: create}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -225,7 +225,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages", "create",
 			"--max-items", "10",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -252,7 +252,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--thinking", "{type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -289,7 +289,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"--thinking", "{type: adaptive, block_binding: {prefix_mismatch_behavior: error}, display: summarized}",
 			"--tool-choice", "{type: auto, disable_parallel_tool_use: true}",
 			"--tool", "{input_schema: {type: object, properties: {location: bar, unit: bar}, required: [location]}, name: name, allowed_callers: [direct], cache_control: {type: ephemeral, ttl: 5m}, defer_loading: true, description: Get the current weather in a given location, eager_input_streaming: true, input_examples: [{foo: bar}], strict: true, type: custom}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
@@ -405,7 +405,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:messages", "count-tokens",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--user-profile-id", "anthropic-user-profile-id",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)

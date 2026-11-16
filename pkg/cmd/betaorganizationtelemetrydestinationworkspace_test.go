@@ -17,7 +17,7 @@ func TestBetaOrganizationTelemetryDestinationsWorkspacesList(t *testing.T) {
 			"--destination-id", "destination_id",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -31,7 +31,7 @@ func TestBetaOrganizationTelemetryDestinationsWorkspacesAdd(t *testing.T) {
 			"beta:organization:telemetry-destinations:workspaces", "add",
 			"--destination-id", "destination_id",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -45,7 +45,7 @@ func TestBetaOrganizationTelemetryDestinationsWorkspacesRemove(t *testing.T) {
 			"beta:organization:telemetry-destinations:workspaces", "remove",
 			"--destination-id", "destination_id",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

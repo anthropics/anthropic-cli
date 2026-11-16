@@ -18,7 +18,7 @@ func TestBetaOrganizationFederationIssuersCreate(t *testing.T) {
 			"--check-jti=true",
 			"--jwks", "{type: discovery, ca_cert_pem: ca_cert_pem, discovery_base: discovery_base}",
 			"--max-jwt-lifetime-seconds", "1",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -37,7 +37,7 @@ func TestBetaOrganizationFederationIssuersCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:issuers", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -50,7 +50,7 @@ func TestBetaOrganizationFederationIssuersRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:issuers", "retrieve",
 			"--federation-issuer-id", "federation_issuer_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -69,7 +69,7 @@ func TestBetaOrganizationFederationIssuersUpdate(t *testing.T) {
 			"--jwks-polling-disabled=true",
 			"--max-jwt-lifetime-seconds", "1",
 			"--name", "x",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -90,7 +90,7 @@ func TestBetaOrganizationFederationIssuersUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:issuers", "update",
 			"--federation-issuer-id", "federation_issuer_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -106,7 +106,7 @@ func TestBetaOrganizationFederationIssuersList(t *testing.T) {
 			"--include-archived=true",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -119,7 +119,7 @@ func TestBetaOrganizationFederationIssuersArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:issuers", "archive",
 			"--federation-issuer-id", "federation_issuer_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

@@ -13,7 +13,7 @@ func TestOrganizationWorkspacesCreate(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"organization:workspaces", "create",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--data-residency", "{allowed_inference_geos: unrestricted, default_inference_geo: global, workspace_geo: us}",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
@@ -30,7 +30,7 @@ func TestOrganizationWorkspacesCreate(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"organization:workspaces", "create",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--data-residency.allowed-inference-geos", "unrestricted",
 			"--data-residency.default-inference-geo", "global",
 			"--data-residency.workspace-geo", "us",
@@ -44,7 +44,7 @@ func TestOrganizationWorkspacesCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"name: x\n" +
+			"name: Workspace Name\n" +
 			"data_residency:\n" +
 			"  allowed_inference_geos: unrestricted\n" +
 			"  default_inference_geo: global\n" +
@@ -83,7 +83,7 @@ func TestOrganizationWorkspacesUpdate(t *testing.T) {
 			"--data-residency", "{allowed_inference_geos: unrestricted, default_inference_geo: global}",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
 		)
@@ -102,7 +102,7 @@ func TestOrganizationWorkspacesUpdate(t *testing.T) {
 			"--data-residency.default-inference-geo", "global",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
-			"--name", "x",
+			"--name", "Workspace Name",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
 		)
@@ -116,7 +116,7 @@ func TestOrganizationWorkspacesUpdate(t *testing.T) {
 			"  default_inference_geo: global\n" +
 			"display_color: '#6C5BB9'\n" +
 			"external_key_id: ekey_01SDCCSbTxrXDpWc1phhtcfK\n" +
-			"name: x\n" +
+			"name: Workspace Name\n" +
 			"tags:\n" +
 			"  env: prod\n" +
 			"  team: platform\n" +

@@ -24,7 +24,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -52,7 +52,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -82,7 +82,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules", "create",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -95,7 +95,7 @@ func TestBetaOrganizationFederationRulesRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules", "retrieve",
 			"--federation-rule-id", "federation_rule_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -117,7 +117,7 @@ func TestBetaOrganizationFederationRulesUpdate(t *testing.T) {
 			"--target", "{service_account_id: svac_01SDCCSbTxrXDpWc1phhtcfK, type: service_account, service_account_name: service_account_name}",
 			"--token-lifetime-seconds", "60",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -145,7 +145,7 @@ func TestBetaOrganizationFederationRulesUpdate(t *testing.T) {
 			"--target.service-account-name", "service_account_name",
 			"--token-lifetime-seconds", "60",
 			"--workspace-id", "workspace_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -175,7 +175,7 @@ func TestBetaOrganizationFederationRulesUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules", "update",
 			"--federation-rule-id", "federation_rule_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -192,7 +192,7 @@ func TestBetaOrganizationFederationRulesList(t *testing.T) {
 			"--issuer-id", "issuer_id",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -205,7 +205,7 @@ func TestBetaOrganizationFederationRulesArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules", "archive",
 			"--federation-rule-id", "federation_rule_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

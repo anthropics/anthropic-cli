@@ -15,7 +15,7 @@ func TestBetaEnvironmentsWorkRetrieve(t *testing.T) {
 			"beta:environments:work", "retrieve",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -31,7 +31,7 @@ func TestBetaEnvironmentsWorkUpdate(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
 			"--metadata", "{foo: string}",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -47,7 +47,7 @@ func TestBetaEnvironmentsWorkUpdate(t *testing.T) {
 			"beta:environments:work", "update",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -64,7 +64,7 @@ func TestBetaEnvironmentsWorkList(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--limit", "1",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -78,7 +78,7 @@ func TestBetaEnvironmentsWorkAck(t *testing.T) {
 			"beta:environments:work", "ack",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -94,7 +94,7 @@ func TestBetaEnvironmentsWorkHeartbeat(t *testing.T) {
 			"--work-id", "work_id",
 			"--desired-ttl-seconds", "0",
 			"--expected-last-heartbeat", "expected_last_heartbeat",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -109,7 +109,7 @@ func TestBetaEnvironmentsWorkPoll(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--block-ms", "1",
 			"--reclaim-older-than-ms", "1",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--anthropic-worker-id", "Anthropic-Worker-ID",
 		)
 	})
@@ -123,7 +123,7 @@ func TestBetaEnvironmentsWorkStats(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:environments:work", "stats",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -139,7 +139,7 @@ func TestBetaEnvironmentsWorkStop(t *testing.T) {
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
 			"--force=true",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
@@ -153,7 +153,7 @@ func TestBetaEnvironmentsWorkStop(t *testing.T) {
 			"beta:environments:work", "stop",
 			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
 			"--work-id", "work_id",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})

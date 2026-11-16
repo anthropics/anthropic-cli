@@ -17,7 +17,7 @@ func TestBetaAgentsVersionsList(t *testing.T) {
 			"--agent-id", "agent_011CZkYpogX7uDKUyvBTophP",
 			"--limit", "0",
 			"--page", "page",
-			"--beta", "message-batches-2024-09-24",
+			"--beta", "computer-use-2024-10-22",
 			"--workspace-id", "wrkspc_011CZkZaBF1tNoB5wlCeusgy",
 		)
 	})
