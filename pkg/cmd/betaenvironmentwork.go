@@ -14,7 +14,7 @@ import (
 
 var betaEnvironmentsWorkRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Note: these endpoints are called automatically by the pre-built environment\nworker provided in the SDKs and CLI, for orchestrating sessions with self-hosted\nsandbox environments. They are included here as a reference; you do not need to\ninvoke them directly.",
+	Usage:   "Retrieve detailed information about a specific work item.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -44,7 +44,7 @@ var betaEnvironmentsWorkRetrieve = cli.Command{
 
 var betaEnvironmentsWorkUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Note: these endpoints are called automatically by the pre-built environment\nworker provided in the SDKs and CLI, for orchestrating sessions with self-hosted\nsandbox environments. They are included here as a reference; you do not need to\ninvoke them directly.",
+	Usage:   "Update work item metadata with merge semantics.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -80,7 +80,7 @@ var betaEnvironmentsWorkUpdate = cli.Command{
 
 var betaEnvironmentsWorkList = cli.Command{
 	Name:    "list",
-	Usage:   "Note: these endpoints are called automatically by the pre-built environment\nworker provided in the SDKs and CLI, for orchestrating sessions with self-hosted\nsandbox environments. They are included here as a reference; you do not need to\ninvoke them directly.",
+	Usage:   "List work items in an environment.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -235,7 +235,7 @@ var betaEnvironmentsWorkStats = cli.Command{
 
 var betaEnvironmentsWorkStop = cli.Command{
 	Name:    "stop",
-	Usage:   "Note: these endpoints are called automatically by the pre-built environment\nworker provided in the SDKs and CLI, for orchestrating sessions with self-hosted\nsandbox environments. They are included here as a reference; you do not need to\ninvoke them directly.",
+	Usage:   "Stop a work item, initiating graceful or forced shutdown.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
