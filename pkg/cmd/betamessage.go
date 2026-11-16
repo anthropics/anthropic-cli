@@ -36,6 +36,11 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			BodyPath: "model",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "billing-policy",
+			Usage:    "Declares which organization is billed for the request.",
+			BodyPath: "billing_policy",
+		},
+		&requestflag.Flag[map[string]any]{
 			Name:     "cache-control",
 			BodyPath: "cache_control",
 		},
@@ -177,6 +182,18 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "message.output-config",
 			Usage:      "Per-message output configuration on a role:\"system\" input message.\n\nFields here apply per-turn; ``format`` remains top-level only. An\nempty ``{}`` is accepted on a message that carries content; a message\nwith neither content nor output_config fields is rejected.",
 			InnerField: "output_config",
+		},
+	},
+	"billing-policy": {
+		&requestflag.InnerFlag[string]{
+			Name:       "billing-policy.type",
+			Usage:      `Allowed values: "billing_policy".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "billing-policy.bill-to",
+			Usage:      "Who is billed for a request.",
+			InnerField: "bill_to",
 		},
 	},
 	"cache-control": {
@@ -518,6 +535,11 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			BodyPath: "model",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "billing-policy",
+			Usage:    "Declares which organization is billed for the request.",
+			BodyPath: "billing_policy",
+		},
+		&requestflag.Flag[map[string]any]{
 			Name:     "cache-control",
 			BodyPath: "cache_control",
 		},
@@ -606,6 +628,18 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 			Name:       "message.output-config",
 			Usage:      "Per-message output configuration on a role:\"system\" input message.\n\nFields here apply per-turn; ``format`` remains top-level only. An\nempty ``{}`` is accepted on a message that carries content; a message\nwith neither content nor output_config fields is rejected.",
 			InnerField: "output_config",
+		},
+	},
+	"billing-policy": {
+		&requestflag.InnerFlag[string]{
+			Name:       "billing-policy.type",
+			Usage:      `Allowed values: "billing_policy".`,
+			InnerField: "type",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "billing-policy.bill-to",
+			Usage:      "Who is billed for a request.",
+			InnerField: "bill_to",
 		},
 	},
 	"cache-control": {
