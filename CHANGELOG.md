@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.10.0](https://github.com/anthropics/anthropic-cli/compare/v2.9.0...v2.10.0) (2026-11-16)
+
+### Features
+
+* **api:** add Update Bundle, which sets a Claude Tag Bundle's instructions, and return instructions on Bundle
+* **api:** let the CLI fill Claude Tag bundle and target IDs from output
+
+
+### Bug Fixes
+
+* **sessions:** keep the viewer's one-time link out of the browser opener's arguments
+
+  `ant beta:sessions connect --web` now opens a temporary file that only you can read, and that file sends the browser on to the viewer. If the browser shows an error instead, because it can't read the temp directory, paste the link printed in the terminal into it.
+
+
+### Chores
+
+* bump go sdk to v2.10.0
+* **docs:** add an example value for the workspace name
+* **docs:** clarify which workspaces an external key can be attached to
+* **docs:** say when organization_id is required on plugin reads
+
 ## [2.9.0](https://github.com/anthropics/anthropic-cli/compare/v2.8.0...v2.9.0) (2026-11-10)
 
 ### Features
