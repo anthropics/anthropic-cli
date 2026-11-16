@@ -62,7 +62,7 @@ func TestBetaOrganizationWebhooksUpdate(t *testing.T) {
 			"beta:organization:webhooks", "update",
 			"--webhook-endpoint-id", "webhook_endpoint_id",
 			"--description", "description",
-			"--enabled-event", "user_profile.enforcement_action_opened",
+			"--enabled-event", "external_key.failed",
 			"--name", "name",
 			"--state", "disabled",
 			"--url", "x",
@@ -75,7 +75,7 @@ func TestBetaOrganizationWebhooksUpdate(t *testing.T) {
 		pipeData := []byte("" +
 			"description: description\n" +
 			"enabled_events:\n" +
-			"  - user_profile.enforcement_action_opened\n" +
+			"  - external_key.failed\n" +
 			"name: name\n" +
 			"state: disabled\n" +
 			"url: x\n")
