@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.11.0](https://github.com/anthropics/anthropic-cli/compare/v2.10.0...v2.11.0) (2026-11-17)
+
+### Features
+
+* **api:** add beta support for the billing_policy request parameter
+* **api:** add webhook events for external key failure and recovery
+
+
+### Chores
+
+* bump go sdk to v2.11.0
+* **deps:** bump urfave/cli to v3.4.1
+* **docs:** clarify which AWS KMS keys a workspace can use on Claude Platform on AWS
+* **docs:** clarify which credential work get, update and list accept
+* **docs:** clarify which uploads a plugin pin holds back
+
 ## [2.10.0](https://github.com/anthropics/anthropic-cli/compare/v2.9.0...v2.10.0) (2026-11-16)
 
 ### Features
