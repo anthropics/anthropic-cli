@@ -72,7 +72,7 @@ var betaOrganizationPluginsRetrieve = cli.Command{
 
 var betaOrganizationPluginsUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Change which stored version of an organization-owned Plugin is served to\nmembers, for example to roll back to an earlier one. This pins the served\nversion: later uploads are stored but no longer change what is served, and\npinning cannot currently be undone, here or in claude.ai.",
+	Usage:   "Change which stored version of an organization-owned Plugin is served to\nmembers, for example to roll back to an earlier one. This pins the served\nversion: later uploads through this API are stored but no longer change what is\nserved, and pinning cannot currently be undone, here or in claude.ai.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
