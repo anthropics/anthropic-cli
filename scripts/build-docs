@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Mark the necessary Go modules as private to avoid Go's proxy
+export GOPRIVATE="${GOPRIVATE:+$GOPRIVATE,}github.com/anthropics/anthropic-sdk-go/v2,github.com/anthropics/*"
+
+mkdir -p completions
+for shell in bash zsh fish; do
+  go run ./cmd/ant/main.go @completion "$shell" >"completions/ant.$shell"
+done
+go run ./cmd/ant/main.go @manpages -o man
