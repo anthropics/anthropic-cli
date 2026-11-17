@@ -60,7 +60,7 @@ var organizationExternalKeysCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "provider-config.kms-arn",
-			Usage:      "Full ARN of the AWS KMS key. On Claude Platform on AWS, alias ARNs are rejected, and your organization's own key must be a single-Region key in your organization's AWS account.",
+			Usage:      "Full ARN of the AWS KMS key. On Claude Platform on AWS, alias ARNs are rejected, and your organization's own key must be a single-Region key.",
 			InnerField: "kms_arn",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -145,7 +145,7 @@ var organizationExternalKeysUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "provider-config.kms-arn",
-			Usage:      "Full ARN of the AWS KMS key. On Claude Platform on AWS, alias ARNs are rejected, and your organization's own key must be a single-Region key in your organization's AWS account.",
+			Usage:      "Full ARN of the AWS KMS key. On Claude Platform on AWS, alias ARNs are rejected, and your organization's own key must be a single-Region key.",
 			InnerField: "kms_arn",
 		},
 		&requestflag.InnerFlag[*string]{

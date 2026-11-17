@@ -18,6 +18,7 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--max-tokens", "1024",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-5-5",
+			"--billing-policy", "{type: billing_policy, bill_to: self}",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--compaction", "{type: summarize, instructions: instructions}",
 			"--container", "{id: id, skills: [{skill_id: pdf, type: anthropic, version: latest}]}",
@@ -58,6 +59,8 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"--max-tokens", "1024",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-5-5",
+			"--billing-policy.type", "billing_policy",
+			"--billing-policy.bill-to", "self",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
 			"--compaction.type", "summarize",
@@ -114,6 +117,9 @@ func TestBetaMessagesCreate(t *testing.T) {
 			"            type: char_location\n" +
 			"    role: user\n" +
 			"model: claude-opus-5-5\n" +
+			"billing_policy:\n" +
+			"  type: billing_policy\n" +
+			"  bill_to: self\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +
@@ -241,6 +247,7 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"beta:messages", "count-tokens",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-5-5",
+			"--billing-policy", "{type: billing_policy, bill_to: self}",
 			"--cache-control", "{type: ephemeral, ttl: 5m}",
 			"--compaction", "{type: summarize, instructions: instructions}",
 			"--context-management", "{edits: [{type: clear_tool_uses_20250919, clear_at_least: {type: input_tokens, value: 0}, clear_tool_inputs: true, exclude_tools: [string], keep: {type: tool_uses, value: 0}, trigger: {type: input_tokens, value: 1}}]}",
@@ -269,6 +276,8 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"beta:messages", "count-tokens",
 			"--message", "{content: [{text: x, type: text, cache_control: {type: ephemeral, ttl: 5m}, citations: [{cited_text: The grass is green. The sky is blue., document_index: 0, document_title: x, end_char_index: 0, start_char_index: 0, type: char_location}]}], role: user}",
 			"--model", "claude-opus-5-5",
+			"--billing-policy.type", "billing_policy",
+			"--billing-policy.bill-to", "self",
 			"--cache-control.type", "ephemeral",
 			"--cache-control.ttl", "5m",
 			"--compaction.type", "summarize",
@@ -314,6 +323,9 @@ func TestBetaMessagesCountTokens(t *testing.T) {
 			"            type: char_location\n" +
 			"    role: user\n" +
 			"model: claude-opus-5-5\n" +
+			"billing_policy:\n" +
+			"  type: billing_policy\n" +
+			"  bill_to: self\n" +
 			"cache_control:\n" +
 			"  type: ephemeral\n" +
 			"  ttl: 5m\n" +
