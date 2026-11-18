@@ -89,8 +89,8 @@ type Flag[
 
 	// Const, when true, marks this flag as a constant. The flag's Default value is used as the fixed value
 	// and always included in the request (IsSet returns true). The user can still see and override the flag,
-	// but isn't required to provide it. This is used for single-value enums and `x-stainless-const`
-	// parameters.
+	// but isn't required to provide it. This is used for required parameters that the spec fixes to one value,
+	// such as an OpenAPI `const` or a discriminator.
 	Const bool
 
 	// FileInput, when true, indicates that the flag value is always treated as a file path. The file is read
