@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.12.0](https://github.com/anthropics/anthropic-cli/compare/v2.11.0...v2.12.0) (2026-11-19)
+
+### Features
+
+* **api:** add Claude Code managed settings to the Admin API
+
+
+### Chores
+
+* bump go sdk to v2.12.0
+* **docs:** explain how the input-token rate limit types differ
+* **internal:** correct the comment on constant flags
+
 ## [2.11.0](https://github.com/anthropics/anthropic-cli/compare/v2.10.0...v2.11.0) (2026-11-17)
 
 ### Features
