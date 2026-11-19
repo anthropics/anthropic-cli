@@ -1199,6 +1199,35 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:claude-code:managed-settings:configuration",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationClaudeCodeManagedSettingsConfigurationRetrieve,
+					&betaOrganizationClaudeCodeManagedSettingsConfigurationUpdate,
+				},
+			},
+			{
+				Name:     "beta:organization:claude-code:managed-settings:rbac-groups",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationClaudeCodeManagedSettingsRBACGroupsRetrieve,
+					&betaOrganizationClaudeCodeManagedSettingsRBACGroupsList,
+					&betaOrganizationClaudeCodeManagedSettingsRBACGroupsDelete,
+					&betaOrganizationClaudeCodeManagedSettingsRBACGroupsSet,
+				},
+			},
+			{
+				Name:     "beta:organization:claude-code:managed-settings:rbac-group-default",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationClaudeCodeManagedSettingsRBACGroupDefaultRetrieve,
+					&betaOrganizationClaudeCodeManagedSettingsRBACGroupDefaultUpdate,
+				},
+			},
+			{
 				Name:     "beta:organization:claude-tag:slack-channels",
 				Category: "API RESOURCE",
 				Suggest:  true,
