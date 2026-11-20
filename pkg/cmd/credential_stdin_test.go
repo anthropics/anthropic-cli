@@ -229,7 +229,7 @@ func TestAuthStatusEnvOverrideWarning(t *testing.T) {
 func TestMultiAuthWarningNamesStdin(t *testing.T) {
 	resetWarnOnce(t)
 	out := captureStderr(t, func() {
-		warnIfMultipleAuthSources("--api-key-stdin", "", false, false, false, false, false, true, "", "")
+		warnIfMultipleAuthSources("--api-key-stdin", "", false, false, false, false, false, false, true, "", "")
 	})
 	assert.Contains(t, out, "using --api-key-stdin per precedence")
 	assert.NotContains(t, out, "ANTHROPIC_API_KEY")

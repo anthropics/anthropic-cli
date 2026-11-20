@@ -119,6 +119,20 @@ The CLI doesn't refresh the token, so set it again when it expires.
 
 `--foundry-resource` also sets the resource, and `--foundry-api-key-stdin` and `--foundry-auth-token-stdin` read the key or the token from standard input. A key, a token or `--foundry-resource` selects Foundry; `ANTHROPIC_FOUNDRY_RESOURCE` on its own doesn't, since a Claude Code setup can export it with no key or token. When both a key and a token are set, the piped one is used; when both come from the environment, the token is used, as in Claude Code, and the CLI prints a note. `ANTHROPIC_API_KEY`, an auth token, a profile named with `--profile`, Google Cloud settings and AWS settings take precedence, and `ant auth status` shows which is in use. Foundry credentials are sent only to your resource, so `--base-url` and `ANTHROPIC_BASE_URL` are not used. `ANTHROPIC_CUSTOM_HEADERS` is not applied either. To send requests to another URL, set `--foundry-base-url` (`ANTHROPIC_FOUNDRY_BASE_URL`) in place of the resource, and include the `/anthropic` path. [Claude in Microsoft Foundry](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry) lists the features available there. `ant beta:worker` is not supported on Foundry.
 
+### Claude in Amazon Bedrock
+
+Name your region; the CLI then sends requests to the Amazon Bedrock Messages API endpoint, signed with your AWS credentials. Model IDs carry the `anthropic.` prefix there:
+
+```sh
+export ANTHROPIC_BEDROCK_REGION=ap-northeast-1
+ant messages create \
+  --max-tokens 1024 \
+  --message '{role: user, content: "Hello, Claude"}' \
+  --model anthropic.claude-opus-5-5
+```
+
+The same setting is available as `--bedrock-region`. Either it or a key piped to `--bedrock-api-key-stdin` selects Bedrock; `AWS_REGION`, `AWS_PROFILE` and `AWS_BEARER_TOKEN_BEDROCK` on their own don't, since other tools set them for their own use. The region defaults to `AWS_REGION`, then `AWS_DEFAULT_REGION`. Any credentials the AWS default credential chain finds are used, including `AWS_PROFILE`, environment keys and an IAM role. To use a Bedrock API key instead, set `AWS_BEARER_TOKEN_BEDROCK` or pipe it to `--bedrock-api-key-stdin`. `ANTHROPIC_API_KEY`, an auth token, a profile named with `--profile`, Google Cloud settings, AWS settings and Foundry settings take precedence, and `ant auth status` shows which is in use. AWS credentials are sent only to the endpoint, so `--base-url` and `ANTHROPIC_BASE_URL` are not used. `ANTHROPIC_CUSTOM_HEADERS` is not applied either. To send requests to another URL, set `--bedrock-base-url` (`ANTHROPIC_BEDROCK_MANTLE_BASE_URL`). Bedrock serves the Messages API only (`messages` and `beta:messages`): the other resources, `ant apply` and `ant beta:worker` are not available there.
+
 ## Requirements
 
 macOS, Linux, or Windows.
