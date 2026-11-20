@@ -13,8 +13,8 @@ func TestBetaOrganizationFederationIssuersCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:issuers", "create",
-			"--issuer-url", "x",
-			"--name", "x",
+			"--issuer-url", "https://token.actions.githubusercontent.com",
+			"--name", "github-actions",
 			"--check-jti=true",
 			"--jwks", "{type: discovery, ca_cert_pem: ca_cert_pem, discovery_base: discovery_base}",
 			"--max-jwt-lifetime-seconds", "1",
@@ -25,8 +25,8 @@ func TestBetaOrganizationFederationIssuersCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"issuer_url: x\n" +
-			"name: x\n" +
+			"issuer_url: https://token.actions.githubusercontent.com\n" +
+			"name: github-actions\n" +
 			"check_jti: true\n" +
 			"jwks:\n" +
 			"  type: discovery\n" +

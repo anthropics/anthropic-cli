@@ -14,16 +14,16 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules", "create",
-			"--issuer-id", "issuer_id",
-			"--match", "{audience: audience, claims: {foo: string}, condition: condition, subject_prefix: subject_prefix}",
-			"--name", "x",
-			"--oauth-scope", "x",
+			"--issuer-id", "fdis_01SDCCSbTxrXDpWc1phhtcfK",
+			"--match", "{audience: audience, claims: {event_name: push, ref: refs/heads/main, repository_id: '123456789', repository_owner_id: '987654321'}, condition: condition, subject_prefix: subject_prefix}",
+			"--name", "prod-deploy-pipeline",
+			"--oauth-scope", "workspace:developer",
 			"--target", "{service_account_id: svac_01SDCCSbTxrXDpWc1phhtcfK, type: service_account, service_account_name: service_account_name}",
 			"--applies-to-all-workspaces=true",
 			"--attributes", "{foo: string}",
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
-			"--workspace-id", "workspace_id",
+			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
@@ -37,13 +37,13 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules", "create",
-			"--issuer-id", "issuer_id",
+			"--issuer-id", "fdis_01SDCCSbTxrXDpWc1phhtcfK",
 			"--match.audience", "audience",
-			"--match.claims", "{foo: string}",
+			"--match.claims", "{event_name: push, ref: refs/heads/main, repository_id: '123456789', repository_owner_id: '987654321'}",
 			"--match.condition", "condition",
 			"--match.subject-prefix", "subject_prefix",
-			"--name", "x",
-			"--oauth-scope", "x",
+			"--name", "prod-deploy-pipeline",
+			"--oauth-scope", "workspace:developer",
 			"--target.service-account-id", "svac_01SDCCSbTxrXDpWc1phhtcfK",
 			"--target.type", "service_account",
 			"--target.service-account-name", "service_account_name",
@@ -51,7 +51,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"--attributes", "{foo: string}",
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
-			"--workspace-id", "workspace_id",
+			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
@@ -59,15 +59,18 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"issuer_id: issuer_id\n" +
+			"issuer_id: fdis_01SDCCSbTxrXDpWc1phhtcfK\n" +
 			"match:\n" +
 			"  audience: audience\n" +
 			"  claims:\n" +
-			"    foo: string\n" +
+			"    event_name: push\n" +
+			"    ref: refs/heads/main\n" +
+			"    repository_id: '123456789'\n" +
+			"    repository_owner_id: '987654321'\n" +
 			"  condition: condition\n" +
 			"  subject_prefix: subject_prefix\n" +
-			"name: x\n" +
-			"oauth_scope: x\n" +
+			"name: prod-deploy-pipeline\n" +
+			"oauth_scope: workspace:developer\n" +
 			"target:\n" +
 			"  service_account_id: svac_01SDCCSbTxrXDpWc1phhtcfK\n" +
 			"  type: service_account\n" +
@@ -77,7 +80,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"  foo: string\n" +
 			"description: description\n" +
 			"token_lifetime_seconds: 60\n" +
-			"workspace_id: workspace_id\n")
+			"workspace_id: wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
