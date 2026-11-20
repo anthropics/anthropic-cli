@@ -105,6 +105,9 @@ func embedFilesValue(v reflect.Value, embedStyle FileEmbedStyle, stdin *onceStdi
 		}
 		v = v.Elem()
 	}
+	if v.Kind() == reflect.Pointer && !v.IsNil() && v.Elem().Kind() == reflect.String {
+		v = v.Elem()
+	}
 
 	switch v.Kind() {
 	case reflect.Map:
