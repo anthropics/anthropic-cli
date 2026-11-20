@@ -14,7 +14,7 @@ import (
 
 var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
-	Usage:   "Create User Profile",
+	Usage:   "Register one of your end customers and get the ID to send on the requests you\nmake for them.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -101,7 +101,7 @@ var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 
 var betaUserProfilesRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Get User Profile",
+	Usage:   "Get a user profile by ID to check the details stored for it.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -128,7 +128,7 @@ var betaUserProfilesRetrieve = cli.Command{
 
 var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
-	Usage:   "Update User Profile",
+	Usage:   "Change the details of a user profile, leaving the fields that you don't send as\nthey are.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -222,7 +222,7 @@ var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 
 var betaUserProfilesList = cli.Command{
 	Name:    "list",
-	Usage:   "List User Profiles",
+	Usage:   "List the user profiles in your organization, newest first by default.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[int64]{
@@ -266,7 +266,7 @@ var betaUserProfilesList = cli.Command{
 
 var betaUserProfilesDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Delete User Profile",
+	Usage:   "Delete a user profile, for example when the end customer closes their account.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -293,7 +293,7 @@ var betaUserProfilesDelete = cli.Command{
 
 var betaUserProfilesCreateEnrollmentURL = cli.Command{
 	Name:    "create-enrollment-url",
-	Usage:   "Create Enrollment URL",
+	Usage:   "Create a link that sends the profile's end customer to the Verification Portal\nfrom Claude Platform on AWS.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
