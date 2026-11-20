@@ -121,7 +121,7 @@ jobs:
           args: build --snapshot --clean --id macos --id linux --id windows
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Kept apart from the default GOCACHE so setup-go's go.sum-keyed cache never picks up compile output.
+          # Kept apart from the default GOCACHE so setup-go's cache never picks up compile output.
           GOCACHE: ${{ runner.temp }}/go-build-cache
 
       # Go bumps the mtime of entries it reuses, so this keeps only what this build used and bounds the saved cache.
