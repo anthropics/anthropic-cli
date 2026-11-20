@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.12.1](https://github.com/anthropics/anthropic-cli/compare/v2.12.0...v2.12.1) (2026-11-20)
+
+### Chores
+
+* bump go sdk to v2.13.0
+
 ## [2.12.0](https://github.com/anthropics/anthropic-cli/compare/v2.11.0...v2.12.0) (2026-11-19)
 
 ### Features
