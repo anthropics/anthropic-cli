@@ -38,6 +38,11 @@ var betaOrganizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 			BodyPath: "external_key_id",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "inference-data-privacy",
+			Usage:    "Where the Workspace's retained inference data and transcript copies go, and\nwhether Anthropic's human review applies. A member cannot be null; omit it\ninstead.",
+			BodyPath: "inference_data_privacy",
+		},
+		&requestflag.Flag[map[string]any]{
 			Name:     "tags",
 			Usage:    "User-defined tags as string key-value pairs. Keys may not begin with `anthropic`.",
 			BodyPath: "tags",
@@ -73,6 +78,21 @@ var betaOrganizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 			InnerField: "workspace_geo",
 		},
 	},
+	"inference-data-privacy": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "inference-data-privacy.human-review",
+			Usage:      "Whether Anthropic's human review applies to the Workspace's inference\ndata.",
+			InnerField: "human_review",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "inference-data-privacy.safeguards-storage",
+			InnerField: "safeguards_storage",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "inference-data-privacy.transcripts-storage",
+			InnerField: "transcripts_storage",
+		},
+	},
 })
 
 var betaOrganizationWorkspacesRetrieve = cli.Command{
@@ -85,6 +105,11 @@ var betaOrganizationWorkspacesRetrieve = cli.Command{
 			Usage:     "ID of the Workspace.",
 			Required:  true,
 			PathParam: "workspace_id",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional. Send `efs-2026-10-01` in this header to use this endpoint's beta features: additional parameters, accepted values and response fields.",
+			HeaderPath: "anthropic-beta",
 		},
 	},
 	Action:          handleBetaOrganizationWorkspacesRetrieve,
@@ -115,6 +140,11 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "ID of the customer-managed encryption key (CMEK) configuration to use for this\nWorkspace. Setting this field requires CMEK to be enabled for your\norganization. When set, data stored for this Workspace is encrypted with the\nreferenced key. Create key configurations with the External Keys API. On\nClaude Platform on AWS the value for an AWS KMS key is the key's ARN, and your\norganization's own key must be a single-Region key in the same Region as the\nWorkspace. If that key is outside the Workspace's AWS account, it can be attached\nonly by updating an active Workspace. On that platform the key is validated\nagainst this Workspace when it is attached, so a key-policy problem is reported\nas an error on this request. This field is write-once: once a key is attached to\na Workspace it cannot be detached or replaced. To rotate key material, rotate\nthe underlying key on your cloud KMS; the `external_key_id` stays the same.",
 			BodyPath: "external_key_id",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "inference-data-privacy",
+			Usage:    "Changes to where the Workspace's retained inference data and transcript\ncopies go, and to whether Anthropic's human review applies. An omitted member\nis unchanged; a member cannot be null.",
+			BodyPath: "inference_data_privacy",
+		},
 		&requestflag.Flag[string]{
 			Name:     "name",
 			Usage:    "Name of the Workspace.",
@@ -130,6 +160,11 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 			Usage:    "ID of a user profile to attach to the Workspace. Every inference request through the Workspace must then name this user profile; the API rejects a request that names none or a different one. Once set, it can't be replaced or removed (sending the same ID again changes nothing); only deleting the user profile clears it. It can't be set on a Workspace whose External Key isn't bound to this user profile. The default Workspace can't have a user profile.",
 			BodyPath: "user_profile_id",
 		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional. Send `efs-2026-10-01` in this header to use this endpoint's beta features: additional parameters, accepted values and response fields.",
+			HeaderPath: "anthropic-beta",
+		},
 	},
 	Action:          handleBetaOrganizationWorkspacesUpdate,
 	HideHelpCommand: true,
@@ -144,6 +179,21 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 			Name:       "data-residency.default-inference-geo",
 			Usage:      "Default inference geo applied when requests omit the parameter. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.",
 			InnerField: "default_inference_geo",
+		},
+	},
+	"inference-data-privacy": {
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "inference-data-privacy.human-review",
+			Usage:      "Whether Anthropic's human review applies to the Workspace's inference\ndata.",
+			InnerField: "human_review",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "inference-data-privacy.safeguards-storage",
+			InnerField: "safeguards_storage",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "inference-data-privacy.transcripts-storage",
+			InnerField: "transcripts_storage",
 		},
 	},
 })
@@ -186,6 +236,11 @@ var betaOrganizationWorkspacesList = cli.Command{
 			Default:   20,
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional. Send `efs-2026-10-01` in this header to use this endpoint's beta features: additional parameters, accepted values and response fields.",
+			HeaderPath: "anthropic-beta",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
@@ -204,6 +259,11 @@ var betaOrganizationWorkspacesArchive = cli.Command{
 			Name:      "workspace-id",
 			Required:  true,
 			PathParam: "workspace_id",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional. Send `efs-2026-10-01` in this header to use this endpoint's beta features: additional parameters, accepted values and response fields.",
+			HeaderPath: "anthropic-beta",
 		},
 	},
 	Action:          handleBetaOrganizationWorkspacesArchive,
@@ -273,9 +333,16 @@ func handleBetaOrganizationWorkspacesRetrieve(ctx context.Context, cmd *cli.Comm
 		return err
 	}
 
+	params := anthropic.BetaOrganizationWorkspaceGetParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Organization.Workspaces.Get(ctx, cmd.Value("workspace-id").(string), options...)
+	_, err = client.Beta.Organization.Workspaces.Get(
+		ctx,
+		cmd.Value("workspace-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}
@@ -428,9 +495,16 @@ func handleBetaOrganizationWorkspacesArchive(ctx context.Context, cmd *cli.Comma
 		return err
 	}
 
+	params := anthropic.BetaOrganizationWorkspaceArchiveParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Organization.Workspaces.Archive(ctx, cmd.Value("workspace-id").(string), options...)
+	_, err = client.Beta.Organization.Workspaces.Archive(
+		ctx,
+		cmd.Value("workspace-id").(string),
+		params,
+		options...,
+	)
 	if err != nil {
 		return err
 	}

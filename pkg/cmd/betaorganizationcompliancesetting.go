@@ -13,10 +13,16 @@ import (
 )
 
 var betaOrganizationComplianceSettingsRetrieve = cli.Command{
-	Name:            "retrieve",
-	Usage:           "Retrieve your organization's Compliance Settings.",
-	Suggest:         true,
-	Flags:           []cli.Flag{},
+	Name:    "retrieve",
+	Usage:   "Retrieve your organization's Compliance Settings.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional. Send `efs-2026-10-01` in this header to use this endpoint's beta features: additional parameters, accepted values and response fields.",
+			HeaderPath: "anthropic-beta",
+		},
+	},
 	Action:          handleBetaOrganizationComplianceSettingsRetrieve,
 	HideHelpCommand: true,
 }
@@ -30,6 +36,11 @@ var betaOrganizationComplianceSettingsUpdate = requestflag.WithInnerFlags(cli.Co
 			Name:     "state",
 			Required: true,
 			BodyPath: "state",
+		},
+		&requestflag.Flag[[]string]{
+			Name:       "beta",
+			Usage:      "Optional. Send `efs-2026-10-01` in this header to use this endpoint's beta features: additional parameters, accepted values and response fields.",
+			HeaderPath: "anthropic-beta",
 		},
 	},
 	Action:          handleBetaOrganizationComplianceSettingsUpdate,
@@ -63,9 +74,11 @@ func handleBetaOrganizationComplianceSettingsRetrieve(ctx context.Context, cmd *
 		return err
 	}
 
+	params := anthropic.BetaOrganizationComplianceSettingGetParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Beta.Organization.ComplianceSettings.Get(ctx, options...)
+	_, err = client.Beta.Organization.ComplianceSettings.Get(ctx, params, options...)
 	if err != nil {
 		return err
 	}

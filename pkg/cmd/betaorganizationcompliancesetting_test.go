@@ -13,6 +13,7 @@ func TestBetaOrganizationComplianceSettingsRetrieve(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:compliance-settings", "retrieve",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -25,6 +26,7 @@ func TestBetaOrganizationComplianceSettingsUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:compliance-settings", "update",
 			"--state", "{type: enabled}",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -37,6 +39,7 @@ func TestBetaOrganizationComplianceSettingsUpdate(t *testing.T) {
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:compliance-settings", "update",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
