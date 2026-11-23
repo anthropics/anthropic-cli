@@ -18,6 +18,8 @@ release holds the sandboxes of one environment, in a namespace of its own.
   a complete settings file for each kind of cluster.
 - `chart_test.go` — renders the chart with `helm` for each kind of cluster and
   checks what an install depends on.
+- `install-agent-sandbox.sh` — installs the Agent Sandbox controller on a
+  cluster other than GKE ([Install the controller](#install-the-controller)).
 
 ## Prerequisites
 
@@ -38,8 +40,7 @@ Autopilot default, sets `gke.dns: cloudDns`. The optional hostname egress
 mode needs Dataplane V2.
 
 **EKS.** Install the upstream Agent Sandbox controller with its extensions
-(`kubectl apply -f` the release's `sandbox.yaml` and `extensions.yaml`, or the
-Helm chart with `controller.extensions=true`). Create a node group for
+([Install the controller](#install-the-controller)). Create a node group for
 sandboxes with gVisor's `runsc` installed and registered as a containerd
 handler named `runsc`, labelled and tainted
 `cma.anthropic.com/sandbox-node=true`; with `platform: eks` the chart
@@ -51,8 +52,9 @@ gVisor or another sandboxed runtime, whose name goes in `runtimeClass.name`,
 and a NetworkPolicy-enforcing CNI.
 
 **Which controller version.** The recipe has run on upstream release v1.0.1
-and on the add-on as GKE 1.35 ships it. Install the upstream controller from
-one release's files, by version, and pin its image by digest. The controller
+and on the add-on as GKE 1.35 ships it. On a cluster other than GKE,
+[install-agent-sandbox.sh](#install-the-controller) installs that release with
+its image pinned by digest. The controller
 creates every sandbox pod in the cluster, in every namespace, so treat a new
 version as a change to the sandbox boundary. Before you move to one:
 
@@ -68,6 +70,58 @@ Google upgrades the GKE add-on with the cluster, so step 3 is what you have
 there: run `preflight` after every cluster upgrade. It reads the template as
 the cluster stores it and dry-run-creates a sandbox, so a changed schema or
 admission policy fails a check.
+
+### Install the controller
+
+On every cluster but GKE, which has the add-on, run the script once before the
+chart, from a checkout of this repository at the tag of the sandboxes release you
+install, `sandboxes-v<version>`, as a cluster administrator:
+
+```sh
+sh sandboxes/kubernetes/install-agent-sandbox.sh --context CONTEXT
+```
+
+It downloads the Agent Sandbox release's manifest, refuses it if its SHA-256
+is not the recorded one, applies it with the controller's image pinned by
+digest, and waits up to three minutes for the controller to start. It needs
+`kubectl`, `curl`, `awk`, `mktemp`, `tr` and `sha256sum` or `shasum`.
+
+If the cluster already has a controller or its CustomResourceDefinitions, the
+script changes nothing and prints what it found, unless the controller's image
+names the recorded digest. An image named by tag alone does not count.
+
+Add `--replace` to put this script's version in place of a controller that you
+installed with the script or with `kubectl apply`, or to finish a first run that
+stopped part way. It installs without looking, even over a newer release or
+beside a controller in another namespace, so first look with
+`kubectl --context CONTEXT get deployments --all-namespaces`. Then download the
+manifest from the address that `--help` prints, save a copy as `dry-run.yaml`,
+and in the copy replace the controller's image with the one `--help` prints,
+which carries the digest, or with your `--image` copy followed by `@` and that
+digest. Ask the cluster what it would refuse. This changes nothing:
+
+```sh
+kubectl --context CONTEXT apply --server-side --dry-run=server -f dry-run.yaml
+```
+
+If the cluster refuses an object, do not use `--replace`: it would stop part
+way. A line that begins `Warning: failed to migrate` is no refusal. After a
+first run that stopped part way, an error that the namespace was not found is
+expected. Also check that the manifest still serves every API version that
+other applications use. Change a controller that Helm or another
+tool manages with that tool alone.
+
+Where GitHub or `registry.k8s.io` is out of reach, download the manifest
+elsewhere, copy the image to your registry, and name both copies. `IMAGE` is
+the image as `--help` prints it, and `COPY` is its name in your registry. A
+copy with another digest leaves the controller in `ImagePullBackOff`. Pass the
+same `--image` on every later run, or the controller moves back to
+`registry.k8s.io`:
+
+```sh
+docker buildx imagetools create --tag COPY IMAGE
+sh sandboxes/kubernetes/install-agent-sandbox.sh --context CONTEXT --manifest sandbox-with-extensions.yaml --image COPY
+```
 
 ## Install
 
