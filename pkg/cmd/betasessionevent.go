@@ -48,7 +48,7 @@ var betaSessionsEventsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by the event's `processed_at`. Defaults to `asc` (chronological).",
+			Usage:     "Sort direction for results, ordered by the event's `processed_at`. Defaults to `asc` (chronological).\n\nAllowed values: \"asc\", \"desc\".",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
@@ -147,7 +147,7 @@ var betaSessionsEventsSend = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "event.result",
-			Usage:      "The confirmation result: 'allow' or 'deny'.",
+			Usage:      "The confirmation result: 'allow' or 'deny'.\n\nAllowed values: \"allow\", \"deny\".",
 			InnerField: "result",
 		},
 		&requestflag.InnerFlag[map[string]any]{

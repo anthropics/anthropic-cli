@@ -26,7 +26,7 @@ var userProfilesActionURLsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "action",
-			Usage:    "The end-user that the profile represents enrolls in a program.",
+			Usage:    "The action that the person who opens the URL takes.",
 			Required: true,
 			BodyPath: "action",
 		},

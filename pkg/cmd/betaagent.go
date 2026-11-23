@@ -36,7 +36,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "execution-identity",
-			Usage:    "Execution principal for runs of this agent: `service_account` (the default) or `aws_role`.",
+			Usage:    "Execution principal for runs of this agent. Omitting it, sending null, or sending `{\"type\": \"service_account\"}` stores the default.",
 			BodyPath: "execution_identity",
 		},
 		&requestflag.Flag[[]map[string]any]{
@@ -101,7 +101,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "model.speed",
-			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Defaults to `standard`. Not all models support `fast`; invalid combinations are rejected at create time.",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Defaults to `standard`. Not all models support `fast`; invalid combinations are rejected at create time.\n\nAllowed values: \"standard\", \"fast\".",
 			InnerField: "speed",
 		},
 	},
@@ -142,7 +142,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "multiagent.advisor",
-			Usage:      "Whether the session's primary thread can consult an advisor model.",
+			Usage:      "Whether the session's primary thread can consult an advisor model. Defaults to disabled.",
 			InnerField: "advisor",
 		},
 		&requestflag.InnerFlag[[]any]{
@@ -152,12 +152,12 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "multiagent.subagents",
-			Usage:      "Whether the agent can spawn session threads.",
+			Usage:      "Whether the agent can spawn session threads. Defaults to enabled.",
 			InnerField: "subagents",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "multiagent.workflows",
-			Usage:      "Whether the agent can start workflow runs.",
+			Usage:      "Whether the agent can start workflow runs. Defaults to enabled.",
 			InnerField: "workflows",
 		},
 	},
@@ -199,7 +199,7 @@ var betaAgentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.input-schema",
-			Usage:      "JSON Schema for custom tool input parameters.",
+			Usage:      "JSON Schema defining the expected input parameters for the tool.",
 			InnerField: "input_schema",
 		},
 		&requestflag.InnerFlag[string]{
@@ -265,7 +265,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "execution-identity",
-			Usage:    "Execution principal for runs of this agent: `service_account` (the default) or `aws_role`.",
+			Usage:    "Execution principal for runs of this agent. Full replacement. Omit to preserve; send null or `{\"type\": \"service_account\"}` to restore the default.",
 			BodyPath: "execution_identity",
 		},
 		&requestflag.Flag[any]{
@@ -285,7 +285,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "multiagent",
-			Usage:    "Multiagent orchestration configuration.",
+			Usage:    "Multiagent orchestration configuration. Full replacement. Omit to preserve; send null to clear.",
 			BodyPath: "multiagent",
 		},
 		&requestflag.Flag[string]{
@@ -377,7 +377,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "model.speed",
-			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Defaults to `standard`. Not all models support `fast`; invalid combinations are rejected at create time.",
+			Usage:      "Inference speed mode. `fast` provides significantly faster output token generation at premium pricing. Defaults to `standard`. Not all models support `fast`; invalid combinations are rejected at create time.\n\nAllowed values: \"standard\", \"fast\".",
 			InnerField: "speed",
 		},
 	},
@@ -389,7 +389,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "multiagent.advisor",
-			Usage:      "Whether the session's primary thread can consult an advisor model.",
+			Usage:      "Whether the session's primary thread can consult an advisor model. Defaults to disabled.",
 			InnerField: "advisor",
 		},
 		&requestflag.InnerFlag[[]any]{
@@ -399,12 +399,12 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "multiagent.subagents",
-			Usage:      "Whether the agent can spawn session threads.",
+			Usage:      "Whether the agent can spawn session threads. Defaults to enabled.",
 			InnerField: "subagents",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "multiagent.workflows",
-			Usage:      "Whether the agent can start workflow runs.",
+			Usage:      "Whether the agent can start workflow runs. Defaults to enabled.",
 			InnerField: "workflows",
 		},
 	},
@@ -453,7 +453,7 @@ var betaAgentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:                  "tool.input-schema",
-			Usage:                 "JSON Schema for custom tool input parameters.",
+			Usage:                 "JSON Schema defining the expected input parameters for the tool.",
 			InnerField:            "input_schema",
 			OuterIsArrayOfObjects: true,
 		},

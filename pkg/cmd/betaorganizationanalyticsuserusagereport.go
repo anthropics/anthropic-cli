@@ -25,7 +25,7 @@ var betaOrganizationAnalyticsUserUsageReportList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "bucket-width",
-			Usage:     "Time-bucket granularity. When set, each row's `starting_at` and `ending_at` are populated and one actor may span several rows (one per time bucket with usage). The time bucket counts toward `limit`, so one page can return multiple rows for the same actor. `ending_at` is required when `bucket_width` is set, and with `bucket_width=\"1m\"` the range may span at most 24 hours. When omitted, each row aggregates the full `[starting_at, ending_at)` range.",
+			Usage:     "Time-bucket granularity. When set, each row's `starting_at` and `ending_at` are populated and one actor may span several rows (one per time bucket with usage). The time bucket counts toward `limit`, so one page can return multiple rows for the same actor. `ending_at` is required when `bucket_width` is set, and with `bucket_width=\"1m\"` the range may span at most 24 hours. When omitted, each row aggregates the full `[starting_at, ending_at)` range.\n\nAllowed values: \"1d\", \"1h\", \"1m\".",
 			QueryPath: "bucket_width",
 		},
 		&requestflag.Flag[[]string]{
@@ -77,13 +77,13 @@ var betaOrganizationAnalyticsUserUsageReportList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction. Defaults to `desc`.",
+			Usage:     "Sort direction. Defaults to `desc`.\n\nAllowed values: \"asc\", \"desc\".",
 			Default:   "desc",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order-by",
-			Usage:     "Metric to rank actors by. Defaults to `total_tokens`.",
+			Usage:     "Metric to rank actors by. Defaults to `total_tokens`.\n\nAllowed values: \"output_tokens\", \"requests\", \"total_tokens\", \"uncached_input_tokens\".",
 			Default:   "total_tokens",
 			QueryPath: "order_by",
 		},

@@ -29,6 +29,7 @@ var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "external-user-details",
+			Usage:    "Details about the entity this profile represents, as the platform states them. Every field is optional. Not accepted under the legacy `user-profiles-2026-03-24` and `user-profiles-2026-08-18` beta headers, which take the top-level `external_id` (and, under `user-profiles-2026-08-18`, `external_user_onboarded_at`) instead.",
 			BodyPath: "external_user_details",
 		},
 		&requestflag.Flag[any]{
@@ -78,7 +79,7 @@ var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.entity-type",
-			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.",
+			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.\n\nAllowed values: \"individual\", \"business\", \"non_profit\", \"government\".",
 			InnerField: "entity_type",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -150,6 +151,7 @@ var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "external-user-details",
+			Usage:    "Details about the entity this profile represents, as the platform states them. Each field sent replaces the stored value; omit a field to leave it unchanged. Once set, a value cannot be cleared and `null` is rejected. Not accepted under the legacy `user-profiles-2026-03-24` and `user-profiles-2026-08-18` beta headers.",
 			BodyPath: "external_user_details",
 		},
 		&requestflag.Flag[any]{
@@ -199,7 +201,7 @@ var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.entity-type",
-			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.",
+			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.\n\nAllowed values: \"individual\", \"business\", \"non_profit\", \"government\".",
 			InnerField: "entity_type",
 		},
 		&requestflag.InnerFlag[*string]{

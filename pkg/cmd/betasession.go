@@ -31,7 +31,7 @@ var betaSessionsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "budget",
-			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			Usage:    "Enforced spend ceiling for the session. Omit to create an uncapped session. Every model the session can run — the agent's model and each callable agent's model — must have a public list price, or the request is rejected with reason `model_not_budgetable`.",
 			BodyPath: "budget",
 		},
 		&requestflag.Flag[[]map[string]any]{
@@ -118,7 +118,7 @@ var betaSessionsCreate = requestflag.WithInnerFlags(cli.Command{
 	"budget": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "budget.max-list-cost",
-			Usage:      "A monetary amount in a specific currency.",
+			Usage:      "Maximum list cost the session may accrue. List price is used regardless of any negotiated discount, so the cap fires at or before the actual charge.",
 			InnerField: "max_list_cost",
 		},
 		&requestflag.InnerFlag[string]{
@@ -162,7 +162,7 @@ var betaSessionsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "resource.access",
-			Usage:      "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.",
+			Usage:      "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.\n\nAllowed values: \"read_write\", \"read_only\".",
 			InnerField: "access",
 		},
 		&requestflag.InnerFlag[string]{
@@ -241,12 +241,12 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "agent",
-			Usage:    "Mid-session agent configuration update. Only `tools` and `mcp_servers` are updatable. Full replacement: the provided array becomes the new value. To preserve existing entries, GET the session, modify the array, and POST it back.",
+			Usage:    "Agent configuration update. Only `tools` and `mcp_servers` are updatable mid-session. Only valid for sessions created from an agent or deployment reference. The session must not be running.",
 			BodyPath: "agent",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "budget",
-			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			Usage:    "Enforced spend ceiling for the session. Set an object to replace the budget of a session that was created with one, or `null` to remove it; omit to preserve. A budget cannot be added to a session created without one (rejected with reason `budget_create_only`), and a removed budget cannot be re-added. Allowed in any non-terminated status. Lowering `max_list_cost` to at or below the session's consumed list cost is rejected with reason `budget_not_raised`, and every model the session can run must have a public list price or the request is rejected with reason `model_not_budgetable`.",
 			BodyPath: "budget",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -293,7 +293,7 @@ var betaSessionsUpdate = requestflag.WithInnerFlags(cli.Command{
 	"budget": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "budget.max-list-cost",
-			Usage:      "A monetary amount in a specific currency.",
+			Usage:      "Maximum list cost the session may accrue. List price is used regardless of any negotiated discount, so the cap fires at or before the actual charge.",
 			InnerField: "max_list_cost",
 		},
 		&requestflag.InnerFlag[string]{
@@ -361,7 +361,7 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort direction for results, ordered by `created_at`. Defaults to `desc` (newest first).",
+			Usage:     "Sort direction for results, ordered by `created_at`. Defaults to `desc` (newest first).\n\nAllowed values: \"asc\", \"desc\".",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{

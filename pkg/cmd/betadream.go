@@ -78,7 +78,7 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "model.speed",
-			Usage:      "How fast the model generates output for the dream. Defaults to `standard`.\n\nDreams accept only `standard`.",
+			Usage:      "How fast the model generates output for the dream. Defaults to `standard`.\n\nDreams accept only `standard`.\n\nAllowed values: \"standard\", \"fast\".",
 			InnerField: "speed",
 		},
 	},

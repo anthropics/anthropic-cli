@@ -140,7 +140,7 @@ var betaOrganizationPluginsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "owner-type",
-			Usage:     "`organization` for Plugins in the organization's plugin marketplaces, `user` for Plugins in members' personal plugin marketplaces.",
+			Usage:     "`organization` for Plugins in the organization's plugin marketplaces, `user` for Plugins in members' personal plugin marketplaces.\n\nAllowed values: \"organization\", \"user\".",
 			QueryPath: "owner_type",
 		},
 		&requestflag.Flag[string]{

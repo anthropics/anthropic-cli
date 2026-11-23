@@ -19,7 +19,7 @@ var betaOrganizationRateLimitsList = cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:      "group-type",
-			Usage:     "Filter by group type.",
+			Usage:     "Filter by group type.\n\nAllowed values: \"batch\", \"files\", \"model_group\", \"skills\", \"token_count\", \"web_search\".",
 			QueryPath: "group_type",
 		},
 		&requestflag.Flag[int64]{

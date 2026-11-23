@@ -30,7 +30,7 @@ var betaOrganizationServiceAccountsCreate = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "organization-role",
-			Usage:    "Org-level role. Defaults to `developer`.",
+			Usage:    "Org-level role. Defaults to `developer`.\n\nAllowed values: \"admin\", \"developer\".",
 			BodyPath: "organization_role",
 		},
 		&requestflag.Flag[[]string]{
@@ -82,7 +82,7 @@ var betaOrganizationServiceAccountsUpdate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "organization-role",
-			Usage:    "Replaces the org-level role. Omit or send `null` to leave unchanged.",
+			Usage:    "Replaces the org-level role. Omit or send `null` to leave unchanged.\n\nAllowed values: \"admin\", \"developer\".",
 			BodyPath: "organization_role",
 		},
 		&requestflag.Flag[[]string]{

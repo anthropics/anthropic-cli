@@ -127,7 +127,7 @@ var betaMemoryStoresMemoriesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "precondition",
-			Usage:    "Optional condition that must hold for an update to apply. When omitted, the update is unconditional. Asserts the current state of the memory being updated. When an update changes `path`, the precondition still refers to the memory's current content, not the destination path. Currently the only supported variant is `content_sha256`.",
+			Usage:    "The condition that the memory must meet for the update to apply. Omit it to update unconditionally.\n\nIf the condition fails, the request fails with HTTP status 409.",
 			BodyPath: "precondition",
 		},
 		&requestflag.Flag[[]string]{
@@ -191,7 +191,7 @@ var betaMemoryStoresMemoriesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.\n\n- `basic` - Return the object with `content` set to `null`. The `content_size_bytes` and `content_sha256` fields remain populated, so sync clients can diff without fetching content.\n- `full` - Return the object with `content` populated. On list endpoints, `view=full` caps `limit` at 20.",
+			Usage:     "Whether each memory in the response includes `content`. Defaults to `basic`, which sets it to `null`.\n\nWith `full`, a page holds at most 20 items.\n\n- `basic` - Return the object with `content` set to `null`. The `content_size_bytes` and `content_sha256` fields remain populated, so sync clients can diff without fetching content.\n- `full` - Return the object with `content` populated. On list endpoints, `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{

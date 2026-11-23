@@ -25,7 +25,7 @@ var betaOrganizationTelemetryDestinationsCreate = requestflag.WithInnerFlags(cli
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "workspaces",
-			Usage:    "Which of the organization's workspaces a telemetry destination covers, as a create or update request sets it.",
+			Usage:    "Which of the organization's workspaces the destination covers.",
 			Required: true,
 			BodyPath: "workspaces",
 		},
@@ -41,7 +41,7 @@ var betaOrganizationTelemetryDestinationsCreate = requestflag.WithInnerFlags(cli
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "traces",
-			Usage:    "The settings for the traces that a telemetry destination receives, as a create or update request sets them. An omitted field takes its default on create and keeps its stored value on update.",
+			Usage:    "The settings for the traces that the destination receives. If you leave it out, every setting takes its default.",
 			BodyPath: "traces",
 		},
 		&requestflag.Flag[[]string]{
@@ -67,7 +67,7 @@ var betaOrganizationTelemetryDestinationsCreate = requestflag.WithInnerFlags(cli
 	"traces": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "traces.content-mode",
-			Usage:      "What the spans that the API exports to a telemetry destination contain.\n\nSee the [OpenTelemetry export guide](https://platform.claude.com/docs/en/manage-claude/opentelemetry#choose-a-content-mode) to learn what the spans contain in each content mode.\n\n- `metadata_only` - The spans contain identifiers, timing, status, token counts, and similar metadata. They don't contain prompt text, completion text, or tool inputs and outputs.\n- `content` - The spans contain the same metadata as `metadata_only`, plus message and tool content.\n\n  An organization with a data-handling restriction, such as under HIPAA, can't choose this mode. The API exports only metadata for such an organization, even to a destination that already has `content`.",
+			Usage:      "What the exported spans contain. Defaults to `metadata_only` on create.\n\nOn update, `null` sets `metadata_only`.\n\n- `metadata_only` - The spans contain identifiers, timing, status, token counts, and similar metadata. They don't contain prompt text, completion text, or tool inputs and outputs.\n- `content` - The spans contain the same metadata as `metadata_only`, plus message and tool content.\n\n  An organization with a data-handling restriction, such as under HIPAA, can't choose this mode. The API exports only metadata for such an organization, even to a destination that already has `content`.",
 			InnerField: "content_mode",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -138,17 +138,17 @@ var betaOrganizationTelemetryDestinationsUpdate = requestflag.WithInnerFlags(cli
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "state",
-			Usage:    "The state to set on a telemetry destination, by `type` alone.\n\nA caller can't set the `reason` of a disabled state. Only the API sets it.",
+			Usage:    "Whether the destination receives deliveries after the update. The field can't be `null`.",
 			BodyPath: "state",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "traces",
-			Usage:    "The settings for the traces that a telemetry destination receives, as a create or update request sets them. An omitted field takes its default on create and keeps its stored value on update.",
+			Usage:    "The traces settings to change. Omitted settings keep their stored values.\n\n`null` sets every traces setting to its create default.",
 			BodyPath: "traces",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "workspaces",
-			Usage:    "Which of the organization's workspaces a telemetry destination covers, as a create or update request sets it.",
+			Usage:    "The new workspace scope, in the same form as on create. The field can't be `null`.\n\nThe API refuses an update that changes the type or sends `workspace_ids` while the destination's list has more than 750 workspaces. Remove workspaces one at a time until 750 or fewer remain, then send the update again.",
 			BodyPath: "workspaces",
 		},
 		&requestflag.Flag[[]string]{
@@ -170,7 +170,7 @@ var betaOrganizationTelemetryDestinationsUpdate = requestflag.WithInnerFlags(cli
 	"traces": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "traces.content-mode",
-			Usage:      "What the spans that the API exports to a telemetry destination contain.\n\nSee the [OpenTelemetry export guide](https://platform.claude.com/docs/en/manage-claude/opentelemetry#choose-a-content-mode) to learn what the spans contain in each content mode.\n\n- `metadata_only` - The spans contain identifiers, timing, status, token counts, and similar metadata. They don't contain prompt text, completion text, or tool inputs and outputs.\n- `content` - The spans contain the same metadata as `metadata_only`, plus message and tool content.\n\n  An organization with a data-handling restriction, such as under HIPAA, can't choose this mode. The API exports only metadata for such an organization, even to a destination that already has `content`.",
+			Usage:      "What the exported spans contain. Defaults to `metadata_only` on create.\n\nOn update, `null` sets `metadata_only`.\n\n- `metadata_only` - The spans contain identifiers, timing, status, token counts, and similar metadata. They don't contain prompt text, completion text, or tool inputs and outputs.\n- `content` - The spans contain the same metadata as `metadata_only`, plus message and tool content.\n\n  An organization with a data-handling restriction, such as under HIPAA, can't choose this mode. The API exports only metadata for such an organization, even to a destination that already has `content`.",
 			InnerField: "content_mode",
 		},
 		&requestflag.InnerFlag[bool]{

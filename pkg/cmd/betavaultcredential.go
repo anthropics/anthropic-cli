@@ -86,11 +86,12 @@ var betaVaultsCredentialsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "auth.networking",
+			Usage:      "Outbound hosts the secret value is substituted on.",
 			InnerField: "networking",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "auth.refresh",
-			Usage:      "OAuth refresh token parameters for creating a credential with refresh support.",
+			Usage:      "Refresh token configuration, if the credential supports token refresh.",
 			InnerField: "refresh",
 		},
 		&requestflag.InnerFlag[string]{
@@ -208,16 +209,17 @@ var betaVaultsCredentialsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "auth.injection-location",
-			Usage:      "Changes which parts of an outbound request the secret is substituted into. A location you leave out keeps its current setting.\n\nAfter the change, at least one location must be enabled.\n\nSee [Authenticate with vaults](https://platform.claude.com/docs/en/managed-agents/vaults#add-a-credential) to learn more about injection locations.",
+			Usage:      "Updated injection location.",
 			InnerField: "injection_location",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "auth.networking",
+			Usage:      "The new networking scope, which replaces the stored one as a whole.",
 			InnerField: "networking",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "auth.refresh",
-			Usage:      "Parameters for updating OAuth refresh token configuration.",
+			Usage:      "Updated refresh token configuration.",
 			InnerField: "refresh",
 		},
 		&requestflag.InnerFlag[*string]{

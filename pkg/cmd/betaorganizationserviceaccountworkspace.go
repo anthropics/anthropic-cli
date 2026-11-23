@@ -67,7 +67,7 @@ var betaOrganizationServiceAccountsWorkspacesAdd = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "workspace-role",
-			Usage:    `Allowed values: "workspace_admin", "workspace_developer", "workspace_restricted_developer", "workspace_user".`,
+			Usage:    "Role to assign to the service account in this workspace.\n\nAllowed values: \"workspace_admin\", \"workspace_developer\", \"workspace_restricted_developer\", \"workspace_user\".",
 			Required: true,
 			BodyPath: "workspace_role",
 		},

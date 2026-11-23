@@ -87,7 +87,7 @@ var betaMemoryStoresMemoryVersionsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "operation",
-			Usage:     "The kind of change that a memory version records.\n\nEvery change to a memory adds one version. If you update a memory and nothing changes, the memory doesn't get a new version.\n\n- `created` - The memory was created. The first version in any memory's lineage.\n- `modified` - The memory's `content`, `path`, or both were changed via update. Writes the agent makes through the filesystem mount also appear as `modified`.\n- `deleted` - The memory was deleted. The `content`, `content_size_bytes`, and `content_sha256` fields are `null` on this version. The preceding version, while it is retained, records the deleted content's size and hash.",
+			Usage:     "Return only versions that record this kind of change.\n\n- `created` - The memory was created. The first version in any memory's lineage.\n- `modified` - The memory's `content`, `path`, or both were changed via update. Writes the agent makes through the filesystem mount also appear as `modified`.\n- `deleted` - The memory was deleted. The `content`, `content_size_bytes`, and `content_sha256` fields are `null` on this version. The preceding version, while it is retained, records the deleted content's size and hash.",
 			QueryPath: "operation",
 		},
 		&requestflag.Flag[string]{

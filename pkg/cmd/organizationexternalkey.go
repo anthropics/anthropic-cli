@@ -30,7 +30,7 @@ var organizationExternalKeysCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "geo",
-			Usage:    "Data residency geo. Only `us` is supported.",
+			Usage:    "Data residency geo. Only `us` is supported.\n\nAllowed values: \"us\".",
 			BodyPath: "geo",
 		},
 		&requestflag.Flag[*string]{
@@ -115,7 +115,7 @@ var organizationExternalKeysUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "geo",
-			Usage:    "Data residency geo. Only `us` is supported.",
+			Usage:    "Data residency geo. Only `us` is supported.\n\nAllowed values: \"us\".",
 			BodyPath: "geo",
 		},
 		&requestflag.Flag[map[string]any]{

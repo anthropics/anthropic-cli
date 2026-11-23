@@ -41,7 +41,7 @@ var betaOrganizationPluginsInstallationSettingsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "target-type",
-			Usage:     "Only settings for this kind of target: `organization` (the organization-wide setting) or `rbac_group` (an RBAC Group's).",
+			Usage:     "Only settings for this kind of target: `organization` (the organization-wide setting) or `rbac_group` (an RBAC Group's).\n\nAllowed values: \"organization\", \"rbac_group\".",
 			QueryPath: "target_type",
 		},
 		&requestflag.Flag[[]string]{
@@ -104,7 +104,7 @@ var betaOrganizationPluginsInstallationSettingsSet = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "installation-preference",
-			Usage:    "The installation setting the target is to hold for this Plugin: one of `required`, `auto_install`, `available`, `not_available`.",
+			Usage:    "The installation setting the target is to hold for this Plugin: one of `required`, `auto_install`, `available`, `not_available`.\n\nAllowed values: \"auto_install\", \"available\", \"not_available\", \"required\".",
 			Required: true,
 			BodyPath: "installation_preference",
 		},

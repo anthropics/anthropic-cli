@@ -19,11 +19,12 @@ var userProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:     "access-type",
-			Usage:    "How the platform uses the API on behalf of the entity this profile represents. `application`: the platform sells a product that uses the API behind the scenes, and the profile represents an individual end-user of that product. `passthrough`: the platform resells raw inference, and the profile identifies the resold-to company.\n\n- `application` - The user profile represents an individual end-user of a product that the platform builds on the API. New profiles get this value by default.\n- `passthrough` - The user profile represents a company that the platform resells Claude access to.",
+			Usage:    "How the platform uses the API for this entity. `application` (default): the profile represents an individual end-user of the platform's product. `passthrough`: the profile identifies a company the platform resells Claude access to.\n\n- `application` - The user profile represents an individual end-user of a product that the platform builds on the API. New profiles get this value by default.\n- `passthrough` - The user profile represents a company that the platform resells Claude access to.",
 			BodyPath: "access_type",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "external-user-details",
+			Usage:    "Details about the entity this profile represents, as the platform states them. Every field is optional. Not accepted under the legacy `user-profiles-2026-03-24` and `user-profiles-2026-08-18` beta headers, which take the top-level `external_id` (and, under `user-profiles-2026-08-18`, `external_user_onboarded_at`) instead.",
 			BodyPath: "external_user_details",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -48,7 +49,7 @@ var userProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 	"external-user-details": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.account-status",
-			Usage:      "The status of the entity's account on the platform, as the platform states it: `active`; `suspended`, when the platform has restricted the account and may restore it; or `blocked`, when the platform has barred it. It records the platform's decision only. The statuses that Anthropic itself reports for the profile, such as its status in a program, are Anthropic's decisions and do not change with it.\n\n- `active` - The platform has neither restricted nor barred the account of the entity that the user profile represents.\n- `suspended` - The platform has restricted the account of the entity that the user profile represents and may restore it.\n- `blocked` - The platform has barred the account of the entity that the user profile represents.",
+			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.\n\n- `active` - The platform has neither restricted nor barred the account of the entity that the user profile represents.\n- `suspended` - The platform has restricted the account of the entity that the user profile represents and may restore it.\n- `blocked` - The platform has barred the account of the entity that the user profile represents.",
 			InnerField: "account_status",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -63,7 +64,7 @@ var userProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.entity-type",
-			Usage:      "What kind of entity the profile represents, as the platform states it: `individual`, `business`, `non_profit` or `government`.",
+			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.\n\nAllowed values: \"individual\", \"business\", \"non_profit\", \"government\".",
 			InnerField: "entity_type",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -120,11 +121,12 @@ var userProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "access-type",
-			Usage:    "How the platform uses the API on behalf of the entity this profile represents. `application`: the platform sells a product that uses the API behind the scenes, and the profile represents an individual end-user of that product. `passthrough`: the platform resells raw inference, and the profile identifies the resold-to company.\n\n- `application` - The user profile represents an individual end-user of a product that the platform builds on the API. New profiles get this value by default.\n- `passthrough` - The user profile represents a company that the platform resells Claude access to.",
+			Usage:    "If present, replaces the stored access type. Omit to leave unchanged.\n\n- `application` - The user profile represents an individual end-user of a product that the platform builds on the API. New profiles get this value by default.\n- `passthrough` - The user profile represents a company that the platform resells Claude access to.",
 			BodyPath: "access_type",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "external-user-details",
+			Usage:    "Details about the entity this profile represents, as the platform states them. Each field sent replaces the stored value; omit a field to leave it unchanged. Once set, a value cannot be cleared and `null` is rejected. Not accepted under the legacy `user-profiles-2026-03-24` and `user-profiles-2026-08-18` beta headers.",
 			BodyPath: "external_user_details",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -149,7 +151,7 @@ var userProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 	"external-user-details": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.account-status",
-			Usage:      "The status of the entity's account on the platform, as the platform states it: `active`; `suspended`, when the platform has restricted the account and may restore it; or `blocked`, when the platform has barred it. It records the platform's decision only. The statuses that Anthropic itself reports for the profile, such as its status in a program, are Anthropic's decisions and do not change with it.\n\n- `active` - The platform has neither restricted nor barred the account of the entity that the user profile represents.\n- `suspended` - The platform has restricted the account of the entity that the user profile represents and may restore it.\n- `blocked` - The platform has barred the account of the entity that the user profile represents.",
+			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.\n\n- `active` - The platform has neither restricted nor barred the account of the entity that the user profile represents.\n- `suspended` - The platform has restricted the account of the entity that the user profile represents and may restore it.\n- `blocked` - The platform has barred the account of the entity that the user profile represents.",
 			InnerField: "account_status",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -164,7 +166,7 @@ var userProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.entity-type",
-			Usage:      "What kind of entity the profile represents, as the platform states it: `individual`, `business`, `non_profit` or `government`.",
+			Usage:      "What kind of entity the profile represents: `individual`, `business`, `non_profit` or `government`.\n\nAllowed values: \"individual\", \"business\", \"non_profit\", \"government\".",
 			InnerField: "entity_type",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -202,12 +204,12 @@ var userProfilesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "The direction that a list of user profiles is sorted in.\n\n- `asc` - Oldest first when `order_by` is `created_at`, or names in ascending order when `order_by` is `name`.\n- `desc` - Newest first when `order_by` is `created_at`, or names in descending order when `order_by` is `name`. This is the default.",
+			Usage:     "The sort direction, applied to the field that `order_by` selects. Defaults to `desc`.\n\n- `asc` - Oldest first when `order_by` is `created_at`, or names in ascending order when `order_by` is `name`.\n- `desc` - Newest first when `order_by` is `created_at`, or names in descending order when `order_by` is `name`. This is the default.",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order-by",
-			Usage:     "Sort field for listing user profiles: `created_at` (default) or `name` (case-insensitive; profiles without a name sort last).\n\n- `created_at` - Sort by when each user profile was created. This is the default.\n- `name` - Sort by `name`, ignoring the case of ASCII letters. Profiles without a name come last in either direction.",
+			Usage:     "The field to sort user profiles by, in the direction that `order` sets. Defaults to `created_at`.\n\n- `created_at` - Sort by when each user profile was created. This is the default.\n- `name` - Sort by `name`, ignoring the case of ASCII letters. Profiles without a name come last in either direction.",
 			QueryPath: "order_by",
 		},
 		&requestflag.Flag[string]{

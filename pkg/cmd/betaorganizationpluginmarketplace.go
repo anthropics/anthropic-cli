@@ -51,7 +51,7 @@ var betaOrganizationPluginMarketplacesUpdate = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "default-installation-preference",
-			Usage:    "The organization-wide installation setting every Plugin in the marketplace without one of its own gets: one of `required`, `auto_install`, `available`, `not_available`. Once set it can be changed but not removed.",
+			Usage:    "The organization-wide installation setting every Plugin in the marketplace without one of its own gets: one of `required`, `auto_install`, `available`, `not_available`. Once set it can be changed but not removed.\n\nAllowed values: \"auto_install\", \"available\", \"not_available\", \"required\".",
 			Required: true,
 			BodyPath: "default_installation_preference",
 		},
@@ -83,7 +83,7 @@ var betaOrganizationPluginMarketplacesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "owner-type",
-			Usage:     "`organization` for the organization's plugin marketplaces, `user` for members' personal plugin marketplaces.",
+			Usage:     "`organization` for the organization's plugin marketplaces, `user` for members' personal plugin marketplaces.\n\nAllowed values: \"organization\", \"user\".",
 			QueryPath: "owner_type",
 		},
 		&requestflag.Flag[string]{
@@ -93,7 +93,7 @@ var betaOrganizationPluginMarketplacesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "source",
-			Usage:     "Only plugin marketplaces with this `source`: `manual` for those whose Plugins are uploaded; `github`, `gitlab` or `public_git` for those synchronized from a Git repository. `directory` (Anthropic's catalog) is never listed here.",
+			Usage:     "Only plugin marketplaces with this `source`: `manual` for those whose Plugins are uploaded; `github`, `gitlab` or `public_git` for those synchronized from a Git repository. `directory` (Anthropic's catalog) is never listed here.\n\nAllowed values: \"directory\", \"github\", \"gitlab\", \"manual\", \"public_git\".",
 			QueryPath: "source",
 		},
 		&requestflag.Flag[[]string]{

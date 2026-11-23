@@ -34,6 +34,7 @@ var betaOrganizationClaudeCodeManagedSettingsConfigurationUpdate = requestflag.W
 	Flags: []cli.Flag{
 		&requestflag.Flag[map[string]any]{
 			Name:     "mode",
+			Usage:    "The new mode, as an object such as `{\"type\": \"rbac_groups\"}`.",
 			BodyPath: "mode",
 		},
 		&requestflag.Flag[[]string]{
