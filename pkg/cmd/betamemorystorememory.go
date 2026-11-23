@@ -37,7 +37,7 @@ var betaMemoryStoresMemoriesCreate = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.",
+			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.\n\n- `basic` - Return the object with `content` set to `null`. The `content_size_bytes` and `content_sha256` fields remain populated, so sync clients can diff without fetching content.\n- `full` - Return the object with `content` populated. On list endpoints, `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
@@ -74,7 +74,7 @@ var betaMemoryStoresMemoriesRetrieve = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.",
+			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.\n\n- `basic` - Return the object with `content` set to `null`. The `content_size_bytes` and `content_sha256` fields remain populated, so sync clients can diff without fetching content.\n- `full` - Return the object with `content` populated. On list endpoints, `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{
@@ -112,7 +112,7 @@ var betaMemoryStoresMemoriesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.",
+			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.\n\n- `basic` - Return the object with `content` set to `null`. The `content_size_bytes` and `content_sha256` fields remain populated, so sync clients can diff without fetching content.\n- `full` - Return the object with `content` populated. On list endpoints, `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[*string]{
@@ -191,7 +191,7 @@ var betaMemoryStoresMemoriesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "view",
-			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.",
+			Usage:     "Whether a `memory` or `memory_version` in the response includes its `content`. Defaults to `full` on retrieve operations and to `basic` on list, create, and update operations.\n\nWith `full`, list operations return at most 20 items per page.\n\n- `basic` - Return the object with `content` set to `null`. The `content_size_bytes` and `content_sha256` fields remain populated, so sync clients can diff without fetching content.\n- `full` - Return the object with `content` populated. On list endpoints, `view=full` caps `limit` at 20.",
 			QueryPath: "view",
 		},
 		&requestflag.Flag[[]string]{

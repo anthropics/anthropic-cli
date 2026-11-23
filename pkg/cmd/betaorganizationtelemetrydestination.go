@@ -67,7 +67,7 @@ var betaOrganizationTelemetryDestinationsCreate = requestflag.WithInnerFlags(cli
 	"traces": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "traces.content-mode",
-			Usage:      "What the spans that the API exports to a telemetry destination contain.\n\nSee the [OpenTelemetry export guide](https://platform.claude.com/docs/en/manage-claude/opentelemetry#choose-a-content-mode) to learn what the spans contain in each content mode.",
+			Usage:      "What the spans that the API exports to a telemetry destination contain.\n\nSee the [OpenTelemetry export guide](https://platform.claude.com/docs/en/manage-claude/opentelemetry#choose-a-content-mode) to learn what the spans contain in each content mode.\n\n- `metadata_only` - The spans contain identifiers, timing, status, token counts, and similar metadata. They don't contain prompt text, completion text, or tool inputs and outputs.\n- `content` - The spans contain the same metadata as `metadata_only`, plus message and tool content.\n\n  An organization with a data-handling restriction, such as under HIPAA, can't choose this mode. The API exports only metadata for such an organization, even to a destination that already has `content`.",
 			InnerField: "content_mode",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -170,7 +170,7 @@ var betaOrganizationTelemetryDestinationsUpdate = requestflag.WithInnerFlags(cli
 	"traces": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "traces.content-mode",
-			Usage:      "What the spans that the API exports to a telemetry destination contain.\n\nSee the [OpenTelemetry export guide](https://platform.claude.com/docs/en/manage-claude/opentelemetry#choose-a-content-mode) to learn what the spans contain in each content mode.",
+			Usage:      "What the spans that the API exports to a telemetry destination contain.\n\nSee the [OpenTelemetry export guide](https://platform.claude.com/docs/en/manage-claude/opentelemetry#choose-a-content-mode) to learn what the spans contain in each content mode.\n\n- `metadata_only` - The spans contain identifiers, timing, status, token counts, and similar metadata. They don't contain prompt text, completion text, or tool inputs and outputs.\n- `content` - The spans contain the same metadata as `metadata_only`, plus message and tool content.\n\n  An organization with a data-handling restriction, such as under HIPAA, can't choose this mode. The API exports only metadata for such an organization, even to a destination that already has `content`.",
 			InnerField: "content_mode",
 		},
 		&requestflag.InnerFlag[bool]{

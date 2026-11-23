@@ -475,7 +475,7 @@ var betaDeploymentsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "status",
-			Usage:     "Lifecycle status of a deployment.",
+			Usage:     "Lifecycle status of a deployment.\n\n- `active` - The deployment is active and can run sessions. Archived deployments also report this status; check `archived_at` to distinguish them.\n- `paused` - The deployment is paused. Autonomous triggers are suppressed; manual runs are still permitted.",
 			QueryPath: "status",
 		},
 		&requestflag.Flag[[]string]{

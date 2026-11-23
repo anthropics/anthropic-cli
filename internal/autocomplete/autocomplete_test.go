@@ -64,6 +64,30 @@ func TestGetCompletions_HiddenCommand(t *testing.T) {
 	assert.Equal(t, "visible", result.Completions[0].Name)
 }
 
+func TestGetCompletions_UsageFirstParagraph(t *testing.T) {
+	t.Parallel()
+
+	root := &cli.Command{
+		Commands: []*cli.Command{
+			{
+				Name:  "create",
+				Usage: "Create a card\nfor a user.\n\nIt is active at once.",
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "status", Usage: "The status.\n\n- `active` - Can be used."},
+				},
+			},
+		},
+	}
+
+	result := GetCompletions(CompletionStyleZsh, root, []string{"create", "--st"})
+
+	assert.Contains(t, result.Completions, ShellCompletion{Name: "--status", Usage: "The status."})
+
+	result = GetCompletions(CompletionStyleZsh, root, []string{"cr"})
+
+	assert.Contains(t, result.Completions, ShellCompletion{Name: "create", Usage: "Create a card for a user."})
+}
+
 func TestGetCompletions_NestedSubcommand(t *testing.T) {
 	t.Parallel()
 

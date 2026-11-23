@@ -19,7 +19,7 @@ var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
 			Name:     "access-type",
-			Usage:    "How the platform uses the API for this entity. `application` (default): the profile represents an individual end-user of the platform's product. `passthrough`: the profile identifies a company the platform resells Claude access to.",
+			Usage:    "How the platform uses the API for this entity. `application` (default): the profile represents an individual end-user of the platform's product. `passthrough`: the profile identifies a company the platform resells Claude access to.\n\n- `application` - The user profile represents an individual end-user of a product that the platform builds on the API. New profiles get this value by default.\n- `passthrough` - The user profile represents a company that the platform resells Claude access to.",
 			BodyPath: "access_type",
 		},
 		&requestflag.Flag[*string]{
@@ -63,7 +63,7 @@ var betaUserProfilesCreate = requestflag.WithInnerFlags(cli.Command{
 	"external-user-details": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.account-status",
-			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.",
+			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.\n\n- `active` - The platform has neither restricted nor barred the account of the entity that the user profile represents.\n- `suspended` - The platform has restricted the account of the entity that the user profile represents and may restore it.\n- `blocked` - The platform has barred the account of the entity that the user profile represents.",
 			InnerField: "account_status",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -140,7 +140,7 @@ var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "access-type",
-			Usage:    "If present, replaces the stored access type. Omit to leave unchanged.",
+			Usage:    "If present, replaces the stored access type. Omit to leave unchanged.\n\n- `application` - The user profile represents an individual end-user of a product that the platform builds on the API. New profiles get this value by default.\n- `passthrough` - The user profile represents a company that the platform resells Claude access to.",
 			BodyPath: "access_type",
 		},
 		&requestflag.Flag[*string]{
@@ -184,7 +184,7 @@ var betaUserProfilesUpdate = requestflag.WithInnerFlags(cli.Command{
 	"external-user-details": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "external-user-details.account-status",
-			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.",
+			Usage:      "The status of the entity's account on the platform: `active`, `suspended` or `blocked`.\n\n- `active` - The platform has neither restricted nor barred the account of the entity that the user profile represents.\n- `suspended` - The platform has restricted the account of the entity that the user profile represents and may restore it.\n- `blocked` - The platform has barred the account of the entity that the user profile represents.",
 			InnerField: "account_status",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -232,12 +232,12 @@ var betaUserProfilesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "The sort direction, applied to the field that `order_by` selects. Defaults to `desc`.",
+			Usage:     "The sort direction, applied to the field that `order_by` selects. Defaults to `desc`.\n\n- `asc` - Oldest first when `order_by` is `created_at`, or names in ascending order when `order_by` is `name`.\n- `desc` - Newest first when `order_by` is `created_at`, or names in descending order when `order_by` is `name`. This is the default.",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order-by",
-			Usage:     "The field to sort user profiles by, in the direction that `order` sets. Defaults to `created_at`.",
+			Usage:     "The field to sort user profiles by, in the direction that `order` sets. Defaults to `created_at`.\n\n- `created_at` - Sort by when each user profile was created. This is the default.\n- `name` - Sort by `name`, ignoring the case of ASCII letters. Profiles without a name come last in either direction.",
 			QueryPath: "order_by",
 		},
 		&requestflag.Flag[string]{

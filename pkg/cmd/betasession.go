@@ -371,7 +371,7 @@ var betaSessionsList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "status",
-			Usage:     "Filter by session status. Repeat the parameter to match any of multiple statuses.",
+			Usage:     "Filter by session status. Repeat the parameter to match any of multiple statuses.\n\n- `rescheduling` - Transient error occurred, retrying automatically.\n- `running` - Agent is actively executing.\n- `idle` - Agent is waiting for input, including user messages or tool confirmations. Sessions start in idle.\n- `terminated` - Session has ended, either due to an error or completion.",
 			QueryPath: "statuses",
 		},
 		&requestflag.Flag[[]string]{
