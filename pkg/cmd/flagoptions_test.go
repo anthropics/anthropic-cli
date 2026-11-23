@@ -34,6 +34,17 @@ func TestIsUTF8TextFile(t *testing.T) {
 	}
 }
 
+func TestEmbedFilesMissingExtensionlessPath(t *testing.T) {
+	t.Parallel()
+	path := filepath.Join("testdata", "missing-file-reference", "prompt")
+	for name, style := range map[string]FileEmbedStyle{"text": EmbedText, "upload": EmbedIOReader} {
+		t.Run(name, func(t *testing.T) {
+			_, err := embedFiles("@"+path, style, nil)
+			require.ErrorIs(t, err, os.ErrNotExist)
+		})
+	}
+}
+
 func TestEmbedFiles(t *testing.T) {
 	t.Parallel()
 
