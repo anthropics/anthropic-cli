@@ -4,15 +4,24 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	fakediscovery "k8s.io/client-go/discovery/fake"
+	k8stesting "k8s.io/client-go/testing"
+
+	"github.com/anthropics/anthropic-cli/sandboxes/dispatcher/internal/config"
 	"github.com/anthropics/anthropic-cli/sandboxes/dispatcher/internal/version"
 )
 
@@ -175,6 +184,16 @@ func noCluster(t *testing.T) string {
 	return "KUBECONFIG=" + path
 }
 
+func TestPreflightRunsItsChecksWhenAutoFindsNoVersion(t *testing.T) {
+	env := []string{"ANTHROPIC_ENVIRONMENT_KEY=test-key", "ANTHROPIC_ENVIRONMENT_ID=env_test", "ANTHROPIC_BASE_URL=http://127.0.0.1:1", noCluster(t)}
+	code, stdout, stderr := runMain(t, env, "preflight", "-namespace", "test", "-api-version", "auto", "-claim-mode", "direct")
+	for _, want := range []string{"found no version to use, so the checks use v1beta1: asking the cluster", "FAIL  agent sandbox API is served", "FAIL  environment key reads the work queue"} {
+		if code != 1 || !strings.Contains(stdout, want) {
+			t.Errorf("exit status %d, want 1 and %q; stdout %q, stderr %q", code, want, stdout, stderr)
+		}
+	}
+}
+
 // What serve and preflight print reaches a pod's log or a terminal. For each
 // value of ANTHROPIC_BASE_URL below, neither prints a piece of its user name
 // or password, in either case: Go lower-cases what it reads as a scheme.
@@ -226,5 +245,53 @@ func TestNoSubcommandPrintsTheBaseURLsUserOrPassword(t *testing.T) {
 				})
 			}
 		}
+	}
+}
+
+func TestSandboxShape(t *testing.T) {
+	alpha := []string{"agents.x-k8s.io/v1alpha1 sandboxes", "extensions.agents.x-k8s.io/v1alpha1 sandboxtemplates"}
+	beta := []string{"agents.x-k8s.io/v1beta1 sandboxes", "extensions.agents.x-k8s.io/v1beta1 sandboxtemplates"}
+	for name, tc := range map[string]struct {
+		apiVersion, claimMode string
+		served                []string
+		// want is the version and the claim mode. Empty wants an error.
+		want string
+	}{
+		"auto, v1alpha1 alone":          {"auto", "direct", alpha, "v1alpha1 direct"},
+		"auto, both":                    {"auto", "direct", slices.Concat(alpha, beta), "v1beta1 direct"},
+		"auto, v1beta1 alone":           {"auto", "direct", beta, "v1beta1 direct"},
+		"auto, templates still behind":  {"auto", "direct", slices.Concat(alpha, beta[:1]), "v1alpha1 direct"},
+		"auto, sandboxes still behind":  {"auto", "direct", slices.Concat(alpha, beta[1:]), "v1alpha1 direct"},
+		"auto, not installed":           {"auto", "direct", nil, ""},
+		"auto, another resource":        {"auto", "direct", []string{beta[0], "extensions.agents.x-k8s.io/v1beta1 sandboxclaims"}, ""},
+		"auto with claims":              {"auto", "sandbox_claim", beta, "v1beta1 sandbox_claim"},
+		"auto finds no claims to write": {"auto", "sandbox_claim", alpha, ""},
+		"v1alpha1 with no mode":         {"v1alpha1", "", nil, "v1alpha1 direct"},
+		"v1beta1 with no mode":          {"v1beta1", "", nil, "v1beta1 sandbox_claim"},
+		"v1beta1 is direct when told":   {"v1beta1", "direct", nil, "v1beta1 direct"},
+		"a version that does not exist": {"v1", "direct", beta, ""},
+		"a mode that does not exist":    {"v1beta1", "claim", nil, ""},
+	} {
+		d := &fakediscovery.FakeDiscovery{Fake: &k8stesting.Fake{}}
+		for _, s := range tc.served {
+			groupVersion, resource, _ := strings.Cut(s, " ")
+			d.Resources = append(d.Resources, &metav1.APIResourceList{GroupVersion: groupVersion, APIResources: []metav1.APIResource{{Name: resource}}})
+		}
+		shape, err := sandboxShape(d, &config.Config{K8SAPIVersion: tc.apiVersion, ClaimMode: tc.claimMode})
+		got := ""
+		if err == nil {
+			got = fmt.Sprint(shape.Version(), " ", shape.ClaimMode())
+		}
+		if got != tc.want {
+			t.Errorf("%s: %q, %v; want %q", name, got, err, tc.want)
+		}
+	}
+
+	// A failed read is no answer. Taking it for one could pick the version the
+	// cluster is dropping.
+	d := &fakediscovery.FakeDiscovery{Fake: &k8stesting.Fake{Resources: []*metav1.APIResourceList{{GroupVersion: "agents.x-k8s.io/v1beta1"}}}}
+	d.PrependReactor("get", "resource", func(k8stesting.Action) (bool, runtime.Object, error) { return true, nil, errors.New("timed out") })
+	if _, err := sandboxShape(d, &config.Config{K8SAPIVersion: "auto"}); err == nil || !strings.Contains(err.Error(), "timed out") {
+		t.Errorf("a failed read: err = %v", err)
 	}
 }

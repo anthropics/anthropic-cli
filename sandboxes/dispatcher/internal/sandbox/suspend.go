@@ -51,7 +51,7 @@ func (c *Client) podLeaving(ctx context.Context, sb *Sandbox) error {
 // requested state, which is what a schema the configured API version does
 // not have looks like: the server accepts unknown fields silently.
 func (c *Client) setSuspended(ctx context.Context, sandboxName string, suspended bool) error {
-	patch, err := json.Marshal(c.shape.suspendPatch(suspended))
+	patch, err := json.Marshal(map[string]any{"spec": c.shape.suspendSpec(suspended)})
 	if err != nil {
 		return err
 	}

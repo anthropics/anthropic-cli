@@ -29,8 +29,9 @@ the chart's settings file ([Install](#install), step 3).
 **GKE.** Enable the Agent Sandbox add-on
 (`gcloud beta container clusters update CLUSTER --enable-agent-sandbox`) and
 add a GKE Sandbox node pool (`--sandbox type=gvisor`); on Autopilot the pool
-is provisioned for you. The add-on serves the older
-`extensions.agents.x-k8s.io/v1alpha1` API, which `platform: gke` selects.
+is provisioned for you. The add-on serves `v1alpha1`, `v1beta1` or both, by
+GKE version, and the chart asks the cluster
+([Upgrading a GKE cluster](#upgrading-a-gke-cluster)).
 The cluster must enforce NetworkPolicy: Dataplane V2 (Autopilot has it) or
 Calico on a Standard cluster. A cluster on Cloud DNS for GKE, which is the
 Autopilot default, sets `gke.dns: cloudDns`. The optional hostname egress
@@ -155,13 +156,14 @@ docker buildx build -t "REGISTRY/cma-sandbox:$TAG" --push sandboxes/image
    | `egress.cmaServer` | Where the CMA server is, as exactly one of `public: true` (`api.anthropic.com`, or a custom base URL on a public address), `pods` (the `namespace` and `matchLabels` of a server in this cluster) and `cidr` (a server on a private address outside the cluster, such as `10.20.0.5/32`). With `pods` or `cidr`, `port` is the server's port. |
    | `egress.clusterCIDRs`, or `egress.clusterIsPrivate: true` | The cluster's API endpoint, and any range of yours outside the private ranges, so that sandboxes are kept off them. [Network egress](#network-egress) says how to find them and when `egress.clusterIsPrivate: true` takes their place. |
 
-   Five more depend on the cluster and on how you admit images:
+   Six more depend on the cluster and on how you admit images:
 
    | Setting | What to put there |
    |---|---|
    | `image.dispatcherDigest`, `image.sandboxDigest` | The two digests the release's notes list ([Images](../README.md#images)). The cluster then pulls exactly those images. Left out, it pulls them by the release's version tag. |
    | `image.registry`, `image.tag` | Only when the cluster pulls from a mirror or runs images you built: the registry you pushed both images to, and their tag when it is not the release's version. |
    | `gke.dns`, `gke.kubeDnsUpstreamIP` | On GKE, how the cluster serves DNS: `kubeDns` unless you change it. [Network egress](#network-egress) says when to change it. |
+   | `gke.sandboxAPIVersion` | On GKE, the Agent Sandbox API version: `auto` unless you name `v1alpha1` or `v1beta1` ([Upgrading a GKE cluster](#upgrading-a-gke-cluster)). |
    | `runtimeClass.name`, `runtimeClass.create` | The RuntimeClass sandbox pods run under, `gvisor` unless you change it. `kubectl get runtimeclass` lists the cluster's. On `eks` the chart creates it for the `runsc` node group unless `runtimeClass.create` is `false`. |
    | `sandbox.workspace.storageClassName` | The StorageClass of each session's `/workspace` volume. Left out, it is the cluster's default class, the one `kubectl get storageclass` marks `(default)`. |
 
@@ -179,15 +181,15 @@ docker buildx build -t "REGISTRY/cma-sandbox:$TAG" --push sandboxes/image
    not grant; it needs the same three variables the Secret holds, at a base
    URL your machine can reach, and `-skip-network-probe` until the network
    probe exists (`../dispatcher/README.md` says how to build the binary and
-   lists the checks). On GKE it also fails when the add-on's `v1alpha1`
+   lists the checks). On GKE it also fails when the add-on's
    schema is too old to store `networkPolicyManagement`:
 
    ```sh
    helm install cma oci://us-docker.pkg.dev/anthropic-public-registry/sandboxes/charts/cma-sandboxes --version <version> --namespace cma -f cma-values.yaml --wait
    ANTHROPIC_ENVIRONMENT_KEY="$KEY" ANTHROPIC_ENVIRONMENT_ID="$ENV_ID" ANTHROPIC_BASE_URL="$BASE_URL" \
-     cma-dispatcher preflight -namespace cma -skip-network-probe -api-version v1alpha1   # GKE
+     cma-dispatcher preflight -namespace cma -skip-network-probe -claim-mode direct -api-version auto   # GKE
    ANTHROPIC_ENVIRONMENT_KEY="$KEY" ANTHROPIC_ENVIRONMENT_ID="$ENV_ID" ANTHROPIC_BASE_URL="$BASE_URL" \
-     cma-dispatcher preflight -namespace cma -skip-network-probe                        # eks, generic
+     cma-dispatcher preflight -namespace cma -skip-network-probe   # eks, generic
    kubectl -n cma get sandboxwarmpool cma-sandbox        # READY should reach 2 (stays 0 on GKE)
    ```
 
@@ -204,7 +206,7 @@ volume at `/workspace` (`sandbox.workspace.size`), 2 GiB of scratch space at
 `/tmp`, and 2 GiB at `/mnt/memory` for the session's memory stores. It
 requests 0.5 CPU and 1 GiB and is limited to 2 CPU and 4 GiB
 (`sandbox.resources`), and the worker stops 30 minutes after a session goes
-idle (`sandbox.idleTimeout`). On the GKE add-on, whose template schema stores
+idle (`sandbox.idleTimeout`). On the GKE add-on, whose `v1alpha1` template schema stores
 no `volumeClaimTemplates`, the dispatcher puts the claim on each sandbox
 itself, from the same two `sandbox.workspace` settings. Either way the volume
 survives the idle suspend and is deleted with the sandbox, so a suspended
@@ -221,11 +223,15 @@ It refuses an empty `egress.clusterCIDRs` unless `egress.clusterIsPrivate` is
 missing `platform`, an empty `image.registry`, one image's digest without the
 other's, an `egress.cmaServer` that
 names no location or more than one, and a GKE-only setting (`gke.dns:
-cloudDns` or `nodeLocalCache`, `egress.mode: fqdnGke`) on another platform.
+cloudDns` or `nodeLocalCache`, a named `gke.sandboxAPIVersion`,
+`egress.mode: fqdnGke`) on another platform.
 It refuses `gke.dns: nodeLocalCache` without `gke.kubeDnsUpstreamIP`, and a
 `sandbox.warmPoolSize` above 0 on `gke`, which keeps no warm pool. To run the
 same checks and read the objects without touching the cluster, use
 `helm template cma oci://us-docker.pkg.dev/anthropic-public-registry/sandboxes/charts/cma-sandboxes --version <version> --namespace cma -f cma-values.yaml`.
+On `gke` that command writes the template and the warm pool at `v1alpha1`. For a
+cluster that serves `v1beta1`, add
+`--api-versions extensions.agents.x-k8s.io/v1beta1`.
 
 ## Network egress
 
@@ -328,6 +334,10 @@ and Helm refuses to create an object another release owns. With
 next upgrade would remove the RuntimeClass that the sandboxes of every
 environment run under.
 
+On `gke` the 0.1.0 dispatcher image does not start under the newer chart, so
+move pinned digests or `image.tag` in the same upgrade, and read
+[Upgrading a GKE cluster](#upgrading-a-gke-cluster) first.
+
 To upgrade, run `helm upgrade` with the newer release's version and the same
 settings file, then run `preflight` again, built from that release's tag:
 
@@ -341,7 +351,134 @@ images keep running. If you mirror the
 images or build your own, push the newer ones under the newer release's
 version first, and if your settings file sets `image.tag`, change it to that
 tag. Pushed under the tag the cluster already runs, they restart nothing, the
-old images keep running, and `helm upgrade` still reports success.
+old images keep running, and `helm upgrade` still reports success. On `gke`,
+a 0.1.0 dispatcher image stops instead, in both cases, unless
+`gke.sandboxAPIVersion` is `v1alpha1`.
+
+## Upgrading a GKE cluster
+
+Move each Helm release to the `v1beta1` Agent Sandbox API before the cluster
+reaches GKE 1.37.2-gke.1325000, which removes `v1alpha1`. GKE 1.35 serves
+`v1alpha1` alone, and GKE serves both from 1.36.3-gke.1767000. The chart takes
+`v1beta1` at a `helm install` or `helm upgrade` on a cluster that serves it, and
+the dispatcher takes it when it starts. Release 0.1.0 uses `v1alpha1` alone.
+Anthropic has run steps 1 and 3 on one GKE cluster at 1.36.5-gke.2370000 with
+an earlier version of this recipe, and an earlier form of step 2 that patched
+one namespace. It has not run step 2 as it stands here, or this chart under
+`v1beta1`, on GKE. A cluster already on 1.37.2-gke.1325000 or a later version
+needs the passages after step 3 in place of the steps.
+This command lists what the cluster serves:
+
+```sh
+kubectl api-versions | grep agents.x-k8s.io
+```
+
+Google warns that sandboxes not yet moved to `v1beta1` can stop working after an
+upgrade to 1.36.3-gke.1767000 or later. Make that upgrade yourself when few
+sessions are running, and take the steps below as soon as the command lists both
+versions.
+
+A maintenance exclusion keeps GKE from upgrading the cluster before you are
+ready. "No minor upgrades" is enough on 1.35, and on 1.36 from
+1.36.3-gke.1767000. A cluster on an earlier 1.36 patch, or on 1.37, needs "no
+upgrades", which lasts 90 days at most. To choose when the move to `v1beta1`
+happens, set `gke.sandboxAPIVersion: v1alpha1` and run `helm upgrade` before
+the cluster serves both versions, and remove the setting in step 1.
+
+1. Delete the warm pool, which is empty on GKE. What the earlier controller
+   recorded on it would stop a later `helm upgrade`. Move the digests or
+   `image.tag` if you set them. Helm 4.0.0 to 4.1.0 deletes an object whose
+   API version changes, so the chart refuses any upgrade with it while both
+   versions are served. Then restart the dispatcher:
+
+   ```sh
+   kubectl -n cma delete sandboxwarmpool cma-sandbox
+   helm upgrade cma oci://us-docker.pkg.dev/anthropic-public-registry/sandboxes/charts/cma-sandboxes --version <newer version> --namespace cma -f cma-values.yaml --wait
+   kubectl -n cma rollout restart deployment cma-dispatcher
+   ```
+
+2. Store every Agent Sandbox object in the cluster as `v1beta1`, which an empty
+   patch does. Once GKE removes `v1alpha1`, an object still stored that way
+   cannot be read or deleted, and listing its type across the cluster fails. If
+   another application uses Agent Sandbox on the cluster, migrate its objects
+   first, as the project's
+   [migration guide](https://agent-sandbox.sigs.k8s.io/docs/getting_started/api-migration-guide/)
+   says:
+
+   ```sh
+   for type in sandboxes.agents.x-k8s.io sandboxclaims.extensions.agents.x-k8s.io sandboxtemplates.extensions.agents.x-k8s.io sandboxwarmpools.extensions.agents.x-k8s.io; do
+     kubectl get "$type" -A -o jsonpath='{range .items[*]}{.metadata.namespace} {.metadata.name}{"\n"}{end}' |
+       while read -r namespace name; do kubectl -n "$namespace" patch "$type" "$name" --type=merge -p '{}'; done
+   done
+   ```
+
+   Run it again until every line ends in `patched (no change)`. If a patch is
+   refused, fix that object first, because Kubernetes accepts the next command
+   without checking how objects are stored.
+
+   Then take `v1alpha1` off the stored versions that each of the four resource
+   types records. This changes the whole cluster, so run it once, as a cluster
+   administrator. Kubernetes never does so by itself. While a type records
+   `v1alpha1`, GKE 1.37.2-gke.1325000 cannot update it, and the cluster refuses
+   every new sandbox:
+
+   ```sh
+   for type in sandboxes.agents.x-k8s.io sandboxclaims.extensions.agents.x-k8s.io sandboxtemplates.extensions.agents.x-k8s.io sandboxwarmpools.extensions.agents.x-k8s.io; do
+     kubectl patch crd "$type" --subresource=status --type=merge -p '{"status":{"storedVersions":["v1beta1"]}}'
+   done
+   ```
+
+3. Point what existing sandboxes own at the new version. Without this step,
+   once `v1alpha1` is gone, Kubernetes leaves a volume or a Secret behind when
+   it deletes the sandbox:
+
+   ```sh
+   for object in $(kubectl -n cma get pvc,secrets,pods,services -o jsonpath='{range .items[?(@.metadata.ownerReferences[0].apiVersion=="agents.x-k8s.io/v1alpha1")]}{.kind}/{.metadata.name} {end}'); do
+     kubectl -n cma patch "$object" --type=json -p '[{"op":"replace","path":"/metadata/ownerReferences/0/apiVersion","value":"agents.x-k8s.io/v1beta1"}]'
+   done
+   ```
+
+Each of the four Agent Sandbox resource types records the versions its objects
+have been stored as. If the cluster reached 1.37.2-gke.1325000 while a type
+still recorded `v1alpha1`, GKE cannot update that type. `kubectl api-versions`
+goes on printing both versions, and no session gets or resumes a sandbox. The
+dispatcher's log then has `failed to convert object version` and
+`connection refused`. This command prints what one type records:
+
+```sh
+kubectl get crd sandboxes.agents.x-k8s.io -o jsonpath='{.status.storedVersions}'
+```
+
+If the first command of step 2 patched every object in the cluster on
+1.36.3-gke.1767000 or a later 1.36 version, run the last command of step 2. GKE
+tries its update of the types about once a minute, and on Anthropic's test
+cluster the recorded `v1alpha1` was the only reason Kubernetes gave for refusing it.
+Anthropic has not run the command on a cluster in this state. The update is done
+when `kubectl api-versions` prints `v1beta1` alone. A release that skipped step 1
+then needs the commands below. If the first command did not patch every object,
+some may still be stored as `v1alpha1`, and the last command could leave every
+object of their type unreadable, so ask Google Cloud support before you run it.
+
+If GKE removed `v1alpha1` before step 1, `kubectl api-versions` prints `v1beta1`
+alone and `helm upgrade` stops with `no matches for kind "SandboxTemplate"`.
+Run the commands below in place of step 1, and only once that command no longer
+prints `v1alpha1`. Anthropic has not completed them on GKE. They delete the two
+objects Helm cannot update and its history of the release, and install over the
+remaining objects. They delete no sandbox, volume or network policy. Remove
+`gke.sandboxAPIVersion`, and keep every other `egress` and `gke` setting as the
+release has it, because this install removes no policy that other settings
+would drop. No session gets or resumes a sandbox until the commands finish:
+
+```sh
+kubectl -n cma delete sandboxtemplate,sandboxwarmpool cma-sandbox --ignore-not-found
+kubectl -n cma delete secret -l owner=helm,name=cma
+helm install cma oci://us-docker.pkg.dev/anthropic-public-registry/sandboxes/charts/cma-sandboxes --version <newer version> --namespace cma -f cma-values.yaml --wait
+kubectl -n cma rollout restart deployment cma-dispatcher
+```
+
+Then run step 3. A volume whose sandbox was deleted before that step stays
+until you delete it: compare `kubectl -n cma get pvc` with
+`kubectl -n cma get sandboxes`.
 
 ## Rotating the environment key
 
@@ -472,3 +609,5 @@ configuration:
   queues new work.
 - The recipe has not yet been run against `https://api.anthropic.com`; every
   end-to-end run so far used a custom base URL.
+- On GKE the recipe has run under `v1alpha1` only
+  ([Upgrading a GKE cluster](#upgrading-a-gke-cluster)).

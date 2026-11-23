@@ -19,7 +19,7 @@ const ns = "sandboxes"
 
 func newClient(t *testing.T, version string, objects ...runtime.Object) (*Client, *dynamicfake.FakeDynamicClient, *kubefake.Clientset) {
 	t.Helper()
-	shape, err := ShapeFor(version)
+	shape, err := ShapeFor(version, "")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -85,6 +85,12 @@ func TestEnvironmentDefaultsAndFlags(t *testing.T) {
 	if cfg.APIRequestTimeout != 45*time.Second || cfg.HandoffWait != 90*time.Second || cfg.MaxConcurrentHandoffs != 3 || !cfg.SkipNetworkProbe || cfg.Retention != 48*time.Hour {
 		t.Errorf("cfg = %+v", cfg)
 	}
+	if _, err := load(t, "-api-version", APIVersionAuto); err == nil || !strings.Contains(err.Error(), "-claim-mode") {
+		t.Errorf("err = %v, want auto refused without -claim-mode", err)
+	}
+	if _, err := load(t, "-claim-mode", "sandbox_claim", "-api-version", "v1alpha1"); err == nil {
+		t.Error("sandbox_claim on v1alpha1 must be refused")
+	}
 	if _, err := load(t, "-retention-days", "-1"); err == nil {
 		t.Error("a negative retention must be refused")
 	}
@@ -209,5 +215,21 @@ func TestABaseURLWithAHostLoads(t *testing.T) {
 		if cfg.BaseURL != want {
 			t.Errorf("%s: BaseURL = %q, want %q", value, cfg.BaseURL, want)
 		}
+	}
+}
+
+func TestAPIVersionAndClaimModeReadTheirVariables(t *testing.T) {
+	if cfg, err := load(t); err != nil || cfg.K8SAPIVersion != "v1beta1" || cfg.ClaimMode != "" {
+		t.Errorf("defaults: %+v, %v; want v1beta1 and no claim mode", cfg, err)
+	}
+	for _, arg := range []string{"-api-version=v1", "-claim-mode=claim"} {
+		if _, err := load(t, arg); err == nil {
+			t.Errorf("%s loaded, want a refusal", arg)
+		}
+	}
+	t.Setenv("CMA_DISPATCHER_API_VERSION", APIVersionAuto)
+	t.Setenv("CMA_DISPATCHER_CLAIM_MODE", "direct")
+	if cfg, err := load(t); err != nil || cfg.K8SAPIVersion != APIVersionAuto || cfg.ClaimMode != "direct" {
+		t.Errorf("from variables: %+v, %v; want auto and direct", cfg, err)
 	}
 }

@@ -11,7 +11,7 @@ import (
 // (the add-on's SandboxTemplate schema stores none, so none can be copied)
 // and the workspace mount is backed by an explicit emptyDir.
 func TestSandboxFromTemplateBacksTheWorkspaceWithAnEmptyDir(t *testing.T) {
-	shape, _ := ShapeFor("v1alpha1")
+	shape, _ := ShapeFor("v1alpha1", "")
 	tpl := object("extensions.agents.x-k8s.io/v1alpha1", "SandboxTemplate", "tpl", "tpl-uid", map[string]any{
 		"spec": map[string]any{
 			"volumeClaimTemplates": []any{map[string]any{"metadata": map[string]any{"name": WorkspaceVolume}}},
@@ -58,7 +58,7 @@ func TestSandboxFromTemplateBacksTheWorkspaceWithAnEmptyDir(t *testing.T) {
 // which the controller binds to the worker's workspace mount by name, so
 // no emptyDir stands in and the workspace outlives a suspend.
 func TestSandboxFromTemplateGivesTheWorkspaceAClaim(t *testing.T) {
-	shape, _ := ShapeFor("v1alpha1")
+	shape, _ := ShapeFor("v1alpha1", "")
 	tpl := object("extensions.agents.x-k8s.io/v1alpha1", "SandboxTemplate", "tpl", "tpl-uid", map[string]any{
 		"spec": map[string]any{
 			"podTemplate": map[string]any{"spec": map[string]any{
@@ -106,7 +106,7 @@ func TestSandboxFromTemplateGivesTheWorkspaceAClaim(t *testing.T) {
 // A claim with no storage class leaves storageClassName unset, so the
 // cluster's default class applies.
 func TestSandboxFromTemplateClaimTakesTheDefaultStorageClass(t *testing.T) {
-	shape, _ := ShapeFor("v1alpha1")
+	shape, _ := ShapeFor("v1alpha1", "")
 	tpl := object("extensions.agents.x-k8s.io/v1alpha1", "SandboxTemplate", "tpl", "tpl-uid", map[string]any{
 		"spec": map[string]any{"podTemplate": map[string]any{"spec": map[string]any{
 			"containers": []any{map[string]any{"name": "fetch"}, map[string]any{"name": "worker"}},
@@ -125,7 +125,7 @@ func TestSandboxFromTemplateClaimTakesTheDefaultStorageClass(t *testing.T) {
 // A template that defines its own workspace volume keeps it: the operator's
 // backing wins over the dispatcher's claim or emptyDir stand-in.
 func TestSandboxFromTemplateKeepsAnExplicitWorkspaceVolume(t *testing.T) {
-	shape, _ := ShapeFor("v1alpha1")
+	shape, _ := ShapeFor("v1alpha1", "")
 	tpl := object("extensions.agents.x-k8s.io/v1alpha1", "SandboxTemplate", "tpl", "tpl-uid", map[string]any{
 		"spec": map[string]any{
 			"podTemplate": map[string]any{"spec": map[string]any{
