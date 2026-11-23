@@ -14,7 +14,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsCreate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:bundles:targets", "create",
 			"--bundle-id", "capp_011CZkZjLP1cWxj5EtMmdgbq",
-			"--target", "{slack_channel_id: xxxxxxxx, type: slack_channel}",
+			"--target", "{slack_channel_id: slch_01SvpyRQK3nN6eH9uhRA7n1q, type: slack_channel}",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
@@ -22,7 +22,7 @@ func TestBetaOrganizationClaudeTagBundlesTargetsCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"slack_channel_id: xxxxxxxx\n" +
+			"slack_channel_id: slch_01SvpyRQK3nN6eH9uhRA7n1q\n" +
 			"type: slack_channel\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,

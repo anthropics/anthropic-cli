@@ -14,10 +14,10 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "create",
-			"--agent", "string",
-			"--environment-id", "x",
-			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
-			"--name", "x",
+			"--agent", "{id: agent_011CZkYpogX7uDKUyvBTophP, type: agent, version: 0}",
+			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--initial-event", "{content: [{text: Compile yesterday's orders into report.md., type: text}], type: user.message}",
+			"--name", "Daily order report",
 			"--budget", "{max_list_cost: {amount: '2500', currency: USD}, type: limit}",
 			"--description", "description",
 			"--metadata", "{foo: string}",
@@ -38,10 +38,10 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:deployments", "create",
-			"--agent", "string",
-			"--environment-id", "x",
-			"--initial-event", "{content: [{text: 'Where is my order #1234?', type: text}], type: user.message}",
-			"--name", "x",
+			"--agent", "{id: agent_011CZkYpogX7uDKUyvBTophP, type: agent, version: 0}",
+			"--environment-id", "env_011CZkZ9X2dpNyB7HsEFoRfW",
+			"--initial-event", "{content: [{text: Compile yesterday's orders into report.md., type: text}], type: user.message}",
+			"--name", "Daily order report",
 			"--budget.max-list-cost", "{amount: '2500', currency: USD}",
 			"--budget.type", "limit",
 			"--description", "description",
@@ -59,14 +59,17 @@ func TestBetaDeploymentsCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"agent: string\n" +
-			"environment_id: x\n" +
+			"agent:\n" +
+			"  id: agent_011CZkYpogX7uDKUyvBTophP\n" +
+			"  type: agent\n" +
+			"  version: 0\n" +
+			"environment_id: env_011CZkZ9X2dpNyB7HsEFoRfW\n" +
 			"initial_events:\n" +
 			"  - content:\n" +
-			"      - text: 'Where is my order #1234?'\n" +
+			"      - text: Compile yesterday's orders into report.md.\n" +
 			"        type: text\n" +
 			"    type: user.message\n" +
-			"name: x\n" +
+			"name: Daily order report\n" +
 			"budget:\n" +
 			"  max_list_cost:\n" +
 			"    amount: '2500'\n" +

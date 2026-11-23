@@ -863,6 +863,19 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:external-storage",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationExternalStorageCreate,
+					&betaOrganizationExternalStorageRetrieve,
+					&betaOrganizationExternalStorageUpdate,
+					&betaOrganizationExternalStorageList,
+					&betaOrganizationExternalStorageDelete,
+					&betaOrganizationExternalStorageActivate,
+				},
+			},
+			{
 				Name:     "beta:organization:users",
 				Category: "API RESOURCE",
 				Suggest:  true,

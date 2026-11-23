@@ -14,7 +14,7 @@ func TestBetaOrganizationTelemetryDestinationsCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "create",
-			"--endpoint-url", "x",
+			"--endpoint-url", "https://gateway.example.com",
 			"--workspaces", "{type: all}",
 			"--display-name", "display_name",
 			"--headers", "{foo: string}",
@@ -32,7 +32,7 @@ func TestBetaOrganizationTelemetryDestinationsCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:telemetry-destinations", "create",
-			"--endpoint-url", "x",
+			"--endpoint-url", "https://gateway.example.com",
 			"--workspaces", "{type: all}",
 			"--display-name", "display_name",
 			"--headers", "{foo: string}",
@@ -47,7 +47,7 @@ func TestBetaOrganizationTelemetryDestinationsCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"endpoint_url: x\n" +
+			"endpoint_url: https://gateway.example.com\n" +
 			"workspaces:\n" +
 			"  type: all\n" +
 			"display_name: display_name\n" +

@@ -14,7 +14,7 @@ import (
 
 var userProfilesActionURLsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
-	Usage:   "Create Action URL",
+	Usage:   "Create a link that sends the profile's end customer to the Verification Portal.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

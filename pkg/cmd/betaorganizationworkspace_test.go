@@ -18,6 +18,7 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			"--data-residency", "{allowed_inference_geos: unrestricted, default_inference_geo: global, workspace_geo: us}",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
+			"--inference-data-privacy", "{human_review: {type: disabled}, safeguards_storage: {type: internal}, transcripts_storage: {type: internal}}",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
 			"--beta", "computer-use-2024-10-22",
@@ -39,6 +40,9 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			"--data-residency.workspace-geo", "us",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
+			"--inference-data-privacy.human-review", "{type: disabled}",
+			"--inference-data-privacy.safeguards-storage", "{type: internal}",
+			"--inference-data-privacy.transcripts-storage", "{type: internal}",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
 			"--beta", "computer-use-2024-10-22",
@@ -55,6 +59,13 @@ func TestBetaOrganizationWorkspacesCreate(t *testing.T) {
 			"  workspace_geo: us\n" +
 			"display_color: '#6C5BB9'\n" +
 			"external_key_id: ekey_01SDCCSbTxrXDpWc1phhtcfK\n" +
+			"inference_data_privacy:\n" +
+			"  human_review:\n" +
+			"    type: disabled\n" +
+			"  safeguards_storage:\n" +
+			"    type: internal\n" +
+			"  transcripts_storage:\n" +
+			"    type: internal\n" +
 			"tags:\n" +
 			"  env: prod\n" +
 			"  team: platform\n" +
@@ -76,6 +87,7 @@ func TestBetaOrganizationWorkspacesRetrieve(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "retrieve",
 			"--workspace-id", "workspace_id",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -91,9 +103,11 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"--data-residency", "{allowed_inference_geos: unrestricted, default_inference_geo: global}",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
+			"--inference-data-privacy", "{human_review: {type: disabled}, safeguards_storage: {type: internal}, transcripts_storage: {type: internal}}",
 			"--name", "Workspace Name",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -111,9 +125,13 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"--data-residency.default-inference-geo", "global",
 			"--display-color", "#6C5BB9",
 			"--external-key-id", "ekey_01SDCCSbTxrXDpWc1phhtcfK",
+			"--inference-data-privacy.human-review", "{type: disabled}",
+			"--inference-data-privacy.safeguards-storage", "{type: internal}",
+			"--inference-data-privacy.transcripts-storage", "{type: internal}",
 			"--name", "Workspace Name",
 			"--tags", "{env: prod, team: platform}",
 			"--user-profile-id", "uprof_01SDCCSbTxrXDpWc1phhtcfK",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
@@ -125,6 +143,13 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"  default_inference_geo: global\n" +
 			"display_color: '#6C5BB9'\n" +
 			"external_key_id: ekey_01SDCCSbTxrXDpWc1phhtcfK\n" +
+			"inference_data_privacy:\n" +
+			"  human_review:\n" +
+			"    type: disabled\n" +
+			"  safeguards_storage:\n" +
+			"    type: internal\n" +
+			"  transcripts_storage:\n" +
+			"    type: internal\n" +
 			"name: Workspace Name\n" +
 			"tags:\n" +
 			"  env: prod\n" +
@@ -135,6 +160,7 @@ func TestBetaOrganizationWorkspacesUpdate(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "update",
 			"--workspace-id", "workspace_id",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -153,6 +179,7 @@ func TestBetaOrganizationWorkspacesList(t *testing.T) {
 			"--include-archived=true",
 			"--include-default=true",
 			"--limit", "1",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }
@@ -165,6 +192,7 @@ func TestBetaOrganizationWorkspacesArchive(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:workspaces", "archive",
 			"--workspace-id", "workspace_id",
+			"--beta", "computer-use-2024-10-22",
 		)
 	})
 }

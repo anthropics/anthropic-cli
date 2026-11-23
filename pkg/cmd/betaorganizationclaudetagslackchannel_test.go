@@ -14,7 +14,7 @@ func TestBetaOrganizationClaudeTagSlackChannelsCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:slack-channels", "create",
-			"--slack", "{channel_id: xx, workspace_id: xx}",
+			"--slack", "{channel_id: C0456EFGH, workspace_id: T0123ABCD}",
 			"--settings", "{enabled: true, environment_id: x, guest_policy: {type: allow}, instructions: instructions, model: x, reply_mode: {type: automatic}}",
 			"--beta", "computer-use-2024-10-22",
 		)
@@ -29,8 +29,8 @@ func TestBetaOrganizationClaudeTagSlackChannelsCreate(t *testing.T) {
 			t,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:claude-tag:slack-channels", "create",
-			"--slack.channel-id", "xx",
-			"--slack.workspace-id", "xx",
+			"--slack.channel-id", "C0456EFGH",
+			"--slack.workspace-id", "T0123ABCD",
 			"--settings.enabled=true",
 			"--settings.environment-id", "x",
 			"--settings.guest-policy", "{type: allow}",
@@ -45,8 +45,8 @@ func TestBetaOrganizationClaudeTagSlackChannelsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"slack:\n" +
-			"  channel_id: xx\n" +
-			"  workspace_id: xx\n" +
+			"  channel_id: C0456EFGH\n" +
+			"  workspace_id: T0123ABCD\n" +
 			"settings:\n" +
 			"  enabled: true\n" +
 			"  environment_id: x\n" +

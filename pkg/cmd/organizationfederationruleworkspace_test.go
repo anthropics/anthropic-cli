@@ -27,13 +27,13 @@ func TestOrganizationFederationRulesWorkspacesAdd(t *testing.T) {
 			t,
 			"organization:federation:rules:workspaces", "add",
 			"--federation-rule-id", "federation_rule_id",
-			"--workspace-id", "workspace_id",
+			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
 		)
 	})
 
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
-		pipeData := []byte("workspace_id: workspace_id")
+		pipeData := []byte("workspace_id: wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"organization:federation:rules:workspaces", "add",
