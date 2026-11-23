@@ -122,7 +122,7 @@ var betaOrganizationPluginsVersionsList = cli.Command{
 
 var betaOrganizationPluginsVersionsDownload = cli.Command{
 	Name:    "download",
-	Usage:   "Download one version's `.zip` archive, exactly as stored. Each download of a\nPlugin from a member's personal plugin marketplace is recorded on the Compliance\nAPI activity feed.",
+	Usage:   "Download one version's `.zip` archive, exactly as stored. Downloads of Plugins\nfrom members' personal plugin marketplaces can be recorded on the Compliance API\nactivity feed.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
