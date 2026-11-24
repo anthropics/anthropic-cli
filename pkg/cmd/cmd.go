@@ -885,6 +885,15 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:organization:providers:google:projects:data-controls",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationProvidersGoogleProjectsDataControlsRetrieve,
+					&betaOrganizationProvidersGoogleProjectsDataControlsUpdate,
+				},
+			},
+			{
 				Name:     "beta:organization:users",
 				Category: "API RESOURCE",
 				Suggest:  true,
