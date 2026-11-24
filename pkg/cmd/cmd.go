@@ -729,6 +729,15 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:user-profiles:providers:google:data-controls",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaUserProfilesProvidersGoogleDataControlsRetrieve,
+					&betaUserProfilesProvidersGoogleDataControlsUpdate,
+				},
+			},
+			{
 				Name:     "beta:dreams",
 				Category: "API RESOURCE",
 				Suggest:  true,
