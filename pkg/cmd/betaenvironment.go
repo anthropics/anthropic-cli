@@ -40,7 +40,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "scope",
-			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only. API organizations support only 'organization'; 'account' is rejected. If not specified, defaults based on organization type.",
+			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only. API organizations support only 'organization'; 'account' is rejected. If not specified, defaults based on organization type.\n\nAllowed values: \"organization\", \"account\".",
 			BodyPath: "scope",
 		},
 		&requestflag.Flag[[]string]{
@@ -60,7 +60,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 	"config": {
 		&requestflag.InnerFlag[string]{
 			Name:       "config.type",
-			Usage:      "Environment type",
+			Usage:      "Environment type\n\nAllowed values: \"cloud\", \"self_hosted\".",
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[map[string]any]{
@@ -70,7 +70,7 @@ var betaEnvironmentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "config.packages",
-			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.\n\nUnder `limited` networking, requires `networking.allow_package_managers` to be `true`.",
+			Usage:      "Package manager configuration. Under `limited` networking, requires `networking.allow_package_managers` to be `true`. Omit on update to preserve the existing value.",
 			InnerField: "packages",
 		},
 	},
@@ -134,7 +134,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "scope",
-			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only.",
+			Usage:    "The visibility scope for this environment. 'organization' makes the environment visible to all accounts. 'account' restricts visibility to the owning account only.\n\nAllowed values: \"organization\", \"account\".",
 			BodyPath: "scope",
 		},
 		&requestflag.Flag[[]string]{
@@ -154,7 +154,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	"config": {
 		&requestflag.InnerFlag[string]{
 			Name:       "config.type",
-			Usage:      "Environment type",
+			Usage:      "Environment type\n\nAllowed values: \"cloud\", \"self_hosted\".",
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[map[string]any]{
@@ -164,7 +164,7 @@ var betaEnvironmentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "config.packages",
-			Usage:      "Specify packages (and optionally their versions) available in this environment.\n\nWhen versioning, use the version semantics relevant for the package manager, e.g. for `pip` use `package==1.0.0`. You are responsible for validating the package and version exist. Unversioned installs the latest.\n\nUnder `limited` networking, requires `networking.allow_package_managers` to be `true`.",
+			Usage:      "Package manager configuration. Under `limited` networking, requires `networking.allow_package_managers` to be `true`. Omit on update to preserve the existing value.",
 			InnerField: "packages",
 		},
 	},

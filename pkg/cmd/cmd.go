@@ -729,6 +729,15 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:user-profiles:providers:google:data-controls",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaUserProfilesProvidersGoogleDataControlsRetrieve,
+					&betaUserProfilesProvidersGoogleDataControlsUpdate,
+				},
+			},
+			{
 				Name:     "beta:dreams",
 				Category: "API RESOURCE",
 				Suggest:  true,
@@ -762,6 +771,32 @@ func init() {
 					&betaTunnelsCertificatesRetrieve,
 					&betaTunnelsCertificatesList,
 					&betaTunnelsCertificatesArchive,
+				},
+			},
+			{
+				Name:     "beta:compliance:review:cases",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaComplianceReviewCasesRetrieve,
+					&betaComplianceReviewCasesList,
+					&betaComplianceReviewCasesRespond,
+				},
+			},
+			{
+				Name:     "beta:compliance:review:notices",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaComplianceReviewNoticesList,
+				},
+			},
+			{
+				Name:     "beta:compliance:review:items",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaComplianceReviewItemsRetrieve,
 				},
 			},
 			{
@@ -873,6 +908,15 @@ func init() {
 					&betaOrganizationExternalStorageList,
 					&betaOrganizationExternalStorageDelete,
 					&betaOrganizationExternalStorageActivate,
+				},
+			},
+			{
+				Name:     "beta:organization:providers:google:projects:data-controls",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaOrganizationProvidersGoogleProjectsDataControlsRetrieve,
+					&betaOrganizationProvidersGoogleProjectsDataControlsUpdate,
 				},
 			},
 			{

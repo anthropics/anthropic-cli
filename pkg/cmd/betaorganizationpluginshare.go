@@ -41,7 +41,7 @@ var betaOrganizationPluginsSharesList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "target-type",
-			Usage:     "Only shares with this kind of target: `organization` (every member), `rbac_group` (one RBAC Group), or `organization_member` (one member).",
+			Usage:     "Only shares with this kind of target: `organization` (every member), `rbac_group` (one RBAC Group), or `organization_member` (one member).\n\nAllowed values: \"organization\", \"organization_member\", \"rbac_group\".",
 			QueryPath: "target_type",
 		},
 		&requestflag.Flag[[]string]{

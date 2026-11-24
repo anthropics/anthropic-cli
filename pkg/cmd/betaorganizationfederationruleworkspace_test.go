@@ -30,14 +30,14 @@ func TestBetaOrganizationFederationRulesWorkspacesAdd(t *testing.T) {
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),
 			"beta:organization:federation:rules:workspaces", "add",
 			"--federation-rule-id", "federation_rule_id",
-			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
+			"--workspace-id", "wrkspc_01AbCdEfGhJkLmNpQrStUvWx",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
 
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
-		pipeData := []byte("workspace_id: wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ")
+		pipeData := []byte("workspace_id: wrkspc_01AbCdEfGhJkLmNpQrStUvWx")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),

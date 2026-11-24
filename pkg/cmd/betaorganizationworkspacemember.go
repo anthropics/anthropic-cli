@@ -53,7 +53,7 @@ var betaOrganizationWorkspacesMembersUpdate = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "workspace-role",
-			Usage:    `Allowed values: "workspace_admin", "workspace_billing", "workspace_developer", "workspace_restricted_developer", "workspace_user".`,
+			Usage:    "New workspace role for the User.\n\nAllowed values: \"workspace_admin\", \"workspace_billing\", \"workspace_developer\", \"workspace_restricted_developer\", \"workspace_user\".",
 			Required: true,
 			BodyPath: "workspace_role",
 		},
@@ -117,7 +117,7 @@ var betaOrganizationWorkspacesMembersAdd = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "workspace-role",
-			Usage:    `Allowed values: "workspace_admin", "workspace_developer", "workspace_restricted_developer", "workspace_user".`,
+			Usage:    "Role of the new Workspace Member. Cannot be `workspace_billing`.\n\nAllowed values: \"workspace_admin\", \"workspace_developer\", \"workspace_restricted_developer\", \"workspace_user\".",
 			Required: true,
 			BodyPath: "workspace_role",
 		},

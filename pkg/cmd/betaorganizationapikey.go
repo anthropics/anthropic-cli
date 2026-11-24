@@ -46,7 +46,7 @@ var betaOrganizationAPIKeysUpdate = cli.Command{
 		},
 		&requestflag.Flag[*string]{
 			Name:     "status",
-			Usage:    "Status of the API key.",
+			Usage:    "Status of the API key.\n\nAllowed values: \"active\", \"archived\", \"inactive\".",
 			BodyPath: "status",
 		},
 	},
@@ -82,7 +82,7 @@ var betaOrganizationAPIKeysList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "status",
-			Usage:     "Filter by API key status.",
+			Usage:     "Filter by API key status.\n\nAllowed values: \"active\", \"archived\", \"expired\", \"inactive\".",
 			QueryPath: "status",
 		},
 		&requestflag.Flag[string]{

@@ -37,6 +37,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "cache-control",
+			Usage:    "Top-level cache control automatically applies a cache_control marker to the last cacheable block in the request.",
 			BodyPath: "cache_control",
 		},
 		&requestflag.Flag[any]{
@@ -46,7 +47,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "diagnostics",
-			Usage:    "Request-level diagnostics. Currently carries the previous response\nid for prompt-cache divergence reporting.",
+			Usage:    "Request-level diagnostics. Supply `previous_message_id` to have the response include `diagnostics.cache_miss_reason` explaining any prompt-cache divergence from that prior request.",
 			BodyPath: "diagnostics",
 		},
 		&requestflag.Flag[*string]{
@@ -56,20 +57,22 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
+			Usage:    "An object describing metadata about the request.",
 			BodyPath: "metadata",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "output-config",
+			Usage:    "Configuration options for the model's output, such as the output format.",
 			BodyPath: "output_config",
 		},
 		&requestflag.Flag[string]{
 			Name:     "service-tier",
-			Usage:    "Determines whether to use priority capacity (if available) or standard capacity for this request.\n\nAnthropic offers different levels of service for your API requests. See [service-tiers](https://platform.claude.com/docs/en/api/service-tiers) for details.",
+			Usage:    "Determines whether to use priority capacity (if available) or standard capacity for this request.\n\nAnthropic offers different levels of service for your API requests. See [service-tiers](https://platform.claude.com/docs/en/api/service-tiers) for details.\n\nAllowed values: \"auto\", \"standard_only\".",
 			BodyPath: "service_tier",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.",
+			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.\n\nAllowed values: \"standard\", \"fast\".",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[[]string]{
@@ -139,7 +142,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.ttl",
-			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.",
+			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.\n\nAllowed values: \"5m\", \"1h\".",
 			InnerField: "ttl",
 		},
 	},
@@ -172,11 +175,12 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.\n\nAllowed values: \"low\", \"medium\", \"high\", \"xhigh\", \"max\".",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
+			Usage:      "A schema to specify Claude's output format in responses. See [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)",
 			InnerField: "format",
 		},
 	},
@@ -193,7 +197,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "thinking.display",
-			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).\n\nAllowed values: \"summarized\", \"omitted\".",
 			InnerField: "display",
 		},
 	},
@@ -229,10 +233,12 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.cache-control",
+			Usage:      "Create a cache control breakpoint at this content block.",
 			InnerField: "cache_control",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.citations",
+			Usage:      "Citations configuration for fetched documents. Citations are disabled by default.",
 			InnerField: "citations",
 		},
 		&requestflag.InnerFlag[any]{
@@ -285,7 +291,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "tool.response-inclusion",
-			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.\n\nAllowed values: \"full\", \"excluded\".",
 			InnerField: "response_inclusion",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -300,7 +306,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.url-sources",
-			Usage:      "Which sources contribute to the set of URLs web fetch may fetch.\n\nEach key is a tagged variant: ``user_input`` is ``all`` or ``none``; the\ntwo tool filters are ``all``, ``none``, ``only`` (only the named tools'\nresults) or ``except`` (every result but the named tools'). A named tool\nmust be declared in this request's ``tools[]``.",
+			Usage:      "Which sources contribute to the set of URLs the tool may fetch. Omitted means every source.",
 			InnerField: "url_sources",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -310,6 +316,7 @@ var messagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.user-location",
+			Usage:      "Parameters for the user's location. Used to provide more relevant search results.",
 			InnerField: "user_location",
 		},
 	},
@@ -334,15 +341,17 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "cache-control",
+			Usage:    "Top-level cache control automatically applies a cache_control marker to the last cacheable block in the request.",
 			BodyPath: "cache_control",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "output-config",
+			Usage:    "Configuration options for the model's output, such as the output format.",
 			BodyPath: "output_config",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.",
+			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.\n\nAllowed values: \"standard\", \"fast\".",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[any]{
@@ -398,18 +407,19 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.ttl",
-			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.",
+			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.\n\nAllowed values: \"5m\", \"1h\".",
 			InnerField: "ttl",
 		},
 	},
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.\n\nAllowed values: \"low\", \"medium\", \"high\", \"xhigh\", \"max\".",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
+			Usage:      "A schema to specify Claude's output format in responses. See [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)",
 			InnerField: "format",
 		},
 	},
@@ -426,7 +436,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "thinking.display",
-			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).\n\nAllowed values: \"summarized\", \"omitted\".",
 			InnerField: "display",
 		},
 	},
@@ -462,10 +472,12 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.cache-control",
+			Usage:      "Create a cache control breakpoint at this content block.",
 			InnerField: "cache_control",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.citations",
+			Usage:      "Citations configuration for fetched documents. Citations are disabled by default.",
 			InnerField: "citations",
 		},
 		&requestflag.InnerFlag[any]{
@@ -518,7 +530,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "tool.response-inclusion",
-			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.\n\nAllowed values: \"full\", \"excluded\".",
 			InnerField: "response_inclusion",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -533,7 +545,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.url-sources",
-			Usage:      "Which sources contribute to the set of URLs web fetch may fetch.\n\nEach key is a tagged variant: ``user_input`` is ``all`` or ``none``; the\ntwo tool filters are ``all``, ``none``, ``only`` (only the named tools'\nresults) or ``except`` (every result but the named tools'). A named tool\nmust be declared in this request's ``tools[]``.",
+			Usage:      "Which sources contribute to the set of URLs the tool may fetch. Omitted means every source.",
 			InnerField: "url_sources",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -543,6 +555,7 @@ var messagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.user-location",
+			Usage:      "Parameters for the user's location. Used to provide more relevant search results.",
 			InnerField: "user_location",
 		},
 	},

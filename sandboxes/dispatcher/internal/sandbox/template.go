@@ -30,19 +30,20 @@ func (c *Client) sandboxFromTemplate(ctx context.Context, name, sessionID string
 	return SandboxFromTemplate(c.shape, tpl, c.namespace, name, labels, c.workspaceClaim)
 }
 
-// SandboxFromTemplate builds the Sandbox stored under name on the direct
-// path: tpl's pod template with the fetch container's nonce variable pointed
-// at the sandbox's nonce Secret, one replica, and Retain so a delete is the
-// only thing that drops the workspace. The add-on's SandboxTemplate schema
-// stores no volumeClaimTemplates, so none are copied from tpl; the Sandbox
-// schema does store them, so claim, when set, becomes the Sandbox's own
-// volumeClaimTemplates entry and the controller binds the worker's workspace
-// mount to that claim, which outlives a suspend. Without a claim the mount
-// is backed by an emptyDir a suspend discards. The add-on's Sandbox schema
-// stores no networkPolicyManagement, so tpl's Unmanaged setting cannot be
-// carried; sandbox isolation on this path is the recipe's own
-// NetworkPolicies, which select the pod labels the copied pod template
-// carries.
+// SandboxFromTemplate builds the running Sandbox stored under name on the
+// direct path. It holds tpl's pod template, with the fetch container's nonce
+// variable pointed at the sandbox's nonce Secret. Its shutdownPolicy is Retain,
+// so a delete is the only thing that drops the workspace.
+//
+// No volumeClaimTemplates are copied from tpl at either version, because the
+// add-on's v1alpha1 SandboxTemplate stores none. A Sandbox does store them, so
+// claim, when set, becomes its own entry. The controller binds the worker's
+// workspace mount to that claim, which outlives a suspend. Without a claim the
+// mount is backed by an emptyDir a suspend discards.
+//
+// A Sandbox stores no networkPolicyManagement, so tpl's Unmanaged setting
+// cannot be carried. Isolation on this path is the recipe's own
+// NetworkPolicies, which select the labels of the copied pod template.
 func SandboxFromTemplate(shape Shape, tpl *unstructured.Unstructured, namespace, name string, labels map[string]any, claim *WorkspaceClaim) (*unstructured.Unstructured, error) {
 	podTemplate, found, err := unstructured.NestedMap(tpl.Object, "spec", "podTemplate")
 	if err != nil || !found {
@@ -51,11 +52,8 @@ func SandboxFromTemplate(shape Shape, tpl *unstructured.Unstructured, namespace,
 	if err := stampNonce(podTemplate, NonceSecretName(name)); err != nil {
 		return nil, fmt.Errorf("sandbox template %s: %w", tpl.GetName(), err)
 	}
-	spec := map[string]any{
-		"podTemplate":    podTemplate,
-		"replicas":       int64(1),
-		"shutdownPolicy": "Retain",
-	}
+	spec := shape.suspendSpec(false)
+	spec["podTemplate"], spec["shutdownPolicy"] = podTemplate, "Retain"
 	if err := ensureWorkspaceVolume(podTemplate, spec, claim); err != nil {
 		return nil, fmt.Errorf("sandbox template %s: %w", tpl.GetName(), err)
 	}

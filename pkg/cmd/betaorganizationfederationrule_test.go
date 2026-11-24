@@ -23,7 +23,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"--attributes", "{foo: string}",
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
-			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
+			"--workspace-id", "wrkspc_01AbCdEfGhJkLmNpQrStUvWx",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
@@ -51,7 +51,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"--attributes", "{foo: string}",
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
-			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
+			"--workspace-id", "wrkspc_01AbCdEfGhJkLmNpQrStUvWx",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
@@ -80,7 +80,7 @@ func TestBetaOrganizationFederationRulesCreate(t *testing.T) {
 			"  foo: string\n" +
 			"description: description\n" +
 			"token_lifetime_seconds: 60\n" +
-			"workspace_id: wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ\n")
+			"workspace_id: wrkspc_01AbCdEfGhJkLmNpQrStUvWx\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--base-url", mocktest.ServerWithQuery(t, "beta=true"),

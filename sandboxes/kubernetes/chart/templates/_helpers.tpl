@@ -4,8 +4,15 @@ include "cma-sandboxes.platformPreset" . | fromYaml and never compare
 .Values.platform themselves.
 */}}
 {{- define "cma-sandboxes.platformPreset" -}}
+{{- /* sandboxAPIVersion is what the template and the warm pool are written at, clientAPIVersion and claimMode what the dispatcher is told. */ -}}
 {{- if eq .Values.platform "gke" -}}
-sandboxAPIVersion: v1alpha1
+{{- /* GKE serves v1alpha1, both versions or v1beta1, by its release. helm template with no cluster sees neither and writes v1alpha1. */ -}}
+{{- /* An upgrade with --reuse-values can lack gke.sandboxAPIVersion. */ -}}
+{{- $version := .Values.gke.sandboxAPIVersion | default "auto" -}}
+{{- $served := ternary "v1beta1" "v1alpha1" (.Capabilities.APIVersions.Has "extensions.agents.x-k8s.io/v1beta1") -}}
+sandboxAPIVersion: {{ ternary $served $version (eq $version "auto") }}
+clientAPIVersion: {{ $version }}
+claimMode: direct
 sandboxIdentity: nonce
 sandboxSchema: addon
 workspaceClaimOn: dispatcher
@@ -16,6 +23,8 @@ createRuntimeClass: false
 egressExceptExtra: [{{ .Values.gke.serviceCIDR | quote }}]
 {{- else if eq .Values.platform "eks" -}}
 sandboxAPIVersion: v1beta1
+clientAPIVersion: v1beta1
+claimMode: sandbox_claim
 sandboxIdentity: projectedToken
 sandboxSchema: upstream
 workspaceClaimOn: template
@@ -26,6 +35,8 @@ createRuntimeClass: {{ .Values.runtimeClass.create }}
 egressExceptExtra: []
 {{- else -}}
 sandboxAPIVersion: v1beta1
+clientAPIVersion: v1beta1
+claimMode: sandbox_claim
 sandboxIdentity: projectedToken
 sandboxSchema: upstream
 workspaceClaimOn: template
@@ -76,6 +87,14 @@ refuses unknown keys, wrong types and values outside a fixed list.
 {{- end -}}
 {{- if and (eq .Values.gke.dns "cloudDns") (not $onGKE) -}}
 {{- fail (printf "gke.dns is cloudDns, which only GKE serves, and platform is %s. Set gke.dns back to kubeDns, or set platform to gke." .Values.platform) -}}
+{{- end -}}
+{{- if and (ne (.Values.gke.sandboxAPIVersion | default "auto") "auto") (not $onGKE) -}}
+{{- fail (printf "gke.sandboxAPIVersion is %s, which is for a GKE cluster, and platform is %s. Remove gke.sandboxAPIVersion, or set platform to gke." .Values.gke.sandboxAPIVersion .Values.platform) -}}
+{{- end -}}
+{{- /* An upgrade can change the version of an installed object only where both versions are served. A version with no patch number is refused at v4.0. At v4.1 it passes, because it may be 4.1.1. */ -}}
+{{- $bothServed := and (.Capabilities.APIVersions.Has "extensions.agents.x-k8s.io/v1alpha1") (.Capabilities.APIVersions.Has "extensions.agents.x-k8s.io/v1beta1") -}}
+{{- if and $onGKE .Release.IsUpgrade $bothServed (regexMatch "^v4\\.(0(\\.[0-9]+)?|1\\.0)([-+]|$)" .Capabilities.HelmVersion.Version) -}}
+{{- fail (printf "This is Helm %s, and Helm 4.0.0 to 4.1.0 deletes an object whose API version changes in an upgrade. The cluster serves two versions of the Agent Sandbox API, so this upgrade could delete the sandbox template. Upgrade with Helm 4.1.1 or newer, or with Helm 3." .Capabilities.HelmVersion.Version) -}}
 {{- end -}}
 {{- $nodeLocalCache := eq .Values.gke.dns "nodeLocalCache" -}}
 {{- if and $nodeLocalCache (not $onGKE) -}}

@@ -29,6 +29,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -75,19 +76,15 @@ func main() {
 	if err := cfg.Load(); err != nil {
 		fatal(err)
 	}
-	shape, err := sandbox.ShapeFor(cfg.K8SAPIVersion)
-	if err != nil {
-		fatal(err)
-	}
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	switch cmd {
 	case "serve":
-		if err := serve(ctx, cfg, shape); err != nil {
+		if err := serve(ctx, cfg); err != nil {
 			fatal(err)
 		}
 	case "preflight":
-		if err := preflight(ctx, cfg, shape); err != nil {
+		if err := preflight(ctx, cfg); err != nil {
 			fatal(err)
 		}
 	}
@@ -95,7 +92,7 @@ func main() {
 
 // serve verifies the environment key, connects to the cluster, serves the
 // handoff API to sandbox pods, and polls the work queue until ctx ends.
-func serve(ctx context.Context, cfg *config.Config, shape sandbox.Shape) error {
+func serve(ctx context.Context, cfg *config.Config) error {
 	logger := newLogger(cfg.LogFormat)
 	// Logged before anything in serve that can fail. A start that cannot reach
 	// the API or the cluster still shows its version.
@@ -106,6 +103,10 @@ func serve(ctx context.Context, cfg *config.Config, shape sandbox.Shape) error {
 		return err
 	}
 	kube, dyn, err := clusterClients()
+	if err != nil {
+		return err
+	}
+	shape, err := sandboxShape(kube.Discovery(), cfg)
 	if err != nil {
 		return err
 	}
@@ -141,7 +142,7 @@ func serve(ctx context.Context, cfg *config.Config, shape sandbox.Shape) error {
 		errc <- httpapi.ListenAndServe(ctx, cfg.Listen, cfg.TLSCertFile, cfg.TLSKeyFile, server.Handler())
 	}()
 	go func() {
-		logger.Info("dispatching", "environment_id", cfg.EnvironmentID, "namespace", cfg.K8SNamespace, "api_version", shape.Version(), "max_handoffs", maxHandoffs, "worker_id", d.Options.WorkerID)
+		logger.Info("dispatching", "environment_id", cfg.EnvironmentID, "namespace", cfg.K8SNamespace, "api_version", shape.Version(), "claim_mode", shape.ClaimMode(), "max_handoffs", maxHandoffs, "worker_id", d.Options.WorkerID)
 		errc <- d.Run(ctx)
 	}()
 	err = <-errc
@@ -186,8 +187,21 @@ func watchPods(ctx context.Context, kube kubernetes.Interface, namespace string,
 
 const defaultMaxHandoffs = 8
 
+// sandboxShape resolves -api-version and -claim-mode. It asks the cluster only
+// under config.APIVersionAuto.
+func sandboxShape(d discovery.DiscoveryInterface, cfg *config.Config) (sandbox.Shape, error) {
+	apiVersion := cfg.K8SAPIVersion
+	if apiVersion == config.APIVersionAuto {
+		var err error
+		if apiVersion, err = sandbox.ServedVersion(d); err != nil {
+			return sandbox.Shape{}, err
+		}
+	}
+	return sandbox.ShapeFor(apiVersion, sandbox.ClaimMode(cfg.ClaimMode))
+}
+
 // sandboxClientAndAuth builds the sandbox client and the pod-facing
-// authenticator together, since they share an identity model. On the add-on
+// authenticator together, since they share an identity model. On the direct
 // path the client's nonce registry is also what authenticates the endpoint.
 func sandboxClientAndAuth(kube kubernetes.Interface, dyn dynamic.Interface, cfg *config.Config, shape sandbox.Shape) (*sandbox.Client, httpapi.Authenticator, error) {
 	opts := sandbox.Options{Shape: shape, Namespace: cfg.K8SNamespace, EnvironmentID: cfg.EnvironmentID, TemplateName: cfg.K8SSandboxTemplateName, WarmPoolName: cfg.K8SWarmPoolName, WorkspaceClaim: workspaceClaim(cfg)}
@@ -214,8 +228,8 @@ func sandboxClientAndAuth(kube kubernetes.Interface, dyn dynamic.Interface, cfg 
 	return sandboxes, httpapi.NonceAuth{Registry: registry}, nil
 }
 
-// handoffLimit sizes the sessions provisioned at once. The add-on path has no
-// warm pool, so it takes the default; the upstream path reads the pool.
+// handoffLimit sizes the sessions provisioned at once. The direct path has no
+// warm pool, so it takes the default; the claim path reads the pool.
 func handoffLimit(ctx context.Context, shape sandbox.Shape, sandboxes *sandbox.Client, logger *slog.Logger) int {
 	if shape.Direct() {
 		return defaultMaxHandoffs
@@ -230,11 +244,19 @@ func handoffLimit(ctx context.Context, shape sandbox.Shape, sandboxes *sandbox.C
 
 // preflight checks the cluster and the environment key from the operator's
 // machine, prints one line per check, and fails when any check does.
-func preflight(ctx context.Context, cfg *config.Config, shape sandbox.Shape) error {
+func preflight(ctx context.Context, cfg *config.Config) error {
 	warnHTTP2Debug(newLogger(cfg.LogFormat), os.Getenv("GODEBUG"))
 	kube, dyn, err := clusterClients()
 	if err != nil {
 		return err
+	}
+	shape, err := sandboxShape(kube.Discovery(), cfg)
+	if err != nil {
+		// Only auto fails here. The checks still run, at the version auto prefers.
+		fmt.Printf("warn  -api-version auto found no version to use, so the checks use v1beta1: %v\n", err)
+		if shape, err = sandbox.ShapeFor("v1beta1", sandbox.ClaimMode(cfg.ClaimMode)); err != nil {
+			return err
+		}
 	}
 	checker := &checks.Checker{
 		Kube: kube,
@@ -259,7 +281,7 @@ func preflight(ctx context.Context, cfg *config.Config, shape sandbox.Shape) err
 	return nil
 }
 
-// workspaceClaim is the claim the add-on path gives each session's
+// workspaceClaim is the claim the direct path gives each session's
 // /workspace, or nil when the size is zero.
 func workspaceClaim(cfg *config.Config) *sandbox.WorkspaceClaim {
 	if cfg.WorkspaceClaimSize.IsZero() {

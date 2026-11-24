@@ -43,7 +43,7 @@ var organizationWorkspacesRateLimitsUpdate = requestflag.WithInnerFlags(cli.Comm
 	"limit": {
 		&requestflag.InnerFlag[string]{
 			Name:       "limit.type",
-			Usage:      "Rate limiter type. `input_tokens_per_minute` counts every input token, cache reads included. `input_tokens_per_minute_cache_aware` does not count cache reads, and on current models the organization's input-token limit usually has this type. A workspace limit of either type applies alongside the organization's limit, not in place of it. Because cache reads count toward an `input_tokens_per_minute` limit, it can reject requests that read mostly from the cache while the organization's limit still has room.",
+			Usage:      "Rate limiter type. `input_tokens_per_minute` counts every input token, cache reads included. `input_tokens_per_minute_cache_aware` does not count cache reads, and on current models the organization's input-token limit usually has this type. A workspace limit of either type applies alongside the organization's limit, not in place of it. Because cache reads count toward an `input_tokens_per_minute` limit, it can reject requests that read mostly from the cache while the organization's limit still has room.\n\nAllowed values: \"fast_itpmca\", \"fast_otpm\", \"input_tokens_per_minute\", \"input_tokens_per_minute_cache_aware\", \"output_tokens_per_minute\", \"requests_per_minute\", \"tokens_per_day\", \"tokens_per_minute\", \"tool_uses_per_second\".",
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[*int64]{
@@ -67,7 +67,7 @@ var organizationWorkspacesRateLimitsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "group-type",
-			Usage:     "Filter by group type.",
+			Usage:     "Filter by group type.\n\nAllowed values: \"batch\", \"files\", \"model_group\", \"skills\", \"token_count\", \"web_search\".",
 			QueryPath: "group_type",
 		},
 		&requestflag.Flag[bool]{

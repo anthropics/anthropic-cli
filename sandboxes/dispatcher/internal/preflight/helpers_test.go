@@ -160,7 +160,7 @@ func run(t *testing.T, c cluster) string {
 // runWithCount returns the output and the failure count Run reports.
 func runWithCount(t *testing.T, c cluster) (string, int) {
 	t.Helper()
-	shape, _ := sandbox.ShapeFor("v1beta1")
+	shape, _ := sandbox.ShapeFor("v1beta1", "")
 	classAnnotations := map[string]string{}
 	if c.defaultClassAnnotation != "" {
 		classAnnotations[c.defaultClassAnnotation] = "true"
@@ -274,7 +274,7 @@ func runDirect(t *testing.T, c directCluster) string {
 // runDirectWithCount returns the output and the failure count Run reports.
 func runDirectWithCount(t *testing.T, c directCluster) (string, int) {
 	t.Helper()
-	shape, _ := sandbox.ShapeFor("v1alpha1")
+	shape, _ := sandbox.ShapeFor("v1alpha1", "")
 	kube := kubefake.NewSimpleClientset(
 		&nodev1.RuntimeClass{ObjectMeta: metav1.ObjectMeta{Name: "gvisor"}, Handler: cmp.Or(c.handler, "runsc")},
 		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "ns", Labels: map[string]string{"pod-security.kubernetes.io/enforce": cmp.Or(c.psaLabel, "restricted")}}},

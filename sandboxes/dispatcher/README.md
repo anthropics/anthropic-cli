@@ -4,9 +4,10 @@
 It polls the environment's work queue with the environment key, gives each session its own sandbox pod through [Kubernetes Agent Sandbox](https://github.com/kubernetes-sigs/agent-sandbox), hands that pod the work item's secret payload (which embeds the session-scoped token), and acks the work item only after the pod has collected it.
 Only the dispatcher ever holds the environment key, and a sandbox pod's `worker` container holds nothing the dispatcher accepts.
 
-How a pod proves its identity depends on the API version.
-On `v1beta1` (upstream) the dispatcher creates a SandboxClaim and the pod authenticates with a projected service-account token the dispatcher verifies with a Kubernetes TokenReview.
-On `v1alpha1` (the GKE add-on, whose admission policy bans every kubelet-issued credential in a sandbox pod) the dispatcher creates the Sandbox directly, with a fresh per-sandbox nonce in a Secret only the fetch container reads, through an env valueFrom; the pod presents that nonce, and the dispatcher accepts it only from the address of the sandbox's own Running pod.
+How a session gets its Sandbox, and how its pod proves its identity, depends on `-claim-mode`.
+On the claim path (`sandbox_claim`) the dispatcher creates a SandboxClaim and the pod authenticates with a projected service-account token the dispatcher verifies with a Kubernetes TokenReview.
+The GKE add-on serves SandboxClaims, but its admission policy bans every kubelet-issued credential in a sandbox pod, so it needs the direct path.
+On the direct path (`direct`) the dispatcher creates the Sandbox directly, with a fresh per-sandbox nonce in a Secret only the fetch container reads, through an env valueFrom; the pod presents that nonce, and the dispatcher accepts it only from the address of the sandbox's own Running pod.
 
 ## Build
 
@@ -43,8 +44,9 @@ Configuration comes from the environment (one Kubernetes Secret) plus flags; eve
 | `ANTHROPIC_ENVIRONMENT_ID` | — | required | environment the dispatcher serves |
 | `ANTHROPIC_BASE_URL` | — | required | `https://api.anthropic.com` or a custom API base URL |
 | `CMA_DISPATCHER_NAMESPACE` | `-namespace` | service-account mount | namespace of the sandboxes |
-| `CMA_DISPATCHER_API_VERSION` | `-api-version` | `v1beta1` | `agents.x-k8s.io` version: `v1alpha1` for the GKE add-on, `v1beta1` for upstream |
-| `CMA_DISPATCHER_SANDBOX_TEMPLATE` | `-sandbox-template` | `cma-sandbox` | SandboxTemplate the add-on path builds Sandboxes from |
+| `CMA_DISPATCHER_API_VERSION` | `-api-version` | `v1beta1` | `agents.x-k8s.io` version: `v1beta1`, `v1alpha1`, or `auto` to ask the cluster at start, which needs `-claim-mode` |
+| `CMA_DISPATCHER_CLAIM_MODE` | `-claim-mode` | `direct` under `v1alpha1`, else `sandbox_claim` | `sandbox_claim` takes a Sandbox from the warm pool through a SandboxClaim, and is refused under `v1alpha1`; `direct` creates it with no claim, for a cluster that bans projected tokens in a sandbox |
+| `CMA_DISPATCHER_SANDBOX_TEMPLATE` | `-sandbox-template` | `cma-sandbox` | SandboxTemplate the direct path builds Sandboxes from |
 | `CMA_DISPATCHER_WARM_POOL` | `-warm-pool` | `cma-sandbox` | SandboxWarmPool claims check out from |
 | `CMA_DISPATCHER_SANDBOX_SERVICE_ACCOUNT` | `-sandbox-service-account` | `cma-sandbox` | ServiceAccount of the sandbox pods; `default` is refused |
 | `CMA_DISPATCHER_TOKEN_AUDIENCE` | `-token-audience` | `cma-dispatcher` | audience of the pods' projected tokens |
@@ -54,8 +56,8 @@ Configuration comes from the environment (one Kubernetes Secret) plus flags; eve
 | `CMA_DISPATCHER_HANDOFF_WAIT` | `-handoff-wait` | `120s` | time for a session to reach a running pod that collects its work item; the queue's reclaim window is twice this |
 | `CMA_DISPATCHER_SWEEP_INTERVAL` | `-sweep-interval` | `5m` | how often sandboxes are checked against the API |
 | `CMA_DISPATCHER_RETENTION_DAYS` | `-retention-days` | `0` (off) | delete suspended sandboxes idle longer than this |
-| `CMA_DISPATCHER_WORKSPACE_CLAIM_SIZE` | `-workspace-claim-size` | `10Gi` | add-on path: size of each session's `/workspace` claim; `0` backs `/workspace` with an emptyDir a suspend discards |
-| `CMA_DISPATCHER_WORKSPACE_STORAGE_CLASS` | `-workspace-storage-class` | empty (cluster default) | add-on path: StorageClass of that claim |
+| `CMA_DISPATCHER_WORKSPACE_CLAIM_SIZE` | `-workspace-claim-size` | `10Gi` | direct path: size of each session's `/workspace` claim; `0` backs `/workspace` with an emptyDir a suspend discards |
+| `CMA_DISPATCHER_WORKSPACE_STORAGE_CLASS` | `-workspace-storage-class` | empty (cluster default) | direct path: StorageClass of that claim |
 | `CMA_DISPATCHER_MAX_CONCURRENT_HANDOFFS` | `-max-concurrent-handoffs` | `0` | sessions provisioned at once; `0` reads the warm pool's replicas, or 8 when that fails |
 | `CMA_DISPATCHER_LOG_FORMAT` | `-log-format` | `text` | `text` or `json` |
 | `CMA_DISPATCHER_DISPATCHER_SERVICE_ACCOUNT`, `CMA_DISPATCHER_DEPLOYMENT`, `CMA_DISPATCHER_SERVICE_HOST`, `CMA_DISPATCHER_SKIP_NETWORK_PROBE` | same names | `cma-dispatcher`, `cma-dispatcher`, `cma-dispatcher:8443`, `false` | preflight only |
@@ -75,14 +77,14 @@ level=WARN msg="GODEBUG http2debug is on: the HTTP/2 debug lines on standard err
 
 ## What one work item does
 
-1. The session handle's name is derived from the session id: lowercased, non-alphanumeric runs replaced by `-`, cut so that twelve hex digits of `sha256(session id)` still fit a 63-character label. This names the SandboxClaim on `v1beta1` and the Sandbox itself on `v1alpha1`.
-2. The handle is created with labels `anthropic.com/session-id` and `app.kubernetes.io/managed-by: cma-dispatcher`, and no lifetime that would delete the session's volume. An existing handle is reused only when it carries both labels for this session; a suspended Sandbox is set back to running. On `v1alpha1` the Sandbox is created directly from the template, its fetch container reading a per-sandbox nonce Secret the Sandbox owns; an existing Sandbox is reused only while the dispatcher still holds its nonce. After a restart the dispatcher holds no nonces and may not read Secrets back. While such a Sandbox's pod still exists the handoff fails and the work item redelivers, since the pod may be running a turn. Once the pod is gone, a Sandbox with no recorded handoff and no stored workspace claim is deleted so the next handoff recreates it; one stored with a claim, or past its first collection, is kept and re-armed: the dispatcher suspends it if it is not already, writes a fresh nonce Secret and points the fetch container at it, so the resumed pod starts with the new nonce.
+1. The session handle's name is derived from the session id: lowercased, non-alphanumeric runs replaced by `-`, cut so that twelve hex digits of `sha256(session id)` still fit a 63-character label. This names the SandboxClaim on the claim path and the Sandbox itself on the direct path.
+2. The handle is created with labels `anthropic.com/session-id` and `app.kubernetes.io/managed-by: cma-dispatcher`, and no lifetime that would delete the session's volume. An existing handle is reused only when it carries both labels for this session; a suspended Sandbox is set back to running. On the direct path the Sandbox is created from the template, its fetch container reading a per-sandbox nonce Secret the Sandbox owns; an existing Sandbox is reused only while the dispatcher still holds its nonce. After a restart the dispatcher holds no nonces and may not read Secrets back. While such a Sandbox's pod still exists the handoff fails and the work item redelivers, since the pod may be running a turn. Once the pod is gone, a Sandbox with no recorded handoff and no stored workspace claim is deleted so the next handoff recreates it; one stored with a claim, or past its first collection, is kept and re-armed: the dispatcher suspends it if it is not already, writes a fresh nonce Secret and points the fetch container at it, so the resumed pod starts with the new nonce.
    The labels are only as trustworthy as the namespace's writers, since whoever can create claims can also label them.
    A handoff is recorded on the handle only after a collection (step 4), so on a Sandbox found after a restart a missing record does not show that an existing pod holds no work.
    A Sandbox stored with a workspace claim is kept even without a recorded handoff, since its volume may already hold a turn's files whose record never landed; whether it has a claim is read from the stored Sandbox, because `-workspace-claim-size` may have been set to `0` after it was created.
    A pod built before the fetch container was pointed at the new Secret presents a nonce the dispatcher does not hold and is refused.
    Any failed read while resolving such a Sandbox fails the handoff.
-3. The dispatcher waits for the claim's Sandbox to be Ready (on `v1beta1`) and its pod (named by the Sandbox's `agents.x-k8s.io/pod-name` annotation or after the Sandbox, controlled by the Sandbox, created no earlier than the Sandbox's last resume, not terminating) to be Running, then records a work item keyed by the pod UID.
+3. The dispatcher waits for the claim's Sandbox to be Ready (on the claim path) and its pod (named by the Sandbox's `agents.x-k8s.io/pod-name` annotation or after the Sandbox, controlled by the Sandbox, created no earlier than the Sandbox's last resume, not terminating) to be Running, then records a work item keyed by the pod UID.
 4. The pod's `fetch` container calls `GET /work-item`; the dispatcher acks the work item only after that call succeeds, and stamps `anthropic.com/last-active` on the claim. If the pod never asks within the handoff wait, the work item is dropped and the item is left for the queue to redeliver. The poll's reclaim window is twice the handoff wait, and a redelivered item whose pod still holds it is acked at once. The work id is the session id, and the API queues the item again on a message to a session whose worker has exited, so once the pod's worker is gone the same id is handed off afresh, resuming the suspended Sandbox.
    The handoff (the pod's UID and its worker's restart count) is recorded on the claim only after the pod collected the item, so a claim never records a handoff that did not take.
    The ack waits for that record: an acked item never comes again, and a dispatcher restarted with the claim unrecorded would judge the pod that holds the token stale and suspend it mid-turn.
@@ -95,8 +97,8 @@ At most `-max-concurrent-handoffs` sessions are provisioned at a time; the loop 
 
 Routes are exact-path, exact-method. `GET /healthz` is unauthenticated and answers 200.
 `GET /work-item` authenticates by the path's identity model.
-On `v1beta1` it verifies the bearer with a Kubernetes TokenReview for audience `cma-dispatcher`: the token must verify for that audience, belong to `system:serviceaccount:<namespace>:<sandbox service account>`, and carry `authentication.kubernetes.io/pod-uid`.
-On `v1alpha1` it reads the `X-CMA-Assignment-Nonce` header and accepts the request only when the nonce matches a live sandbox (constant-time compare), the request's TCP peer address is that sandbox's pod's address, and the pod is observed Running; a deleted pod or a changed address is refused, and every ambiguity fails closed.
+On the claim path it verifies the bearer with a Kubernetes TokenReview for audience `cma-dispatcher`: the token must verify for that audience, belong to `system:serviceaccount:<namespace>:<sandbox service account>`, and carry `authentication.kubernetes.io/pod-uid`.
+On the direct path it reads the `X-CMA-Assignment-Nonce` header and accepts the request only when the nonce matches a live sandbox (constant-time compare), the request's TCP peer address is that sandbox's pod's address, and the pod is observed Running; a deleted pod or a changed address is refused, and every ambiguity fails closed.
 Nothing but the resolved pod UID selects the work item.
 It returns `{"session_id","work_id","secret","base_url","environment_id"}`, `secret` being the work queue's secret payload verbatim: 404 means nothing is assigned to the pod yet and the caller should retry; 410 means the pod's work item is closed and it must not expect another. The same pod, identified by its verified token, gets the same work item again until the dispatcher closes it, which happens when the pod's worker exits or the pod is gone. The work item counts as collected only once the response has been written to the connection; a failed write keeps it for the retry.
 
@@ -107,16 +109,21 @@ Any other answer keeps the claim: a rejected key, an outage, or any other 404, s
 With `-retention-days N`, a suspended claim whose `anthropic.com/last-active` annotation is older than N days is deleted too; a claim without a parsable annotation is never counted as old.
 A session whose handoff is in flight is left alone by both rules, and a handoff that resumes a suspended sandbox stamps `anthropic.com/last-active` first.
 
-## By API version
+## By path and API version
 
-On `v1beta1` the dispatcher creates a SandboxClaim naming `spec.warmPoolRef`, and suspends by writing `spec.operatingMode` (`Suspended` / `Running`) on the Sandbox.
-On `v1alpha1` (the GKE add-on, which never reconciles warm pools) it creates the Sandbox directly from the template with `replicas: 1` and `shutdownPolicy: Retain`, the fetch container reading a fresh nonce Secret owned by the Sandbox, and suspends by writing `spec.replicas` (`0` / `1`).
-The add-on's SandboxTemplate schema stores no `volumeClaimTemplates`, so the dispatcher copies none from the template; the Sandbox schema does store them, so the dispatcher writes its own `workspace` claim (`-workspace-claim-size`, 10 GiB by default, from `-workspace-storage-class` or the cluster default) onto each Sandbox, and the controller creates a PVC owned by the Sandbox and binds it to the worker's mount by name. That PVC survives a suspend and is rebound on resume, and goes with the Sandbox on delete. A template that defines its own `workspace` volume keeps it. With `-workspace-claim-size 0` the mount is backed by an explicit emptyDir instead, and `/workspace` dies with the suspended pod.
+The API version sets how a Sandbox is suspended: `spec.operatingMode` (`Suspended` / `Running`) on `v1beta1`, `spec.replicas` (`0` / `1`) on `v1alpha1`.
+Under `-api-version auto` the dispatcher takes `v1beta1` when the cluster serves `sandboxes` and `sandboxtemplates` at that version, `v1alpha1` when it serves both at that one, and otherwise does not start.
+It asks once, at start, so a dispatcher that took `v1alpha1` needs a restart when the cluster stops serving it.
+`auto` needs `-claim-mode`, so that an upgrade of the cluster cannot change the path.
+
+On the claim path, which exists on `v1beta1` alone, the dispatcher creates a SandboxClaim naming `spec.warmPoolRef`.
+On the direct path it uses no warm pool. It creates a running Sandbox from the template with `shutdownPolicy: Retain`, the fetch container reading a fresh nonce Secret owned by the Sandbox.
+The add-on's `v1alpha1` SandboxTemplate schema stores no `volumeClaimTemplates`, so the dispatcher copies none from the template at either version; the Sandbox schema does store them, so the dispatcher writes its own `workspace` claim (`-workspace-claim-size`, 10 GiB by default, from `-workspace-storage-class` or the cluster default) onto each Sandbox, and the controller creates a PVC owned by the Sandbox and binds it to the worker's mount by name. That PVC survives a suspend and is rebound on resume, and goes with the Sandbox on delete. A template that defines its own `workspace` volume keeps it. With `-workspace-claim-size 0` the mount is backed by an explicit emptyDir instead, and `/workspace` dies with the suspended pod.
 The Sandbox carries the same `anthropic.com/session-id` and handoff annotations a claim would, so the loop treats it as its own session handle.
 
 ## Preflight checks
 
-The `v1beta1` checks:
+The claim path's checks:
 
 1. `agents.x-k8s.io/<version>` serves `sandboxes` and `extensions.agents.x-k8s.io/<version>` serves `sandboxclaims`, `sandboxtemplates`, `sandboxwarmpools`.
 2. The SandboxWarmPool's `sandboxTemplateRef` names the SandboxTemplate the next checks inspect, since session pods come from the pool's template.
@@ -130,7 +137,7 @@ The `v1beta1` checks:
 10. `work/stats` succeeds with the environment key.
 11. The dispatcher ServiceAccount is allowed each verb below and may create TokenReviews (checked with SubjectAccessReviews).
 
-On `v1alpha1` the checks differ in these ways:
+On the direct path the checks differ in these ways:
 
 - The API check requires only `sandboxes` and `sandboxtemplates`.
 - The warm-pool check is dropped.
@@ -141,7 +148,7 @@ On `v1alpha1` the checks differ in these ways:
 
 ## RBAC the binary needs
 
-Namespaced Role, `v1beta1`:
+Namespaced Role, claim path:
 
 | API group | resource | verbs |
 |---|---|---|
@@ -151,8 +158,8 @@ Namespaced Role, `v1beta1`:
 | `""` | `pods` | get, list, watch |
 
 Plus a ClusterRoleBinding to `system:auth-delegator` for TokenReview.
-On `v1alpha1` the dispatcher instead needs `sandboxes` create, get, list, watch, patch, delete, `sandboxtemplates` get, `secrets` create, and no SandboxClaim, warm-pool, or TokenReview access.
-The chart's Role carries the `v1beta1` grants, and only `platform: gke` adds the add-on path's, so the upstream installs never hold verbs they do not use.
+On the direct path the dispatcher instead needs `sandboxes` create, get, list, watch, patch, delete, `sandboxtemplates` get, `secrets` create, and no SandboxClaim, warm-pool, or TokenReview access.
+The chart's Role carries the claim path's grants, and only `platform: gke` adds the direct path's, so the upstream installs never hold verbs they do not use.
 `create` is the only Secrets verb: the dispatcher writes each sandbox's nonce Secret once and can never read, change, or delete one, and each nonce Secret is garbage-collected through its ownerReference to its Sandbox.
 Because the dispatcher cannot delete Secrets, each re-arm after a restart leaves the Sandbox's earlier nonce Secret in place until the Sandbox itself is deleted.
 `patch` on the session handle is for the `anthropic.com/last-active` annotation; `patch` on `sandboxes` suspends and resumes; `watch` on `pods` is how a worker's exit is seen.

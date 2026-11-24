@@ -14,7 +14,7 @@ import (
 )
 
 // EnsureClaim returns the session's sandbox handle, creating the backing
-// object when absent. The upstream path creates a SandboxClaim; the add-on
+// object when absent. The claim path creates a SandboxClaim; the direct
 // path creates a Sandbox directly.
 func (c *Client) EnsureClaim(ctx context.Context, sessionID string) (*SandboxClaim, error) {
 	if c.shape.Direct() {
@@ -45,7 +45,7 @@ func (c *Client) ListClaims(ctx context.Context) ([]SandboxClaim, error) {
 }
 
 // DeleteClaim deletes the session's handle and its pod and volumes. On the
-// upstream path the controller cascades from the deleted claim; on the add-on
+// claim path the controller cascades from the deleted claim; on the direct
 // path the Sandbox is deleted directly and its nonce forgotten. A handle
 // already gone is not an error.
 func (c *Client) DeleteClaim(ctx context.Context, name string) error {
@@ -114,7 +114,7 @@ func (c *Client) adoptExistingClaim(ctx context.Context, name, sessionID string)
 }
 
 // handleObjects is the resource holding each session's handle: SandboxClaims
-// on the upstream path, Sandboxes on the add-on path.
+// on the claim path, Sandboxes on the direct path.
 func (c *Client) handleObjects() dynamic.ResourceInterface {
 	if c.shape.Direct() {
 		return c.sandboxes()

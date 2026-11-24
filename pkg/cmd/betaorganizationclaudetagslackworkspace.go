@@ -51,7 +51,7 @@ var betaOrganizationClaudeTagSlackWorkspacesUpdate = requestflag.WithInnerFlags(
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "settings",
-			Usage:    "The settings to change. A setting left out is unchanged. A setting sent as null is cleared, so it is inherited.",
+			Usage:    "The settings to change.",
 			Required: true,
 			BodyPath: "settings",
 		},
@@ -77,7 +77,7 @@ var betaOrganizationClaudeTagSlackWorkspacesUpdate = requestflag.WithInnerFlags(
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "settings.guest-policy",
-			Usage:      "What Claude does in a channel while a Slack guest is in it, for everyone in the channel. It changes nothing in a channel without Slack guests. More types can be added.",
+			Usage:      "What Claude does in a channel while a Slack guest is in it. Null clears it.",
 			InnerField: "guest_policy",
 		},
 		&requestflag.InnerFlag[*string]{
@@ -92,7 +92,7 @@ var betaOrganizationClaudeTagSlackWorkspacesUpdate = requestflag.WithInnerFlags(
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "settings.reply-mode",
-			Usage:      "How Claude takes part in a Slack channel. A channel alone stores one. More types can be added.",
+			Usage:      "How Claude takes part in the channel: `automatic`, `mention_only`, `always_awake` or `thread`. Only a channel takes one: an update of a workspace that sends a value is refused, and one that sends null changes nothing. Null never clears it: sent to a channel that stores none it changes nothing, and sent to a channel that stores one it is refused, because a stored reply mode can be changed but never cleared; a caller that wants Claude's default behavior sends `automatic`.",
 			InnerField: "reply_mode",
 		},
 	},

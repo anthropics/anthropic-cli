@@ -78,7 +78,7 @@ var betaDreamsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "model.speed",
-			Usage:      "How fast the model generates output for the dream. Defaults to `standard`.\n\nDreams accept only `standard`.",
+			Usage:      "How fast the model generates output for the dream. Defaults to `standard`.\n\nDreams accept only `standard`.\n\nAllowed values: \"standard\", \"fast\".",
 			InnerField: "speed",
 		},
 	},
@@ -155,7 +155,7 @@ var betaDreamsList = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:      "status",
-			Usage:     "Return only dreams that have one of these statuses.\n\nRepeat the parameter to give more than one status. Leave it out to return dreams of every status.",
+			Usage:     "Return only dreams that have one of these statuses.\n\nRepeat the parameter to give more than one status. Leave it out to return dreams of every status.\n\n- `pending` - The dream is waiting to start and hasn't read its inputs yet.\n\n  `outputs` is empty and every `usage` count is zero.\n- `running` - The dream is reading its inputs and writing its result.\n\n  `usage` updates while the dream has this status.\n- `completed` - The dream finished and its output memory store holds the complete result.\n- `failed` - The dream stopped with an error, which `error` describes.\n\n  If `outputs` references a memory store, that memory store keeps what the dream wrote before it stopped.\n- `canceled` - A cancel request stopped the dream before it reached `completed` or `failed`.\n\n  If `outputs` references a memory store, that memory store keeps what the dream wrote. `usage` can keep changing after the cancel.",
 			QueryPath: "statuses",
 		},
 		&requestflag.Flag[[]string]{

@@ -44,7 +44,7 @@ type Sandbox struct {
 
 // NonceSink records the per-sandbox secret the dispatcher writes into each
 // direct Sandbox's nonce Secret, so the pod-facing endpoint can authenticate
-// the pod by it. The direct (add-on) path alone uses it.
+// the pod by it. The direct path alone uses it.
 type NonceSink interface {
 	// Mint returns a fresh nonce for sandboxName and registers it.
 	Mint(sandboxName string) (string, error)
@@ -65,7 +65,7 @@ type Client struct {
 	templateName  string
 	warmPoolName  string
 	// nonces registers each direct Sandbox's nonce Secret value; nil on the
-	// upstream path, which authenticates pods by projected token instead.
+	// claim path, which authenticates pods by projected token instead.
 	nonces NonceSink
 	// workspaceClaim backs each direct Sandbox's /workspace; nil means an
 	// emptyDir that a suspend discards.
@@ -75,7 +75,7 @@ type Client struct {
 // WorkspaceClaim is the per-session volume the direct path gives /workspace:
 // a ReadWriteOnce claim of Size from StorageClass (the cluster default when
 // empty), owned by the Sandbox so it survives a suspend and goes with a
-// delete. The upstream path takes its claim from the SandboxTemplate.
+// delete. The claim path takes its claim from the SandboxTemplate.
 type WorkspaceClaim struct {
 	Size         resource.Quantity
 	StorageClass string
@@ -103,7 +103,7 @@ func New(dyn dynamic.Interface, kube kubernetes.Interface, opts Options) (*Clien
 		return nil, errors.New("the sandbox client needs an environment id")
 	}
 	if opts.Shape.Direct() && opts.Nonces == nil {
-		return nil, errors.New("the add-on path needs a nonce sink to authenticate sandbox pods")
+		return nil, errors.New("the direct path needs a nonce sink to authenticate sandbox pods")
 	}
 	return &Client{dyn: dyn, kube: kube, shape: opts.Shape, namespace: opts.Namespace, environmentID: opts.EnvironmentID, templateName: opts.TemplateName, warmPoolName: opts.WarmPoolName, nonces: opts.Nonces, workspaceClaim: opts.WorkspaceClaim}, nil
 }

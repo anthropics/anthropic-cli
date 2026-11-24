@@ -85,7 +85,7 @@ var betaDeploymentRunsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "trigger-type",
-			Usage:     "What triggered a deployment run.",
+			Usage:     "Filter runs by what triggered them. Omit to return all runs.\n\n- `schedule` - The run was fired by the deployment's cron schedule.\n- `manual` - The run was started manually by creating a session directly against the deployment.",
 			QueryPath: "trigger_type",
 		},
 		&requestflag.Flag[[]string]{

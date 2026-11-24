@@ -120,6 +120,7 @@
       "properties": {
         "dns": {"enum": ["kubeDns", "cloudDns", "nodeLocalCache"]},
         "kubeDnsUpstreamIP": {"type": "string"},
+        "sandboxAPIVersion": {"enum": ["auto", "v1alpha1", "v1beta1"]},
         "serviceCIDR": {"type": "string", "minLength": 1}
       }
     }

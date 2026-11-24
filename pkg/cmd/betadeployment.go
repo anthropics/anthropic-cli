@@ -43,7 +43,7 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "budget",
-			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			Usage:    "Enforced spend ceiling stamped onto each session created from this deployment, copied at session-creation time. Omit to leave sessions uncapped. The deployment agent's model must have a public list price, or the request is rejected; a multiagent roster is re-validated in full when each fire copies the cap, which fails closed the same way.",
 			BodyPath: "budget",
 		},
 		&requestflag.Flag[*string]{
@@ -63,7 +63,7 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "schedule",
-			Usage:    "A recurring schedule. Discriminated union — only cron is supported currently.",
+			Usage:    "Optional recurring cron schedule. When present, the deployment fires automatically. Both expression and timezone are required when schedule is set.",
 			BodyPath: "schedule",
 		},
 		&requestflag.Flag[[]string]{
@@ -131,7 +131,7 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 	"budget": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "budget.max-list-cost",
-			Usage:      "A monetary amount in a specific currency.",
+			Usage:      "Maximum list cost the session may accrue. List price is used regardless of any negotiated discount, so the cap fires at or before the actual charge.",
 			InnerField: "max_list_cost",
 		},
 		&requestflag.InnerFlag[string]{
@@ -148,7 +148,7 @@ var betaDeploymentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "resource.access",
-			Usage:      "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.",
+			Usage:      "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.\n\nAllowed values: \"read_write\", \"read_only\".",
 			InnerField: "access",
 		},
 		&requestflag.InnerFlag[string]{
@@ -251,7 +251,7 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "budget",
-			Usage:    "A hard spend ceiling. The session stops issuing new model requests once the tracked list cost reaches `max_list_cost`.",
+			Usage:    "Spend ceiling for future sessions. Full replacement. Omit to preserve; send null to clear (sessions created afterwards are uncapped). The deployment agent's model must have a public list price, or the request is rejected; a multiagent roster is re-validated in full when each fire copies the cap, which fails closed the same way.",
 			BodyPath: "budget",
 		},
 		&requestflag.Flag[*string]{
@@ -286,7 +286,7 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "schedule",
-			Usage:    "A recurring schedule. Discriminated union — only cron is supported currently.",
+			Usage:    "Cron schedule. Full replacement. Omit to preserve; send null to clear (revert to manual-only).",
 			BodyPath: "schedule",
 		},
 		&requestflag.Flag[any]{
@@ -328,7 +328,7 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	"budget": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "budget.max-list-cost",
-			Usage:      "A monetary amount in a specific currency.",
+			Usage:      "Maximum list cost the session may accrue. List price is used regardless of any negotiated discount, so the cap fires at or before the actual charge.",
 			InnerField: "max_list_cost",
 		},
 		&requestflag.InnerFlag[string]{
@@ -372,7 +372,7 @@ var betaDeploymentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:                  "resource.access",
-			Usage:                 "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.",
+			Usage:                 "Access mode for the mounted store. Defaults to read_write. read_only mounts the store as a read-only filesystem.\n\nAllowed values: \"read_write\", \"read_only\".",
 			InnerField:            "access",
 			OuterIsArrayOfObjects: true,
 		},
@@ -475,7 +475,7 @@ var betaDeploymentsList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "status",
-			Usage:     "Lifecycle status of a deployment.",
+			Usage:     "Filter by status: `active` or `paused`. Omit for both. To include archived deployments, use `include_archived` instead; the two cannot be combined.\n\n- `active` - The deployment is active and can run sessions. Archived deployments also report this status; check `archived_at` to distinguish them.\n- `paused` - The deployment is paused. Autonomous triggers are suppressed; manual runs are still permitted.",
 			QueryPath: "status",
 		},
 		&requestflag.Flag[[]string]{

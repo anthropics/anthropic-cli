@@ -25,6 +25,7 @@ var betaOrganizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "data-residency",
+			Usage:    "Data residency configuration for the workspace. If omitted, defaults to `workspace_geo: \"us\"`, `allowed_inference_geos: \"unrestricted\"`, and `default_inference_geo: \"global\"`.",
 			BodyPath: "data_residency",
 		},
 		&requestflag.Flag[*string]{
@@ -39,7 +40,7 @@ var betaOrganizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "inference-data-privacy",
-			Usage:    "Where the Workspace's retained inference data and transcript copies go, and\nwhether Anthropic's human review applies. A member cannot be null; omit it\ninstead.",
+			Usage:    "Where the Workspace's retained inference data and transcript copies go, and whether Anthropic's human review applies. Requires the `efs-2026-10-01` `anthropic-beta` value. When omitted, `safeguards_storage` and `transcripts_storage` are `internal` and `human_review` is `enabled`. Cannot be null. An Admin API key can't set this field, because it doesn't belong to a user or a service account. Use an API key that belongs to one, or an OAuth token.",
 			BodyPath: "inference_data_privacy",
 		},
 		&requestflag.Flag[map[string]any]{
@@ -69,27 +70,29 @@ var betaOrganizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "data-residency.default-inference-geo",
-			Usage:      "Default inference geo applied when requests omit the parameter. Defaults to 'global' if omitted. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.",
+			Usage:      "Default inference geo applied when requests omit the parameter. Defaults to 'global' if omitted. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.\n\nAllowed values: \"global\", \"us\".",
 			InnerField: "default_inference_geo",
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "data-residency.workspace-geo",
-			Usage:      "Geographic region for workspace data storage. Immutable after creation. Defaults to 'us' if omitted.",
+			Usage:      "Geographic region for workspace data storage. Immutable after creation. Defaults to 'us' if omitted.\n\nAllowed values: \"us\".",
 			InnerField: "workspace_geo",
 		},
 	},
 	"inference-data-privacy": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "inference-data-privacy.human-review",
-			Usage:      "Whether Anthropic's human review applies to the Workspace's inference\ndata.",
+			Usage:      "Whether Anthropic's human review applies to the Workspace. `disabled` needs Anthropic's approval. When omitted, `enabled`. Cannot be null.",
 			InnerField: "human_review",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "inference-data-privacy.safeguards-storage",
+			Usage:      "Where the data Anthropic's safeguards systems retain for the Workspace goes. `external` sends it, once the attach takes effect, to the External Storage that `external_storage_id` names. `internal` means no External Storage: it goes to Anthropic's storage or, on a cloud provider's platform, to that provider's storage. When omitted, `internal`. Cannot be null.",
 			InnerField: "safeguards_storage",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "inference-data-privacy.transcripts-storage",
+			Usage:      "Where copies of the Workspace's transcripts and its cases (Anthropic's safety findings about those transcripts) go. `external` sends them, once the attach takes effect, to the External Storage that `external_storage_id` names. `internal` means no External Storage, so no copies are made. When omitted, `internal`. Cannot be null.",
 			InnerField: "transcripts_storage",
 		},
 	},
@@ -128,6 +131,7 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "data-residency",
+			Usage:    "Data residency configuration for the workspace.",
 			BodyPath: "data_residency",
 		},
 		&requestflag.Flag[string]{
@@ -142,7 +146,7 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "inference-data-privacy",
-			Usage:    "Changes to where the Workspace's retained inference data and transcript\ncopies go, and to whether Anthropic's human review applies. An omitted member\nis unchanged; a member cannot be null.",
+			Usage:    "Changes to where the Workspace's retained inference data and transcript copies go, and to whether Anthropic's human review applies. Requires the `efs-2026-10-01` `anthropic-beta` value. An omitted member is unchanged. Cannot be null. An Admin API key can't set this field, because it doesn't belong to a user or a service account. Use an API key that belongs to one, or an OAuth token.",
 			BodyPath: "inference_data_privacy",
 		},
 		&requestflag.Flag[string]{
@@ -177,22 +181,24 @@ var betaOrganizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "data-residency.default-inference-geo",
-			Usage:      "Default inference geo applied when requests omit the parameter. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.",
+			Usage:      "Default inference geo applied when requests omit the parameter. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.\n\nAllowed values: \"global\", \"us\".",
 			InnerField: "default_inference_geo",
 		},
 	},
 	"inference-data-privacy": {
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "inference-data-privacy.human-review",
-			Usage:      "Whether Anthropic's human review applies to the Workspace's inference\ndata.",
+			Usage:      "Whether Anthropic's human review applies to the Workspace from now on. `disabled` needs Anthropic's approval. When omitted, unchanged. Cannot be null.",
 			InnerField: "human_review",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "inference-data-privacy.safeguards-storage",
+			Usage:      "Where the data Anthropic's safeguards systems retain for the Workspace goes once the change takes effect. `external` sends it to the External Storage that `external_storage_id` names. `internal` means no External Storage: it goes to Anthropic's storage or, on a cloud provider's platform, to that provider's storage. When omitted, unchanged. Cannot be null.",
 			InnerField: "safeguards_storage",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "inference-data-privacy.transcripts-storage",
+			Usage:      "Where copies of the Workspace's transcripts and its cases (Anthropic's safety findings about those transcripts) go once the change takes effect. `external` sends them to the External Storage that `external_storage_id` names. `internal` means no External Storage, so no more copies are made. When omitted, unchanged. Cannot be null.",
 			InnerField: "transcripts_storage",
 		},
 	},

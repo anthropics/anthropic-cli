@@ -25,7 +25,7 @@ var betaOrganizationAnalyticsCostReportList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "bucket-width",
-			Usage:     "Time bucket granularity.",
+			Usage:     "Time bucket granularity.\n\nAllowed values: \"1d\", \"1h\", \"1m\".",
 			Default:   "1d",
 			QueryPath: "bucket_width",
 		},

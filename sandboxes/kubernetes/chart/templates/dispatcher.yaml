@@ -53,7 +53,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: CMA_DISPATCHER_API_VERSION
-              value: {{ $platform.sandboxAPIVersion }}
+              value: {{ $platform.clientAPIVersion }}
+            - name: CMA_DISPATCHER_CLAIM_MODE
+              value: {{ $platform.claimMode }}
             - name: CMA_DISPATCHER_SANDBOX_TEMPLATE
               value: cma-sandbox
             - name: CMA_DISPATCHER_WARM_POOL

@@ -236,18 +236,18 @@ for last; do :; done
 	run.waitForWorkItemRefusal(t, "the worker was still held after every probe became unreachable")
 }
 
-// worker.sh gives each nc probe a connect timeout of at most one second. The
+// worker.sh gives each nc probe a connect timeout of at most two seconds. The
 // isolation probes target addresses the network policy drops. A dropped
 // connection gets no refusal. nc with no connect timeout then waits out the
 // kernel's retries, about two minutes per probe. A correctly isolated pod
-// makes up to three such connections on its one sweep. Its worker would then
-// start minutes late. A pod still waiting counts each sweep as 5 s toward the
-// 60 s deadline, whatever the probes took. At one second per probe that count
-// stays close to the clock. The nc stub answers at once only under a timeout
-// of one second, as nc gives up at its deadline. A timeout of 0 reads as none
+// makes up to three such connections on each sweep. Its worker would then
+// start minutes late. A pod still waiting counts each failed check as 5 s
+// toward the 60 s deadline, whatever the probes took. The nc stub answers at
+// once only under a timeout of one or two seconds, and of one second for the
+// resolver, as nc gives up at its deadline. A timeout of 0 reads as none
 // to nc, so the stub treats 0 as no timeout. Without one it waits past the
 // test's own deadline, as nc would wait on a dropped address.
-func TestWorkerGivesEachProbeAOneSecondConnectTimeout(t *testing.T) {
+func TestWorkerGivesEachProbeAConnectTimeoutOfAtMostTwoSeconds(t *testing.T) {
 	run := prepareWorker(t)
 	// The resolver is reachable and every probe unreachable, as in
 	// prepareWorker's stub.
@@ -260,12 +260,14 @@ while [ $# -gt 0 ]; do
 	*) last="$1"; shift ;;
 	esac
 done
-[ -n "$limit" ] && [ "$limit" -ge 1 ] && [ "$limit" -le 1 ] || sleep 60
+most=2
+[ "$last" != 53 ] || most=1
+[ -n "$limit" ] && [ "$limit" -ge 1 ] && [ "$limit" -le "$most" ] || sleep 60
 [ "$last" = 53 ]
 `)
 	startWorker(t, run)
 
-	run.waitForWorkItemRefusal(t, "the worker never got past its isolation check: an nc probe ran without a connect timeout of at most 1 s")
+	run.waitForWorkItemRefusal(t, "the worker never got past its isolation check: an nc probe ran without a connect timeout of at most 2 s, or 1 s for the resolver")
 }
 
 // A work-item directory the worker owns is one the session's code could
@@ -344,26 +346,22 @@ for last; do :; done
 // which proves nothing. A resolver that returns after them would pass a
 // sweep that exercised no network policy.
 //
-// In this test the resolver answers every other call. A worker that checks
-// it before the probes finds it reachable there and unreachable after them
-// on every sweep. So it never passes. At its deadline it refuses to start,
-// naming the lost resolver. A worker that checked the resolver once before
-// its sweeps would find it reachable after the probes on its second sweep.
-// It would then go on to the work item. The sleep stub shortens the worker's
-// five-second waits so the deadline passes within the test.
+// In this test the resolver answers its first call, and later only after a
+// probe has run. A worker that checks it before the probes passes one sweep
+// and no second, and refuses to start at its deadline. A worker that checked
+// it once before its sweeps would pass them all and go on to the work item.
+// The sleep stub shortens the worker's five-second waits so the deadline
+// passes within the test.
 func TestWorkerChecksTheResolverBeforeTheProbesOnEverySweep(t *testing.T) {
 	run := prepareWorker(t)
-	// Every probe is unreachable. The resolver answers every other call,
-	// counting from a reachable first; the stub keeps the count in the file
-	// below.
+	// Every probe is unreachable.
 	calls := filepath.Join(run.binDir, "resolver-calls")
 	writeStub(t, run.binDir, "nc", `#!/bin/sh
 # The worker's last argument is the port: 53 is the resolver, anything else a probe.
 for last; do :; done
-[ "$last" = 53 ] || exit 1
-n=$(($(cat "`+calls+`" 2>/dev/null || echo 0) + 1))
-echo "$n" > "`+calls+`"
-[ $((n % 2)) = 1 ]
+[ "$last" = 53 ] || { : > "`+calls+`.probed"; exit 1; }
+[ -e "`+calls+`" ] || { : > "`+calls+`"; exit 0; }
+rm "`+calls+`.probed" 2>/dev/null
 `)
 	realSleep, err := exec.LookPath("sleep")
 	if err != nil {
@@ -377,8 +375,8 @@ exec "`+realSleep+`" 0.02
 	if status := run.waitForExit(t, "refusing to run"); status != 1 {
 		t.Errorf("the worker exited %d, want 1", status)
 	}
-	if err := run.stderr(t); !strings.Contains(err, "refusing to start: this pod lost its DNS resolver during the check after 60s") {
-		t.Errorf("the worker did not hold every sweep on a resolver lost after the probes: %q", err)
+	if err := run.stderr(t); !strings.Contains(err, "refusing to start: this pod cannot reach its DNS resolver after 60s") {
+		t.Errorf("the worker did not hold on a resolver unreachable before the probes: %q", err)
 	}
 }
 
@@ -590,6 +588,14 @@ func TestWorkerRefusesToStartWhenThePodNeverBecomesIsolated(t *testing.T) {
 		{name: "metadata server reachable", nc: `# The worker's last two arguments are the host and the port.
 for arg; do host="${port:-}"; port="$arg"; done
 [ "$port" = 53 ] || [ "$host:$port" = 169.254.169.254:80 ]`, want: "refusing to start: this pod can still reach 169.254.169.254:80 after 60s"},
+		// The stub connects only when $3, nc's timeout, is 2 or more. A shorter
+		// wait ends before TCP repeats the lost request.
+		{name: "metadata server reachable, first packet lost", nc: `for arg; do host="${port:-}"; port="$arg"; done
+[ "$port" = 53 ] || { [ "$host:$port" = 169.254.169.254:80 ] && [ "$3" -ge 2 ]; }`, want: "refusing to start: this pod can still reach 169.254.169.254:80 after 60s"},
+		// The stub counts the metadata probes in a file and fails every other one,
+		// the first included.
+		{name: "metadata server reachable, every other sweep misses it", nc: `for arg; do host="${port:-}"; port="$arg"; done
+[ "$port" = 53 ] || { [ "$host" = 169.254.169.254 ] && echo >> "$0.tries" && [ $(($(wc -l < "$0.tries") % 2)) = 0 ]; }`, want: "refusing to start: this pod can still reach 169.254.169.254:80 after 60s"},
 		{name: "resolver unreachable", nc: `exit 1`, want: "refusing to start: this pod cannot reach its DNS resolver after 60s"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -726,13 +732,12 @@ for arg; do host="${port:-}"; port="$arg"; done
 
 // A sweep can lose the network between its first resolver check and the
 // probes. Every probe then fails to connect, which proves nothing. So the
-// worker must hold its isolation check, with nothing printed, until a sweep
-// finds the resolver reachable after the probes too.
+// worker must hold its isolation check, with nothing printed, until its sweeps
+// find the resolver reachable after the probes too.
 func TestWorkerWaitsUntilTheResolverIsReachableAfterTheProbes(t *testing.T) {
 	run := prepareWorker(t)
-	// Every probe is unreachable, and the stub records that one ran. While
-	// the resolver-flapping file exists, the resolver answers reachable,
-	// except once after a probe has run since its last answer. With that
+	// Every probe is unreachable. While the resolver-flapping file exists, the
+	// resolver fails once after the probes of every second sweep. With that
 	// file gone, the resolver always answers.
 	flapping := filepath.Join(run.binDir, "resolver-flapping")
 	probed := filepath.Join(run.binDir, "probed")
@@ -740,9 +745,15 @@ func TestWorkerWaitsUntilTheResolverIsReachableAfterTheProbes(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeStub(t, run.binDir, "nc", `#!/bin/sh
-# The worker's last argument is the port: 53 is the resolver, anything else a probe.
-for last; do :; done
-if [ "$last" != 53 ]; then : > "`+probed+`"; exit 1; fi
+# The worker's last two arguments are the host and the port.
+for arg; do host="${port:-}"; port="$arg"; done
+if [ "$port" != 53 ]; then
+	if [ "$host" = 169.254.169.254 ]; then
+		echo >> "`+probed+`.sweeps"
+		[ $(($(wc -l < "`+probed+`.sweeps") % 2)) = 1 ] || : > "`+probed+`"
+	fi
+	exit 1
+fi
 [ -e "`+flapping+`" ] || exit 0
 if [ -e "`+probed+`" ]; then
 	rm "`+probed+`"
@@ -764,7 +775,7 @@ fi
 	if err := os.Remove(flapping); err != nil {
 		t.Fatal(err)
 	}
-	run.waitForWorkItemRefusal(t, "the worker was still held after the resolver stayed reachable through a sweep")
+	run.waitForWorkItemRefusal(t, "the worker was still held after the resolver stayed reachable")
 }
 
 // The worker must find the resolver reachable before it runs the probes. A

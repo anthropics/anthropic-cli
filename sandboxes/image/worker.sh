@@ -48,16 +48,9 @@ main() {
 # not up yet fails every connection alike. That proves nothing.
 wait_until_isolated() {
 	waited=0
-	while :; do
-		if ! resolver_reachable; then
-			blocked_by="this pod cannot reach its DNS resolver"
-		elif reachable="$(any_probe_reachable)"; then
-			blocked_by="this pod can still reach $reachable"
-		elif resolver_reachable; then
-			return 0
-		else
-			blocked_by="this pod lost its DNS resolver during the check"
-		fi
+	# Lost packets can hide an open address for one sweep, so two sweeps in a
+	# row must pass.
+	until isolated_in_one_sweep && isolated_in_one_sweep; do
 		if [ "$waited" -ge "$ISOLATION_DEADLINE_SECONDS" ]; then
 			echo "refusing to start: $blocked_by after ${ISOLATION_DEADLINE_SECONDS}s" >&2
 			exit 1
@@ -65,6 +58,19 @@ wait_until_isolated() {
 		sleep 5
 		waited=$((waited + 5))
 	done
+}
+
+isolated_in_one_sweep() {
+	if ! resolver_reachable; then
+		blocked_by="this pod cannot reach its DNS resolver"
+	elif reachable="$(any_probe_reachable)"; then
+		blocked_by="this pod can still reach $reachable"
+	elif resolver_reachable; then
+		return 0
+	else
+		blocked_by="this pod lost its DNS resolver during the check"
+	fi
+	return 1
 }
 
 resolver_reachable() {
@@ -79,7 +85,9 @@ any_probe_reachable() {
 	for probe in $ISOLATION_PROBES; do
 		port="${probe##*:}"
 		host="${probe%:*}"
-		if nc -z -w 1 "$host" "$port" 2>/dev/null; then
+		# TCP repeats an unanswered connection request after one second. A probe
+		# waits two seconds. One lost packet then cannot hide an open address.
+		if nc -z -w 2 "$host" "$port" 2>/dev/null; then
 			echo "$probe"
 			return 0
 		fi

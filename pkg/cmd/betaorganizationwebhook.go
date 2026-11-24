@@ -100,7 +100,7 @@ var betaOrganizationWebhooksUpdate = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "state",
-			Usage:    "`disabled` stops deliveries. `enabled` resumes them and clears `disabled_reason`. Events that happen while the endpoint is disabled are never delivered.",
+			Usage:    "`disabled` stops deliveries. `enabled` resumes them and clears `disabled_reason`. Events that happen while the endpoint is disabled are never delivered.\n\nAllowed values: \"disabled\", \"enabled\".",
 			BodyPath: "state",
 		},
 		&requestflag.Flag[string]{
@@ -141,7 +141,7 @@ var betaOrganizationWebhooksList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     "Sort order by `created_at`. Defaults to `desc`, newest first.",
+			Usage:     "Sort order by `created_at`. Defaults to `desc`, newest first.\n\nAllowed values: \"asc\", \"desc\".",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[[]string]{

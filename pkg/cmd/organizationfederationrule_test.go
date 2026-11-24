@@ -21,7 +21,7 @@ func TestOrganizationFederationRulesCreate(t *testing.T) {
 			"--applies-to-all-workspaces=true",
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
-			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
+			"--workspace-id", "wrkspc_01AbCdEfGhJkLmNpQrStUvWx",
 		)
 	})
 
@@ -46,7 +46,7 @@ func TestOrganizationFederationRulesCreate(t *testing.T) {
 			"--applies-to-all-workspaces=true",
 			"--description", "description",
 			"--token-lifetime-seconds", "60",
-			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
+			"--workspace-id", "wrkspc_01AbCdEfGhJkLmNpQrStUvWx",
 		)
 	})
 
@@ -72,7 +72,7 @@ func TestOrganizationFederationRulesCreate(t *testing.T) {
 			"applies_to_all_workspaces: true\n" +
 			"description: description\n" +
 			"token_lifetime_seconds: 60\n" +
-			"workspace_id: wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ\n")
+			"workspace_id: wrkspc_01AbCdEfGhJkLmNpQrStUvWx\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"organization:federation:rules", "create",

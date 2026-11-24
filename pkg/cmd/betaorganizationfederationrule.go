@@ -25,7 +25,7 @@ var betaOrganizationFederationRulesCreate = requestflag.WithInnerFlags(cli.Comma
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "match",
-			Usage:    "Does the incoming JWT qualify?\n\nAll populated fields must pass; omitted fields are skipped. At least one\nof `subject_prefix` (other than a wildcard-only value like `*`), `claims`,\nor `condition` is required; `audience` alone is not sufficient.",
+			Usage:    "Conditions the verified JWT must satisfy for this rule to apply. At least one of `subject_prefix` (other than a wildcard-only value like `*`), `claims`, or `condition` is required; `audience` alone is not sufficient.",
 			Required: true,
 			BodyPath: "match",
 		},
@@ -43,7 +43,7 @@ var betaOrganizationFederationRulesCreate = requestflag.WithInnerFlags(cli.Comma
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "target",
-			Usage:    "Bind to a fixed service account by ID.",
+			Usage:    "Identity that tokens minted via this rule act as. Currently always a `service_account` target.",
 			Required: true,
 			BodyPath: "target",
 		},
@@ -171,7 +171,7 @@ var betaOrganizationFederationRulesUpdate = requestflag.WithInnerFlags(cli.Comma
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "match",
-			Usage:    "Does the incoming JWT qualify?\n\nAll populated fields must pass; omitted fields are skipped. At least one\nof `subject_prefix` (other than a wildcard-only value like `*`), `claims`,\nor `condition` is required; `audience` alone is not sufficient.",
+			Usage:    "Replaces the entire match object. All populated matcher fields must pass.",
 			BodyPath: "match",
 		},
 		&requestflag.Flag[*string]{
@@ -186,7 +186,7 @@ var betaOrganizationFederationRulesUpdate = requestflag.WithInnerFlags(cli.Comma
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "target",
-			Usage:    "Bind to a fixed service account by ID.",
+			Usage:    "Replaces the entire target object. Currently always a `service_account` target.",
 			BodyPath: "target",
 		},
 		&requestflag.Flag[*int64]{

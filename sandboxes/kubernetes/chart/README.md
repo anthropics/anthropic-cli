@@ -29,6 +29,8 @@ helm install cma oci://us-docker.pkg.dev/anthropic-public-registry/sandboxes/cha
 ```
 
 `examples/` has one worked values file per platform.
+On `gke` the template and the warm pool take `v1beta1` where the cluster serves it and `v1alpha1` otherwise, so `helm template` writes `v1alpha1` unless given `--api-versions extensions.agents.x-k8s.io/v1beta1`.
+`gke.sandboxAPIVersion` names a version instead.
 `values.yaml` documents every setting, and `values.schema.json` refuses a misspelled key.
 
 The chart refuses to install while `egress.clusterCIDRs` is empty unless `egress.clusterIsPrivate` is true, so the API endpoint is never left reachable by omission.

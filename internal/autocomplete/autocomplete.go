@@ -81,7 +81,9 @@ type ShellCompletion struct {
 }
 
 func NewShellCompletion(name string, usage string) ShellCompletion {
-	return ShellCompletion{Name: name, Usage: usage}
+	// Shells read one completion per line, so the first paragraph becomes a single line
+	summary, _, _ := strings.Cut(usage, "\n\n")
+	return ShellCompletion{Name: name, Usage: strings.Join(strings.Fields(summary), " ")}
 }
 
 type ShellCompletionBehavior int

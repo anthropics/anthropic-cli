@@ -118,7 +118,7 @@ var betaOrganizationSpendLimitsSet = requestflag.WithInnerFlags(cli.Command{
 	"scope": {
 		&requestflag.InnerFlag[string]{
 			Name:       "scope.type",
-			Usage:      "Scope type. Always `user` for this scope.",
+			Usage:      "Scope type. Always `user` for this scope.\n\nAllowed values: \"user\", \"organization\", \"workspace\".",
 			InnerField: "type",
 		},
 		&requestflag.InnerFlag[string]{

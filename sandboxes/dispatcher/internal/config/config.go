@@ -32,8 +32,10 @@ type Config struct {
 
 	// Namespace holds the sandboxes; inside a pod it defaults to the pod's own.
 	K8SNamespace string
-	// APIVersion is the agents.x-k8s.io version the cluster serves: v1alpha1 (GKE add-on) or v1beta1 (upstream).
+	// K8SAPIVersion is the agents.x-k8s.io version to use: v1alpha1, v1beta1 or APIVersionAuto.
 	K8SAPIVersion string
+	// ClaimMode is how a session gets its Sandbox: sandbox_claim, direct, or empty to go by the API version.
+	ClaimMode string
 	// SandboxTemplate names the SandboxTemplate session pods are made from.
 	K8SSandboxTemplateName string
 	// WarmPool names the SandboxWarmPool new claims check out from.
@@ -63,7 +65,7 @@ type Config struct {
 	Retention time.Duration
 	// MaxConcurrentHandoffs bounds the sessions provisioned at once; zero sizes it from the warm pool.
 	MaxConcurrentHandoffs int
-	// WorkspaceClaimSize is the per-session /workspace claim on the add-on path; zero backs /workspace with an emptyDir instead.
+	// WorkspaceClaimSize is the per-session /workspace claim on the direct path; zero backs /workspace with an emptyDir instead.
 	WorkspaceClaimSize resource.Quantity
 	// WorkspaceStorageClass names the StorageClass of that claim; empty takes the cluster default.
 	WorkspaceStorageClass string
@@ -91,7 +93,8 @@ type envError struct {
 func Bind(fs *flag.FlagSet) *Config {
 	c := &Config{fs: fs}
 	fs.StringVar(&c.K8SNamespace, "namespace", env("NAMESPACE", ""), "namespace of the sandboxes (default: the service-account mount)")
-	fs.StringVar(&c.K8SAPIVersion, "api-version", env("API_VERSION", "v1beta1"), "agents.x-k8s.io API version: v1alpha1 (GKE add-on) or v1beta1 (upstream)")
+	fs.StringVar(&c.K8SAPIVersion, "api-version", env("API_VERSION", "v1beta1"), "agents.x-k8s.io API version: v1beta1, v1alpha1, or auto to ask the cluster at start, which needs -claim-mode")
+	fs.StringVar(&c.ClaimMode, "claim-mode", env("CLAIM_MODE", ""), "how a session gets its Sandbox: sandbox_claim takes it from the warm pool through a SandboxClaim, and needs v1beta1; direct creates it with no claim, for a cluster that bans projected service-account tokens in a sandbox, as GKE's add-on does (default: direct under v1alpha1, else sandbox_claim)")
 	fs.StringVar(&c.K8SSandboxTemplateName, "sandbox-template", env("SANDBOX_TEMPLATE", "cma-sandbox"), "SandboxTemplate name")
 	fs.StringVar(&c.K8SWarmPoolName, "warm-pool", env("WARM_POOL", "cma-sandbox"), "SandboxWarmPool name")
 	fs.StringVar(&c.K8SSandboxServiceAccount, "sandbox-service-account", env("SANDBOX_SERVICE_ACCOUNT", "cma-sandbox"), "ServiceAccount the sandbox pods run as")
@@ -106,8 +109,8 @@ func Bind(fs *flag.FlagSet) *Config {
 	fs.DurationVar(&c.HandoffWait, "handoff-wait", envValue(c, "handoff-wait", 120*time.Second, time.ParseDuration, "a duration"), "time a session gets to reach a running pod that collects its work item; the queue's reclaim window is twice this")
 	fs.DurationVar(&c.SweepInterval, "sweep-interval", envValue(c, "sweep-interval", 5*time.Minute, time.ParseDuration, "a duration"), "how often sandboxes are checked against the API")
 	fs.IntVar(&c.retentionDays, "retention-days", envValue(c, "retention-days", 0, strconv.Atoi, "an integer"), "delete suspended sandboxes idle for this many days (0 keeps them)")
-	fs.StringVar(&c.workspaceClaimSize, "workspace-claim-size", env("WORKSPACE_CLAIM_SIZE", "10Gi"), "add-on path: size of each session's /workspace claim (0 backs /workspace with an emptyDir a suspend discards)")
-	fs.StringVar(&c.WorkspaceStorageClass, "workspace-storage-class", env("WORKSPACE_STORAGE_CLASS", ""), "add-on path: StorageClass of that claim (default: the cluster's default class)")
+	fs.StringVar(&c.workspaceClaimSize, "workspace-claim-size", env("WORKSPACE_CLAIM_SIZE", "10Gi"), "direct path: size of each session's /workspace claim (0 backs /workspace with an emptyDir a suspend discards)")
+	fs.StringVar(&c.WorkspaceStorageClass, "workspace-storage-class", env("WORKSPACE_STORAGE_CLASS", ""), "direct path: StorageClass of that claim (default: the cluster's default class)")
 	fs.IntVar(&c.MaxConcurrentHandoffs, "max-concurrent-handoffs", envValue(c, "max-concurrent-handoffs", 0, strconv.Atoi, "an integer"), "sessions provisioned at once (0: the warm pool's replicas, or 8 when it cannot be read)")
 	fs.StringVar(&c.LogFormat, "log-format", env("LOG_FORMAT", "text"), "log format: text or json")
 	fs.BoolVar(&c.SkipNetworkProbe, "skip-network-probe", envValue(c, "skip-network-probe", false, strconv.ParseBool, "a boolean"), "preflight: skip the network policy probe")
@@ -157,6 +160,19 @@ func (c *Config) validate() error {
 	// value. Requests would carry the environment key to that host.
 	if atAfterHost(c.BaseURL) {
 		return errors.New(`ANTHROPIC_BASE_URL (its value is not shown) has an "@" after a "/", "?" or "#", so its host is unclear; in a user name or password, write "/" as %2F, "?" as %3F and "#" as %23; in the path, query or fragment, write "@" as %40`)
+	}
+	if !slices.Contains([]string{APIVersionAuto, "v1alpha1", "v1beta1"}, c.K8SAPIVersion) {
+		return fmt.Errorf("-api-version must be %s, v1alpha1 or v1beta1, not %q", APIVersionAuto, c.K8SAPIVersion)
+	}
+	if !slices.Contains([]string{"", "sandbox_claim", "direct"}, c.ClaimMode) {
+		return fmt.Errorf("-claim-mode must be sandbox_claim or direct, not %q", c.ClaimMode)
+	}
+	// An empty mode follows the version. A cluster upgrade would then change the mode under auto.
+	if c.ClaimMode == "" && c.K8SAPIVersion == APIVersionAuto {
+		return errors.New("-api-version auto needs -claim-mode; on GKE set -claim-mode direct")
+	}
+	if c.ClaimMode == "sandbox_claim" && c.K8SAPIVersion == "v1alpha1" {
+		return errors.New("-claim-mode sandbox_claim is refused under -api-version v1alpha1; on GKE set -claim-mode direct")
 	}
 	if c.LogFormat != "text" && c.LogFormat != "json" {
 		return fmt.Errorf("-log-format must be text or json, not %q", c.LogFormat)
@@ -227,3 +243,6 @@ func envValue[T any](c *Config, flagName string, fallback T, parse func(string) 
 	}
 	return parsed
 }
+
+// APIVersionAuto asks the cluster which agents.x-k8s.io version it serves.
+const APIVersionAuto = "auto"

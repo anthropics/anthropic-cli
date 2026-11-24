@@ -135,3 +135,7 @@ gke:
   # get by default; it is public address space, so sandboxes are kept out of
   # it. Change it when the cluster has a custom Service range.
   serviceCIDR: 34.118.224.0/20
+  # The Agent Sandbox API version. Allowed values: auto, v1alpha1, v1beta1.
+  # auto takes v1beta1 where the cluster serves it, and otherwise v1alpha1.
+  # Name a version to stay on it while the cluster serves both.
+  sandboxAPIVersion: auto

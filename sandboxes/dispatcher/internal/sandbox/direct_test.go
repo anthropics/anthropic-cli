@@ -2,6 +2,7 @@ package sandbox
 
 import (
 	"context"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -29,7 +30,7 @@ func directClient(t *testing.T, objects ...runtime.Object) (*Client, *dynamicfak
 // container carrying fetchEnv.
 func directClientWithFetchEnv(t *testing.T, fetchEnv []any, objects ...runtime.Object) (*Client, *dynamicfake.FakeDynamicClient, *fakeNonces, *kubefake.Clientset) {
 	t.Helper()
-	shape, _ := ShapeFor("v1alpha1")
+	shape, _ := ShapeFor("v1alpha1", "")
 	tpl := object("extensions.agents.x-k8s.io/v1alpha1", "SandboxTemplate", "tpl", "tpl-uid", map[string]any{
 		"spec": map[string]any{"podTemplate": map[string]any{"spec": map[string]any{"containers": []any{
 			map[string]any{"name": "fetch", "env": fetchEnv},
@@ -134,6 +135,27 @@ func TestEnsureClaimCreatesTheSandboxDirectlyOnTheAddOn(t *testing.T) {
 	// Garbage collection matches an owner by UID, not by name.
 	if len(secret.OwnerReferences) != 1 || secret.OwnerReferences[0].Kind != "Sandbox" || secret.OwnerReferences[0].Name != claim.Name || secret.OwnerReferences[0].UID != "sb-uid" {
 		t.Errorf("Secret ownerReferences = %v; want the Sandbox by name and UID, so the Secret is garbage-collected with it", secret.OwnerReferences)
+	}
+}
+
+// v1beta1 has no spec.replicas, and a direct Sandbox's pod phase alone says
+// whether it runs.
+func TestADirectSandboxOnV1Beta1(t *testing.T) {
+	shape, _ := ShapeFor("v1beta1", ClaimModeDirect)
+	tpl := object("extensions.agents.x-k8s.io/v1beta1", "SandboxTemplate", "tpl", "tpl-uid", map[string]any{
+		"spec": map[string]any{"podTemplate": map[string]any{"spec": map[string]any{"containers": []any{map[string]any{"name": "fetch"}}}}},
+	})
+	obj, err := SandboxFromTemplate(shape, tpl, ns, "sb-1", nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	spec, _, _ := unstructured.NestedMap(obj.Object, "spec")
+	delete(spec, "podTemplate")
+	if want := (map[string]any{"operatingMode": "Running", "shutdownPolicy": "Retain"}); obj.GetAPIVersion() != "agents.x-k8s.io/v1beta1" || !reflect.DeepEqual(spec, want) {
+		t.Errorf("%s with spec %v beside its podTemplate, want agents.x-k8s.io/v1beta1 with %v", obj.GetAPIVersion(), spec, want)
+	}
+	if !shape.isReady(obj) {
+		t.Error("a direct Sandbox with no Ready condition is held back")
 	}
 }
 

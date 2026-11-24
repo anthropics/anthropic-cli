@@ -37,16 +37,17 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "billing-policy",
-			Usage:    "Declares which organization is billed for the request.",
+			Usage:    "Declares which organization is billed for this request. `{\"type\": \"billing_policy\", \"bill_to\": \"user_profile\"}` bills the customer behind the user profile named in the `anthropic-user-profile-id` header, instead of your organization. If that customer has not linked an Anthropic organization to the profile, or has not allowed your organization to bill it, the request is rejected rather than billed to you. Omit the field, or send `\"bill_to\": \"self\"` (the default), to be billed as usual.\n\nMessage Batches does not currently support billing the customer behind a user profile. In a batch, omit the field or send `\"bill_to\": \"self\"`. A request in a batch that sets `\"bill_to\": \"user_profile\"` gets an `errored` result with an `invalid_request_error`, nobody is billed for it, and the batch's other requests run as usual.",
 			BodyPath: "billing_policy",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "cache-control",
+			Usage:    "Top-level cache control automatically applies a cache_control marker to the last cacheable block in the request.",
 			BodyPath: "cache_control",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "compaction",
-			Usage:    "Compact the whole conversation and return a signed `compaction` block,\nalone, that a later request sends back first in `messages`, in place of\nthe messages it summarizes. There is no trigger and no pause flag: sending\nthe parameter compacts, and nothing is sampled after the block.\n\nThe summarization prompt is the server's own unless `instructions` are\ngiven, which then replace it for this request; a value that is empty or\nonly whitespace counts as absent.",
+			Usage:    "Compaction configuration.\n\nWhen set on `POST /v1/messages`, the request is a compaction request: the conversation in `messages` is summarized and the response holds only the resulting `compaction` block (`stop_reason` `\"compaction\"`), which later requests send first in `messages` in place of the messages it summarizes. `POST /v1/messages/count_tokens` accepts this parameter and ignores it: the count it returns is for the conversation in `messages` as sent. Cannot be combined with `context_management`.",
 			BodyPath: "compaction",
 		},
 		&requestflag.Flag[any]{
@@ -56,11 +57,12 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "context-management",
+			Usage:    "Context management configuration.\n\nThis allows you to control how Claude manages context across multiple requests, such as whether to clear function results or not.",
 			BodyPath: "context_management",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "diagnostics",
-			Usage:    "Request-level diagnostics. Currently carries the previous response\nid for prompt-cache divergence reporting.",
+			Usage:    "Request-level diagnostics. Supply `previous_message_id` to have the response include `diagnostics.cache_miss_reason` explaining any prompt-cache divergence from that prior request.",
 			BodyPath: "diagnostics",
 		},
 		&requestflag.Flag[any]{
@@ -85,24 +87,27 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
+			Usage:    "An object describing metadata about the request.",
 			BodyPath: "metadata",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "output-config",
+			Usage:    "Configuration options for the model's output, such as the output format.",
 			BodyPath: "output_config",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "output-format",
+			Usage:    "Deprecated: Use `output_config.format` instead. See [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)\n\nA schema to specify Claude's output format in responses. This parameter will be removed in a future release.",
 			BodyPath: "output_format",
 		},
 		&requestflag.Flag[string]{
 			Name:     "service-tier",
-			Usage:    "Determines whether to use priority capacity (if available) or standard capacity for this request.\n\nAnthropic offers different levels of service for your API requests. See [service-tiers](https://platform.claude.com/docs/en/api/service-tiers) for details.",
+			Usage:    "Determines whether to use priority capacity (if available) or standard capacity for this request.\n\nAnthropic offers different levels of service for your API requests. See [service-tiers](https://platform.claude.com/docs/en/api/service-tiers) for details.\n\nAllowed values: \"auto\", \"standard_only\".",
 			BodyPath: "service_tier",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.",
+			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.\n\nAllowed values: \"standard\", \"fast\".",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[[]string]{
@@ -171,7 +176,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "message.clear-at",
-			Usage:      "How long this system message's text stays in front of the model. `\"never\"` (the default) renders it on every request that includes it. `\"next_user_message\"` renders it only for the user turn it follows: once a later `role: \"user\"` message exists in `messages` the message stays in the array (send it unchanged) but is no longer shown to the model. Only permitted on `role: \"system\"` messages.",
+			Usage:      "How long this system message's text stays in front of the model. `\"never\"` (the default) renders it on every request that includes it. `\"next_user_message\"` renders it only for the user turn it follows: once a later `role: \"user\"` message exists in `messages` the message stays in the array (send it unchanged) but is no longer shown to the model. Only permitted on `role: \"system\"` messages.\n\nAllowed values: \"next_user_message\", \"never\".",
 			InnerField: "clear_at",
 		},
 		&requestflag.InnerFlag[any]{
@@ -192,7 +197,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "billing-policy.bill-to",
-			Usage:      "Who is billed for a request.",
+			Usage:      "Who is billed. `self`, the default, bills your organization, as if `billing_policy` were omitted. `user_profile` bills the customer behind the user profile the request names; if that customer has not linked an Anthropic organization to the profile, or has not allowed your organization to bill it, the request is rejected rather than billed to you.\n\nAllowed values: \"self\", \"user_profile\".",
 			InnerField: "bill_to",
 		},
 	},
@@ -204,7 +209,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.ttl",
-			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.",
+			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.\n\nAllowed values: \"5m\", \"1h\".",
 			InnerField: "ttl",
 		},
 	},
@@ -254,7 +259,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "fallback-credit-token.mode",
-			Usage:      "How a failing token affects the retry. `strict` (the default, and the bare-string behavior): a failing redemption is a 400 and the retry is not served. `best_effort`: the retry is served either way — a token-layer failure no longer rejects the request; the retry proceeds at normal price and the outcome is reported on the response's `usage.fallback_credit`. Two failures stay hard in both modes: a malformed token, and combining `fallback_credit_token` with `fallbacks`.",
+			Usage:      "How a failing token affects the retry. `strict` (the default, and the bare-string behavior): a failing redemption is a 400 and the retry is not served. `best_effort`: the retry is served either way — a token-layer failure no longer rejects the request; the retry proceeds at normal price and the outcome is reported on the response's `usage.fallback_credit`. Two failures stay hard in both modes: a malformed token, and combining `fallback_credit_token` with `fallbacks`.\n\nAllowed values: \"strict\", \"best_effort\".",
 			InnerField: "mode",
 		},
 	},
@@ -291,16 +296,17 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.\n\nAllowed values: \"low\", \"medium\", \"high\", \"xhigh\", \"max\".",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
+			Usage:      "A schema to specify Claude's output format in responses. See [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)",
 			InnerField: "format",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.task-budget",
-			Usage:      "User-configurable total token budget across contexts.",
+			Usage:      "Configuration for token budget tracking across contexts.",
 			InnerField: "task_budget",
 		},
 	},
@@ -324,7 +330,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "thinking.block-binding",
-			Usage:      "Controls for block binding: what happens when a thinking block this\nrequest sends back fails the conversation check. Every field is optional;\nan empty object means every default.",
+			Usage:      "Controls for block binding: what happens when a thinking block this request sends back fails the conversation check. `null`, absent or an empty object means every default.",
 			InnerField: "block_binding",
 		},
 		&requestflag.InnerFlag[int64]{
@@ -334,7 +340,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "thinking.display",
-			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).\n\nAllowed values: \"summarized\", \"omitted\", \"updates\".",
 			InnerField: "display",
 		},
 	},
@@ -382,14 +388,17 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.cache-control",
+			Usage:      "Create a cache control breakpoint at this content block.",
 			InnerField: "cache_control",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.caching",
+			Usage:      "Caching for the advisor's own prompt. When set, each advisor call writes a cache entry at the given TTL so subsequent calls in the same conversation read the stable prefix. When omitted, the advisor prompt is not cached.",
 			InnerField: "caching",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.citations",
+			Usage:      "Citations configuration for fetched documents. Citations are disabled by default.",
 			InnerField: "citations",
 		},
 		&requestflag.InnerFlag[any]{
@@ -398,7 +407,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.default-config",
-			Usage:      "Default configuration for tools in an MCP toolset.",
+			Usage:      "Default configuration applied to all tools from this server",
 			InnerField: "default_config",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -482,7 +491,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "tool.response-inclusion",
-			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.\n\nAllowed values: \"full\", \"excluded\".",
 			InnerField: "response_inclusion",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -502,7 +511,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.url-sources",
-			Usage:      "Which sources contribute to the set of URLs web fetch may fetch.\n\nEach key is a tagged variant: ``user_input`` is ``all`` or ``none``; the\ntwo tool filters are ``all``, ``none``, ``only`` (only the named tools'\nresults) or ``except`` (every result but the named tools'). A named tool\nmust be declared in this request's ``tools[]``.",
+			Usage:      "Which sources contribute to the set of URLs the tool may fetch. Omitted means every source.",
 			InnerField: "url_sources",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -512,6 +521,7 @@ var betaMessagesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.user-location",
+			Usage:      "Parameters for the user's location. Used to provide more relevant search results.",
 			InnerField: "user_location",
 		},
 	},
@@ -536,20 +546,22 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "billing-policy",
-			Usage:    "Declares which organization is billed for the request.",
+			Usage:    "Declares which organization is billed when this body is sent to `/v1/messages`. Accepted here so that you can count the tokens of the exact body you will send, and otherwise ignored: counting tokens bills nobody, so no user profile is required.",
 			BodyPath: "billing_policy",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "cache-control",
+			Usage:    "Top-level cache control automatically applies a cache_control marker to the last cacheable block in the request.",
 			BodyPath: "cache_control",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "compaction",
-			Usage:    "Compact the whole conversation and return a signed `compaction` block,\nalone, that a later request sends back first in `messages`, in place of\nthe messages it summarizes. There is no trigger and no pause flag: sending\nthe parameter compacts, and nothing is sampled after the block.\n\nThe summarization prompt is the server's own unless `instructions` are\ngiven, which then replace it for this request; a value that is empty or\nonly whitespace counts as absent.",
+			Usage:    "Compaction configuration.\n\nWhen set on `POST /v1/messages`, the request is a compaction request: the conversation in `messages` is summarized and the response holds only the resulting `compaction` block (`stop_reason` `\"compaction\"`), which later requests send first in `messages` in place of the messages it summarizes. `POST /v1/messages/count_tokens` accepts this parameter and ignores it: the count it returns is for the conversation in `messages` as sent. Cannot be combined with `context_management`.",
 			BodyPath: "compaction",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "context-management",
+			Usage:    "Context management configuration.\n\nThis allows you to control how Claude manages context across multiple requests, such as whether to clear function results or not.",
 			BodyPath: "context_management",
 		},
 		&requestflag.Flag[[]map[string]any]{
@@ -559,15 +571,17 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "output-config",
+			Usage:    "Configuration options for the model's output, such as the output format.",
 			BodyPath: "output_config",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "output-format",
+			Usage:    "Deprecated: Use `output_config.format` instead. See [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)\n\nA schema to specify Claude's output format in responses. This parameter will be removed in a future release.",
 			BodyPath: "output_format",
 		},
 		&requestflag.Flag[*string]{
 			Name:     "speed",
-			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.",
+			Usage:    "The inference speed mode for this request. `\"fast\"` enables high output-tokens-per-second inference.\n\nSome models require the `fast-mode-2026-02-01` beta header for any `speed` value. See [fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) for which models.\n\nAllowed values: \"standard\", \"fast\".",
 			BodyPath: "speed",
 		},
 		&requestflag.Flag[any]{
@@ -617,7 +631,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "message.clear-at",
-			Usage:      "How long this system message's text stays in front of the model. `\"never\"` (the default) renders it on every request that includes it. `\"next_user_message\"` renders it only for the user turn it follows: once a later `role: \"user\"` message exists in `messages` the message stays in the array (send it unchanged) but is no longer shown to the model. Only permitted on `role: \"system\"` messages.",
+			Usage:      "How long this system message's text stays in front of the model. `\"never\"` (the default) renders it on every request that includes it. `\"next_user_message\"` renders it only for the user turn it follows: once a later `role: \"user\"` message exists in `messages` the message stays in the array (send it unchanged) but is no longer shown to the model. Only permitted on `role: \"system\"` messages.\n\nAllowed values: \"next_user_message\", \"never\".",
 			InnerField: "clear_at",
 		},
 		&requestflag.InnerFlag[any]{
@@ -638,7 +652,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "billing-policy.bill-to",
-			Usage:      "Who is billed for a request.",
+			Usage:      "Who is billed. `self`, the default, bills your organization, as if `billing_policy` were omitted. `user_profile` bills the customer behind the user profile the request names; if that customer has not linked an Anthropic organization to the profile, or has not allowed your organization to bill it, the request is rejected rather than billed to you.\n\nAllowed values: \"self\", \"user_profile\".",
 			InnerField: "bill_to",
 		},
 	},
@@ -650,7 +664,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "cache-control.ttl",
-			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.",
+			Usage:      "The time-to-live for the cache control breakpoint.\n\nThis may be one the following values:\n- `5m`: 5 minutes\n- `1h`: 1 hour\n\nDefaults to `5m`. See [prompt caching pricing](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) for details.\n\nAllowed values: \"5m\", \"1h\".",
 			InnerField: "ttl",
 		},
 	},
@@ -699,16 +713,17 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 	"output-config": {
 		&requestflag.InnerFlag[*string]{
 			Name:       "output-config.effort",
-			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.",
+			Usage:      "How much effort the model should put into its response. Higher effort levels may result in more thorough analysis but take longer.\n\nValid values are `low`, `medium`, `high`, `xhigh`, or `max`.\n\nAllowed values: \"low\", \"medium\", \"high\", \"xhigh\", \"max\".",
 			InnerField: "effort",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.format",
+			Usage:      "A schema to specify Claude's output format in responses. See [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)",
 			InnerField: "format",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "output-config.task-budget",
-			Usage:      "User-configurable total token budget across contexts.",
+			Usage:      "Configuration for token budget tracking across contexts.",
 			InnerField: "task_budget",
 		},
 	},
@@ -732,7 +747,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "thinking.block-binding",
-			Usage:      "Controls for block binding: what happens when a thinking block this\nrequest sends back fails the conversation check. Every field is optional;\nan empty object means every default.",
+			Usage:      "Controls for block binding: what happens when a thinking block this request sends back fails the conversation check. `null`, absent or an empty object means every default.",
 			InnerField: "block_binding",
 		},
 		&requestflag.InnerFlag[int64]{
@@ -742,7 +757,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "thinking.display",
-			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).",
+			Usage:      "Controls how thinking content appears in the response. When set to `summarized`, thinking is returned normally. When set to `omitted`, thinking content is redacted but a signature is returned for multi-turn continuity. The default depends on the model; see [Controlling thinking display](https://platform.claude.com/docs/en/build-with-claude/thinking#controlling-thinking-display).\n\nAllowed values: \"summarized\", \"omitted\", \"updates\".",
 			InnerField: "display",
 		},
 	},
@@ -778,14 +793,17 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.cache-control",
+			Usage:      "Create a cache control breakpoint at this content block.",
 			InnerField: "cache_control",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.caching",
+			Usage:      "Caching for the advisor's own prompt. When set, each advisor call writes a cache entry at the given TTL so subsequent calls in the same conversation read the stable prefix. When omitted, the advisor prompt is not cached.",
 			InnerField: "caching",
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.citations",
+			Usage:      "Citations configuration for fetched documents. Citations are disabled by default.",
 			InnerField: "citations",
 		},
 		&requestflag.InnerFlag[any]{
@@ -794,7 +812,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.default-config",
-			Usage:      "Default configuration for tools in an MCP toolset.",
+			Usage:      "Default configuration applied to all tools from this server",
 			InnerField: "default_config",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -878,7 +896,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[string]{
 			Name:       "tool.response-inclusion",
-			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.",
+			Usage:      "How this tool's result blocks appear in the API response when the result was consumed by a completed code_execution call in the same turn. 'full' returns the complete content (default). 'excluded' drops the nested server_tool_use and result block pair entirely. Results from direct calls, or from code_execution calls that paused before completing, are always returned in full so they can be sent back on the next turn.\n\nAllowed values: \"full\", \"excluded\".",
 			InnerField: "response_inclusion",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -898,7 +916,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.url-sources",
-			Usage:      "Which sources contribute to the set of URLs web fetch may fetch.\n\nEach key is a tagged variant: ``user_input`` is ``all`` or ``none``; the\ntwo tool filters are ``all``, ``none``, ``only`` (only the named tools'\nresults) or ``except`` (every result but the named tools'). A named tool\nmust be declared in this request's ``tools[]``.",
+			Usage:      "Which sources contribute to the set of URLs the tool may fetch. Omitted means every source.",
 			InnerField: "url_sources",
 		},
 		&requestflag.InnerFlag[bool]{
@@ -908,6 +926,7 @@ var betaMessagesCountTokens = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[map[string]any]{
 			Name:       "tool.user-location",
+			Usage:      "Parameters for the user's location. Used to provide more relevant search results.",
 			InnerField: "user_location",
 		},
 	},

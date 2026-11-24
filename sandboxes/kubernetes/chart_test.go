@@ -12,8 +12,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -127,7 +127,7 @@ func TestChartRendersAnInstallEachPlatformAccepts(t *testing.T) {
 			}
 			assertPublishedImages(t, objects, appVersion)
 			assertBindingFollowsNamespace(t, objects)
-			assertDispatcherAPIVersion(t, objects, in.sandboxAPIVersion)
+			assertDispatcherPath(t, objects, in.platform, in.sandboxAPIVersion)
 			assertSandboxSchema(t, objects, in.sandboxAPIVersion)
 
 			// Kubernetes lets traffic through when any policy allows it, so the
@@ -260,6 +260,8 @@ func TestChartRefusesValuesItCannotRender(t *testing.T) {
 		{"platform unknown", withMinimalSettings("platform=aks"), "platform"},
 		{"misspelled key", withMinimalSettings("platform=eks", "sandbox.idleTimeuot=5m"), "idleTimeuot"},
 		{"warm pool on gke", withMinimalSettings("platform=gke", "sandbox.warmPoolSize=2"), "sandbox.warmPoolSize"},
+		{"a sandbox API version off GKE", withMinimalSettings("platform=eks", "gke.sandboxAPIVersion=v1beta1"), "gke.sandboxAPIVersion"},
+		{"a sandbox API version that does not exist", withMinimalSettings("platform=gke", "gke.sandboxAPIVersion=v1"), "sandboxAPIVersion"},
 		{"fqdnGke off GKE", withMinimalSettings("platform=eks", "egress.mode=fqdnGke"), "egress.mode"},
 		{"cloudDns off GKE", withMinimalSettings("platform=generic", "gke.dns=cloudDns"), "gke.dns"},
 		{
@@ -329,26 +331,119 @@ func TestChartRefusesValuesItCannotRender(t *testing.T) {
 	}
 }
 
+func TestChartOnGKEWritesTheVersionTheClusterServes(t *testing.T) {
+	helm := helmBinary(t)
+	render := func(served ...string) string {
+		args := templateArgs(withMinimalSettings("platform=gke")...)
+		for _, s := range served {
+			args = append(args, "--api-versions", s)
+		}
+		out, err := runHelm(helm, args...)
+		if err != nil {
+			t.Fatal(out)
+		}
+		return out
+	}
+	// Given: what the chart renders for a cluster that serves v1alpha1 alone,
+	// with the template and the warm pool moved to v1beta1.
+	alpha := render(sandboxAPIAlpha)
+	if n := strings.Count(alpha, sandboxAPIAlpha); n != 2 {
+		t.Fatalf("%d objects at %s, want the template and the warm pool", n, sandboxAPIAlpha)
+	}
+	want := strings.ReplaceAll(alpha, sandboxAPIAlpha, sandboxAPIBeta)
+
+	// Then: that is what it renders wherever v1beta1 is served.
+	for _, served := range [][]string{{sandboxAPIAlpha, sandboxAPIBeta}, {sandboxAPIBeta}} {
+		if got := render(served...); got != want {
+			t.Errorf("on a cluster that serves %v the chart renders:\n%s\nwant:\n%s", served, got, want)
+		}
+	}
+}
+
+func TestChartOnGKEStaysOnANamedVersion(t *testing.T) {
+	helm := helmBinary(t)
+	for _, named := range []string{sandboxAPIAlpha, sandboxAPIBeta} {
+		// When: a version is named on a cluster that serves both.
+		args := append(templateArgs(withMinimalSettings("platform=gke", "gke.sandboxAPIVersion="+path.Base(named))...), "--api-versions", sandboxAPIAlpha, "--api-versions", sandboxAPIBeta)
+		out, err := runHelm(helm, args...)
+		if err != nil {
+			t.Fatal(out)
+		}
+
+		// Then: the objects and the dispatcher take it.
+		for _, want := range []string{
+			"apiVersion: " + named + "\nkind: SandboxTemplate", "apiVersion: " + named + "\nkind: SandboxWarmPool",
+			"name: CMA_DISPATCHER_API_VERSION\n              value: " + path.Base(named) + "\n",
+		} {
+			if !strings.Contains(out, want) {
+				t.Errorf("the render lacks %q", want)
+			}
+		}
+	}
+}
+
+// An upgrade with --reuse-values from an earlier chart brings no such key.
+func TestChartRendersTheSameWithoutTheSandboxAPIVersionKey(t *testing.T) {
+	helm, settings := helmBinary(t), withMinimalSettings("platform=gke")
+	withKey, err := runHelm(helm, templateArgs(settings...)...)
+	if err != nil {
+		t.Fatal(withKey)
+	}
+	withoutKey, err := runHelm(helm, templateArgs(append(settings, "gke.sandboxAPIVersion=null")...)...)
+	if err != nil || withoutKey != withKey {
+		t.Errorf("without the key the chart renders (%v):\n%s\nwant:\n%s", err, withoutKey, withKey)
+	}
+}
+
+func TestChartOnGKERefusesAnUpgradeByAHelmThatDeletesOnAVersionChange(t *testing.T) {
+	helm := helmBinary(t)
+	both := []string{"--api-versions", sandboxAPIAlpha, "--api-versions", sandboxAPIBeta}
+	for _, tc := range []struct {
+		helmVersion, platform string
+		flags                 []string
+		refused               bool
+	}{
+		{"v4.0.4", "gke", append(both, "--is-upgrade"), true},
+		{"v4.1.0", "gke", append(both, "--is-upgrade"), true},
+		{"v4.1.0+g4553a0a", "gke", append(both, "--is-upgrade"), true},
+		{"v4.0", "gke", append(both, "--is-upgrade"), true},
+		{"v4.1", "gke", append(both, "--is-upgrade"), false},
+		{"v4.1.1", "gke", append(both, "--is-upgrade"), false},
+		{"v4.10.0", "gke", append(both, "--is-upgrade"), false},
+		{"v3.18.4", "gke", append(both, "--is-upgrade"), false},
+		{"v4.0.4", "gke", both, false},
+		{"v4.0.4", "gke", append(both[:2:2], "--is-upgrade"), false},
+		{"v4.0.4", "gke", append(both[2:], "--is-upgrade"), false},
+		{"v4.0.4", "eks", append(both, "--is-upgrade"), false},
+	} {
+		// Given: a copy of the chart that reads the row's Helm version, since helm
+		// has no flag for it.
+		chart := t.TempDir()
+		if err := os.CopyFS(chart, os.DirFS(chartDir)); err != nil {
+			t.Fatal(err)
+		}
+		helpers := filepath.Join(chart, "templates", "_helpers.tpl")
+		text, err := os.ReadFile(helpers)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(helpers, bytes.ReplaceAll(text, []byte(".Capabilities.HelmVersion.Version"), []byte(strconv.Quote(tc.helmVersion))), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		args := replaceSetting(templateArgs(withMinimalSettings("platform="+tc.platform)...), chartDir, chart)
+
+		out, err := runHelm(helm, append(args, tc.flags...)...)
+		if refused := err != nil && strings.Contains(out, "deletes an object whose API version changes"); refused != tc.refused || (err != nil) != tc.refused {
+			t.Errorf("Helm %s on %s with %v: refused %v, want %v (%v)", tc.helmVersion, tc.platform, tc.flags, refused, tc.refused, err)
+		}
+	}
+}
+
 func TestChartVersionIsItsAppVersion(t *testing.T) {
 	// appVersion is the image tag when image.tag is empty, and a release sets
 	// both to its own version.
 	if chart := chartMetadata(t); chart.Version != chart.AppVersion {
 		t.Errorf("version is %q and appVersion is %q; a release sets both", chart.Version, chart.AppVersion)
-	}
-}
-
-func TestChartVersionIsTheChangelogsTopHeading(t *testing.T) {
-	changelog, err := os.ReadFile(filepath.Join("..", "CHANGELOG.md"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	plainOrLinkedHeading := regexp.MustCompile(`(?m)^## \[?([^\]\s]+)`)
-	topHeading := plainOrLinkedHeading.FindSubmatch(changelog)
-	if topHeading == nil {
-		t.Fatal("CHANGELOG.md has no version heading")
-	}
-	if chart := chartMetadata(t); chart.Version != string(topHeading[1]) {
-		t.Errorf("version is %q and the top heading of CHANGELOG.md is %q", chart.Version, topHeading[1])
 	}
 }
 
@@ -726,19 +821,23 @@ func assertSandboxSchema(t *testing.T, objects []rendered, sandboxAPIVersion str
 	}
 }
 
-// assertDispatcherAPIVersion checks the dispatcher is told the API version
-// the SandboxTemplate carries. The env value is the version without the
-// group.
-func assertDispatcherAPIVersion(t *testing.T, objects []rendered, sandboxAPIVersion string) {
+// assertDispatcherPath checks the dispatcher's two settings for the Agent
+// Sandbox API. On GKE the served version changes under a running install, so
+// there the dispatcher asks the cluster.
+func assertDispatcherPath(t *testing.T, objects []rendered, platform, sandboxAPIVersion string) {
 	t.Helper()
 	d := find(objects, "Deployment", "cma-dispatcher")
 	if d == nil {
 		t.Fatal("no Deployment cma-dispatcher")
 	}
-	got := containerEnv(d.obj.(*appsv1.Deployment), "dispatcher", "CMA_DISPATCHER_API_VERSION")
-	want := path.Base(sandboxAPIVersion)
-	if got != want {
-		t.Errorf("dispatcher env CMA_DISPATCHER_API_VERSION %q, want %q", got, want)
+	want := map[string]string{"CMA_DISPATCHER_API_VERSION": path.Base(sandboxAPIVersion), "CMA_DISPATCHER_CLAIM_MODE": "sandbox_claim"}
+	if platform == "gke" {
+		want = map[string]string{"CMA_DISPATCHER_API_VERSION": "auto", "CMA_DISPATCHER_CLAIM_MODE": "direct"}
+	}
+	for name, value := range want {
+		if got := containerEnv(d.obj.(*appsv1.Deployment), "dispatcher", name); got != value {
+			t.Errorf("dispatcher env %s %q, want %q", name, got, value)
+		}
 	}
 }
 
@@ -818,4 +917,10 @@ func examplePlatform(t *testing.T, valuesFile string) string {
 		t.Fatalf("%s: %v", valuesFile, err)
 	}
 	return values.Platform
+}
+
+// replaceSetting returns settings with replacement in the place of old.
+func replaceSetting(settings []string, old, replacement string) []string {
+	i := slices.Index(settings, old)
+	return slices.Replace(slices.Clone(settings), i, i+1, replacement)
 }

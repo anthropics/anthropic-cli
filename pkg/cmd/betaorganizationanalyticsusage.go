@@ -102,12 +102,12 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "order",
-			Usage:     `Allowed values: "asc", "desc".`,
+			Usage:     "Sort direction of the `order_by` metric, or of the time buckets when `order_by` is `time` and `time_bucket_width` is set. Defaults to `desc`.\n\nAllowed values: \"asc\", \"desc\".",
 			QueryPath: "order",
 		},
 		&requestflag.Flag[string]{
 			Name:      "order-by",
-			Usage:     `Allowed values: "output_tokens", "requests", "time", "total_tokens", "uncached_input_tokens".`,
+			Usage:     "Row order. A metric ranks rows by that metric in the `order` direction. `time` orders rows by time bucket in the `order` direction (newest first by default) and, within a bucket, by `total_tokens`, highest first. `time` takes effect only with `time_bucket_width`; without it, `time` is the same as `total_tokens`. Defaults to `total_tokens`.\n\nAllowed values: \"output_tokens\", \"requests\", \"time\", \"total_tokens\", \"uncached_input_tokens\".",
 			QueryPath: "order_by",
 		},
 		&requestflag.Flag[[]string]{
@@ -152,7 +152,7 @@ var betaOrganizationAnalyticsUsageList = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "time-bucket-width",
-			Usage:     `Allowed values: "1d", "1h", "1m".`,
+			Usage:     "Time-bucket granularity. When set, rows are returned per time bucket (one per bucket and dimension combination with usage) and each row's `starting_at` and `ending_at` are that bucket's bounds; the time bucket counts toward `limit`. `ending_at` is required when `time_bucket_width` is set, and with `time_bucket_width=\"1m\"` the range may span at most 24 hours. When omitted, each row aggregates the requested range with `starting_at` and `ending_at` each rounded down to the hour.\n\nAllowed values: \"1d\", \"1h\", \"1m\".",
 			QueryPath: "time_bucket_width",
 		},
 		&requestflag.Flag[[]string]{

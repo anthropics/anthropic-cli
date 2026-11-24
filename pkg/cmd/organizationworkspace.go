@@ -25,6 +25,7 @@ var organizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "data-residency",
+			Usage:    "Data residency configuration for the workspace. If omitted, defaults to `workspace_geo: \"us\"`, `allowed_inference_geos: \"unrestricted\"`, and `default_inference_geo: \"global\"`.",
 			BodyPath: "data_residency",
 		},
 		&requestflag.Flag[*string]{
@@ -59,12 +60,12 @@ var organizationWorkspacesCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "data-residency.default-inference-geo",
-			Usage:      "Default inference geo applied when requests omit the parameter. Defaults to 'global' if omitted. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.",
+			Usage:      "Default inference geo applied when requests omit the parameter. Defaults to 'global' if omitted. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.\n\nAllowed values: \"global\", \"us\".",
 			InnerField: "default_inference_geo",
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "data-residency.workspace-geo",
-			Usage:      "Geographic region for workspace data storage. Immutable after creation. Defaults to 'us' if omitted.",
+			Usage:      "Geographic region for workspace data storage. Immutable after creation. Defaults to 'us' if omitted.\n\nAllowed values: \"us\".",
 			InnerField: "workspace_geo",
 		},
 	},
@@ -98,6 +99,7 @@ var organizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "data-residency",
+			Usage:    "Data residency configuration for the workspace.",
 			BodyPath: "data_residency",
 		},
 		&requestflag.Flag[string]{
@@ -137,7 +139,7 @@ var organizationWorkspacesUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[*string]{
 			Name:       "data-residency.default-inference-geo",
-			Usage:      "Default inference geo applied when requests omit the parameter. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.",
+			Usage:      "Default inference geo applied when requests omit the parameter. Must be a member of `allowed_inference_geos` unless `allowed_inference_geos` is `\"unrestricted\"`.\n\nAllowed values: \"global\", \"us\".",
 			InnerField: "default_inference_geo",
 		},
 	},
