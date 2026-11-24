@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.14.0](https://github.com/anthropics/anthropic-cli/compare/v2.13.0...v2.14.0) (2026-11-24)
+
+### Features
+
+* **api:** add Google-managed data controls for Google Cloud projects
+* **api:** add Google-managed data controls for user profiles
+* **api:** add support for compliance review cases, notices, and items
+
+
+### Bug Fixes
+
+* **cli:** show each flag's own description and allowed values in help
+
+
+### Chores
+
+* bump go sdk to v2.15.0
+* **docs:** update example workspace and API key IDs
+* **sandboxes:** publish the images and the Helm chart to Google Artifact Registry from the release workflow
+
+
+### Documentation
+
+* show what enum values mean
+
 ## [2.13.0](https://github.com/anthropics/anthropic-cli/compare/v2.12.1...v2.13.0) (2026-11-23)
 
 ### Features
