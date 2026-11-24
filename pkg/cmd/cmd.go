@@ -774,6 +774,32 @@ func init() {
 				},
 			},
 			{
+				Name:     "beta:compliance:review:cases",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaComplianceReviewCasesRetrieve,
+					&betaComplianceReviewCasesList,
+					&betaComplianceReviewCasesRespond,
+				},
+			},
+			{
+				Name:     "beta:compliance:review:notices",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaComplianceReviewNoticesList,
+				},
+			},
+			{
+				Name:     "beta:compliance:review:items",
+				Category: "API RESOURCE",
+				Suggest:  true,
+				Commands: []*cli.Command{
+					&betaComplianceReviewItemsRetrieve,
+				},
+			},
+			{
 				Name:     "beta:organization",
 				Category: "API RESOURCE",
 				Suggest:  true,
