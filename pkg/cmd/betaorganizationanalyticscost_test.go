@@ -18,7 +18,7 @@ func TestBetaOrganizationAnalyticsCostList(t *testing.T) {
 			"--actor-id", "user_01WxYzAbCdEfGhJkMnPqRsTu",
 			"--actor-type", "service_account_actor",
 			"--agent-id", "agent_01VHd3EAGJ6PLkP9LM7DDu3f",
-			"--api-key-id", "apikey_01Rj2N8SVvo6BePZj99NhmiT",
+			"--api-key-id", "apikey_01BcDeFgHjKmNpQrStUvWxYz",
 			"--claude-tag-category", "engaged",
 			"--claude-tag-user-id", "U0123ABCDEF",
 			"--context-window", "0-200k",
@@ -42,7 +42,7 @@ func TestBetaOrganizationAnalyticsCostList(t *testing.T) {
 			"--speed", "fast",
 			"--time-bucket-width", "1d",
 			"--user-profile-id", "uprof_01M33NeYUQK2WV9PpYcsPHLi",
-			"--workspace-id", "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ",
+			"--workspace-id", "wrkspc_01AbCdEfGhJkLmNpQrStUvWx",
 			"--beta", "computer-use-2024-10-22",
 		)
 	})
